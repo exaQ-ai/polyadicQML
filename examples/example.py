@@ -4,7 +4,7 @@ import numpy as np
 # sns.set()
 
 from polyadicqml.qiskit.circuitML import circuitML
-from polyadicqml.qiskit.qkClassifier import qkClassifier
+from polyadicqml.quantumClassifier import Classifier
 from polyadicqml.qiskit.utility.backends import Backends
 from polyadicqml.circuits.qiskitBdr import ibmqNativeBuilder
 
@@ -70,7 +70,7 @@ nbshots = 300
 
 params = qc.random_params()
 
-model = qkClassifier(qc, bitstr, nbshots=nbshots, budget=100)
+model = Classifier(qc, bitstr, nbshots=nbshots, budget=200)
 
 model.fit(X, y, method="COBYLA")
 
