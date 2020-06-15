@@ -13,6 +13,8 @@ import datetime
 from sklearn.metrics import log_loss
 from scipy.special import softmax
 
+from .circuitML import circuitML
+
 def CE_loss(y_true, y_pred, labels=None):
     """Cross entropy loss.
 
@@ -35,11 +37,12 @@ def CE_loss(y_true, y_pred, labels=None):
 class Classifier():
     """Base class for quantum classifiers. Defines the API for all subclasses, using the sklearn format.
     """
-    def __init__(self, circuit, bitstr, nbshots=None,
+    def __init__(self, circuit, bitstr,
+                 params=None, nbshots=None,
                  nbshots_increment=None,
                  nbshots_incr_delay=None,
                  loss=CE_loss,
-                 budget=200,
+                 job_size=None, budget=200,
                  name=None, save_path=None):
         """Create classifier.
 
@@ -49,6 +52,8 @@ class Classifier():
             Quantum circuit to simulate, how to use and store is defined in child classes.
         bitstr : list of int or list of str
             Which bitstrings should correspond to each class. The number of classes for the classification is defined by the number of elements.
+        params : vector
+            Initial model paramters.
         nbshots : int, optional
             Number of shots for the quantum circuit. If 0, negative or None, then exact proabilities are computed, by default None
         nbshots_increment : float, int or callable, optional
@@ -57,6 +62,10 @@ class Classifier():
             After how many iteration nb_shots has to increse. By default 20, if nbshots_increment is given
         loss : callable, optional
             Loss function, by default Negative LogLoss (Cross entropy).
+        job_size : int, optional
+            Number of runs for each circuit job, by default the number of observations.
+        budget : int, optional
+            Maximum number of optimization steps, by default 200
         name : srt, optional
             Name to identify this classifier.
         save_path : str, optional
@@ -80,6 +89,11 @@ class Classifier():
             self.bitstr = [int(bit, 2) for bit in bitstr]
         else:
             raise TypeError("Bitstrings must be either int or binary strings")
+
+        if params is None:
+            self.set_params(circuit.random_params())
+        else:
+            self.set_params(params)
 
         if not (isinstance(nbshots, int) or (nbshots is None)):
             raise TypeError("Invalid `nbshots` type")
@@ -106,6 +120,8 @@ class Classifier():
             raise TypeError("Invalid `budget` type")
         self.__budget__ = budget
 
+        self.job_size = job_size
+
         self.__loss__ = loss
         self.__min_loss__ = np.inf
 
@@ -117,33 +133,45 @@ class Classifier():
         self.__params_progress__ = []
         self.__name__ = name
         self.__save_path__ = save_path
-        self.__info__ = {'circuit': str(circuit),
-                         'nbshots': nbshots,
-                         'nbshots_increment': str(nbshots_increment),
-                         'nbshots_incr_delay': str(nbshots_incr_delay),
-                         'bitstr': [bin(bit) for bit in self.bitstr]}
+        self.__info__ = {
+            'circuit': str(circuit),
+            'nbshots': nbshots,
+            'nbshots_increment': str(nbshots_increment),
+            'nbshots_incr_delay': str(nbshots_incr_delay),
+            'bitstr': [bin(bit) for bit in self.bitstr],
+            'job_size' : job_size if job_size else "FULL",
+            }
 
     def __verify_circuit__(self, circuit):
         """Test wheter a circuit is valid and raise TypeError if it is not.
+
+        Parameters
+        ----------
+        circuit : circuitML
+            circuit implementation for qiskit
 
         Raises
         ------
         TypeError
         """
-        raise NotImplementedError
+        if False:#not isinstance(circuit, circuitML):
+            raise TypeError(f"Circuit was type {type(circuit)} while circuitML was expected.")
 
     def __set_circuit__(self, circuit):
         """Set the circuit after testing for validity.
+
         Parameters
         ----------
-        circuit
+        circuit : circuitML
+            circuit implementation for qiskit
 
         Raises
         ------
         TypeError
             If the circuit is invalid.
         """
-        raise NotImplementedError
+        self.__verify_circuit__(circuit)
+        self.circuit = circuit
 
     def set_params(self, params):
         """Parameters setter
@@ -168,7 +196,11 @@ class Classifier():
         array
             Bitstring counts as an array of shape (nb_samples, 2**nbqbits)
         """
-        raise NotImplementedError
+        if params is None:
+            params = self.params
+
+        return self.circuit.run(X, params, self.nbshots,
+                               job_size=self.job_size)
 
     def predict_proba(self, X, params=None):
         """Compute the bitstring probabilities associated to each input point of the design matrix.
