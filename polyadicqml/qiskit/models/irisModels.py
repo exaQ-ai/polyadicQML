@@ -1,5 +1,5 @@
 from ..qkCircuitML import qkCircuitML, np
-from ..parallelqkCircuitML import parallelML
+from ..parallelCircuitML import parallelML
 
 ############################################################
 # MODELS

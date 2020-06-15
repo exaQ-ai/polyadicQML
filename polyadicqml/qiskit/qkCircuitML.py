@@ -93,7 +93,7 @@ class qkCircuitML(circuitML):
                 if job_size * n_jobs < len(X):
                     requests.append(self.request(X[job_size * n_jobs :], params, shots))
                 try:
-                    return np.vstack([self.result(job, qc_list, shots, save_jobs_info) for job, qc_list in requests])
+                    return np.vstack([self.result(job, qc_list, shots) for job, qc_list in requests])
                 except:
                     for job, qc_list in requests:
                         status = job.status()

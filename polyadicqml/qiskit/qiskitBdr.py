@@ -2,7 +2,7 @@
 from qiskit import QuantumRegister, QuantumCircuit
 from numpy import pi
 
-from .builder import circuitBuilder
+from ..circuitBuilder import circuitBuilder
 
 class __qiskitGeneralBuilder__(circuitBuilder):
     """Abstract class for Qiskit-circuits builders. 

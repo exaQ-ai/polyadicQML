@@ -39,7 +39,7 @@ class parallelML(qkCircuitML):
         return [self.make_circuit(X[i:i+2], params, shots)
                         for i in range(0, self._len_out, 2)]
 
-    def result(self, job, qc_list, shots=None, save_info=False):
+    def result(self, job, qc_list, shots=None):
         wait = 1
         while not job.done():
             sleep(wait)
@@ -59,5 +59,5 @@ class parallelML(qkCircuitML):
                     out[2*n, int(key0, 2)] += count
                     out[2*n + 1, int(key1, 2)] += count
 
-        if save_info: self.save_job(job)
+        if self.save_path: self.save_job(job)
         return out[:self._len_out]
