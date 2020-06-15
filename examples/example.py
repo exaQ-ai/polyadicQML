@@ -3,7 +3,7 @@ import numpy as np
 # import seaborn as sns
 # sns.set()
 
-from polyadicqml.qiskit.circuitML import circuitML
+from polyadicqml.qiskit.qkCircuitML import qkCircuitML
 from polyadicqml.quantumClassifier import Classifier
 from polyadicqml.qiskit.utility.backends import Backends
 from polyadicqml.circuits.qiskitBdr import ibmqNativeBuilder
@@ -36,7 +36,7 @@ y = np.concatenate((np.zeros(2*n_pc), np.ones(2*n_pc)))
 ##############################
 # Now we define a circuit as a subclass of circuitML
 
-class myCircuit(circuitML):
+class myCircuit(qkCircuitML):
     def __init__(self, backend, circuitBuilder):
         super().__init__(backend, circuitBuilder, nbqbits=2)
         # NOTE that we fixed the number of qubits

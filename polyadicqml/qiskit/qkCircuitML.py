@@ -1,11 +1,9 @@
-"""IBMQ circuit backends using qiskit API.
+"""Implementeation of quantum circuit for ML using qiskit API.
 """
 import qiskit as qk
 from qiskit.providers.aer.noise import NoiseModel
 from qiskit.exceptions import QiskitError
 from qiskit.providers import JobStatus
-
-from .utility.backends import Backends
 
 from sys import exc_info
 from os.path import isfile
@@ -15,13 +13,16 @@ from time import asctime, sleep
 from itertools import cycle
 import json
 
-class circuitML():
+from .utility.backends import Backends
+from ..circuitML import circuitML
+
+class qkCircuitML(circuitML):
     """Quantum ML circuit interface for qiskit and IBMQ.
     Provides a unified interface to run multiple parametric circuits with different input and model parameters. 
     """
     def __init__(self, backend, circuitBuilder, nbqbits, noise_model=None, noise_backend=None,
-                 save_path="jobs.json"):
-        """Create circuitML cricuit.
+                 save_path=None):
+        """Create qkCircuitML cricuit.
 
         Parameters
         ----------
@@ -36,15 +37,14 @@ class circuitML():
         noise_backend : Union[Backends, list, qiskit.IBMQBackend], optional
             IBMQ backend from which the noise model should be generated, by default None.
         save_path : str, optional
-            Where to save the jobs outputs, by default "jobs.json". Jobs are saved only if so is specified when calling `circuitML.run`.
-
+            Where to save the jobs outputs, by default None. Jobs are saved only if a path is specified
+, 
         Raises
         ------
         ValueError
             If both `noise_model` and `noise_backend` are provided.
         """
-        self.nbqbits = nbqbits
-        self.circuitBuilder = circuitBuilder
+        super().__init__(circuitBuilder, nbqbits)
 
         self.save_path = save_path
 
@@ -69,39 +69,12 @@ class circuitML():
                 self.noise_model = cycle([NoiseModel.from_backend(_backend) for _backend in _noise_back])
                 self.coupling_map = cycle([_backend.configuration().coupling_map for _backend in _noise_back])
 
-    def run(self, X, params, shots=None, job_size=None, save_jobs_info=False):
-        """Run the circuit with input `X` and parameters `params`.
-        
-        Trough `KeyboardInterrupt` it is possible to pause execution. This cancels the jobs on the backends and allows to reload them. After pausing, one can resume execution or interrupt.
-
-        Parameters
-        ----------
-        X : array-like
-            Input matrix of shape (nb_samples, nb_features).
-        params : vector-like
-            Parameter vector.
-        shots : int, optional
-            Number of shots for the circuit run, by default None. If None, uses the backend default.
-        job_size : int, optional
-            Maximum job size, to split the circuit runs, by default None. If None, put all nb_samples in the same job. 
-        save_jobs_info : bool, optional
-            Wheter to save each job output, by default False
-
-        Returns
-        -------
-        array
-            Bitstring counts as an array of shape (nb_samples, 2**nbqbits)
-
-        Raises
-        ------
-        TypeError
-            If `jobsize` is invalid.
-        """
+    def run(self, X, params, shots=None, job_size=None):
         try:
             if not job_size:
                 job, qc_list = self.request(X, params, shots)
                 try:
-                    return self.result(job, qc_list, shots, save_jobs_info)
+                    return self.result(job, qc_list, shots)
                 except:
                     status = job.status()
                     if job.done() or status == JobStatus.DONE:
@@ -142,29 +115,11 @@ class circuitML():
 
             return self.run(X, params, shots, job_size)
         except QiskitError:
-            print(f"{asctime()} - Error in circuitML.run :{exc_info()[0]}", end="\n\n")
+            print(f"{asctime()} - Error in qkCircuitML.run :{exc_info()[0]}", end="\n\n")
             with open("error.log", "w") as f:
-                f.write(f"{asctime()} - Error in circuitML.run :{exc_info()[0]}\n")
+                f.write(f"{asctime()} - Error in qkCircuitML.run :{exc_info()[0]}\n")
             sleep(10)
             return self.run(X, params, shots, job_size)
-
-    def make_circuit(self, x, params, shots=None):
-        """Generate the circuit corresponding to input `x` and `params`.
-
-        Parameters
-        ----------
-        x : vector-like
-            Input sample
-        params : vector-like
-            Parameter vector.
-        shots : int, optional
-            Number of shots, by default None
-
-        Returns
-        -------
-        qiskit.QuantumCircuit
-        """
-        raise NotImplementedError
 
     def make_circuit_list(self, X, params, shots=None):
         """Generate a circuit for each sample in `X` rows, with parameters `params`.
@@ -225,7 +180,7 @@ class circuitML():
                  ), qc_list
 
 
-    def result(self, job, qc_list, shots=None, save_info=False):
+    def result(self, job, qc_list, shots=None):
         """Retrieve job results and returns bitstring counts.
 
         Parameters
@@ -236,8 +191,6 @@ class circuitML():
             List of quantum circuits executed in `job`, of length nb_samples.
         shots : int, optional
             Number of shots, by default None. If None, raw counts are returned.
-        save_info : bool, optional
-            Wheter to save the jobs output, by default False
 
         Returns
         -------
@@ -249,7 +202,7 @@ class circuitML():
         QiskitError
             If job status is cancelled or had an error.
         """
-        wait = 5
+        wait = 1
         while not job.done():
             if job.status() in (JobStatus.CANCELLED, JobStatus.ERROR): raise QiskitError
             sleep(wait)
@@ -266,29 +219,9 @@ class circuitML():
                     # print(f"{key} : {count}")
                     out[n, int(key, 2)] = count
 
-        if save_info: self.save_job(job)
+        if self.save_path: self.save_job(job)
         return out
 
-    def random_params(self, seed=None):
-        """Generate a valid vector of random parameters.
-
-        Parameters
-        ----------
-        seed : int, optional
-            random seed, by default None
-
-        Returns
-        -------
-        vector
-        """
-        raise NotImplementedError
-
-    def __repr__(self):
-        return "<circuitML>"
-
-    def __str__(self):
-        return self.__repr__()
-    
     def save_job(self, job, save_path=None):
         """Save job output to json file.
 
@@ -306,7 +239,8 @@ class circuitML():
                 with open(save_path) as f:
                     out = json.load(f)
             except:
-                print(f"ATTENTION: file {save_path} is broken, overwriting!")
+                print(f"ATTENTION: file {save_path} is broken, confirm overwriting!")
+                input("Keybord interrupt ([ctrl-c]) to abort")
                 out = {}
         else:
             out = {}

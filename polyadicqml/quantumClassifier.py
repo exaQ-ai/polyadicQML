@@ -6,6 +6,7 @@ from scipy.optimize import minimize
 from sklearn.metrics import log_loss, accuracy_score
 
 import pickle
+import json
 from tqdm.auto import tqdm
 
 import datetime
@@ -154,7 +155,7 @@ class Classifier():
         ------
         TypeError
         """
-        if False:#not isinstance(circuit, circuitML):
+        if not isinstance(circuit, circuitML):
             raise TypeError(f"Circuit was type {type(circuit)} while circuitML was expected.")
 
     def __set_circuit__(self, circuit):

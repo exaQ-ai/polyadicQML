@@ -1,4 +1,4 @@
-"""Implementation of circuit for ML using the manyQ simulator
+"""Implementation of circuit for ML
 """
 
 class circuitML():
@@ -40,3 +40,28 @@ class circuitML():
         vector
         """
         raise NotImplementedError
+
+    def make_circuit(self, x, params, shots=None):
+        """Generate the circuit corresponding to input `x` and `params`.
+
+        Parameters
+        ----------
+        x : vector-like
+            Input sample
+        params : vector-like
+            Parameter vector.
+        shots : int, optional
+            Number of shots, by default None
+
+        Returns
+        -------
+        quantum circuit
+        """
+        raise NotImplementedError
+
+    def __repr__(self):
+        return "<circuitML>"
+
+    def __str__(self):
+        return self.__repr__()
+    
