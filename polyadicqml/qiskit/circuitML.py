@@ -15,13 +15,13 @@ from time import asctime, sleep
 from itertools import cycle
 import json
 
-class qiskitML():
+class circuitML():
     """Quantum ML circuit interface for qiskit and IBMQ.
     Provides a unified interface to run multiple parametric circuits with different input and model parameters. 
     """
     def __init__(self, backend, circuitBuilder, nbqbits, noise_model=None, noise_backend=None,
                  save_path="jobs.json"):
-        """Create qiskitML cricuit.
+        """Create circuitML cricuit.
 
         Parameters
         ----------
@@ -36,7 +36,7 @@ class qiskitML():
         noise_backend : Union[Backends, list, qiskit.IBMQBackend], optional
             IBMQ backend from which the noise model should be generated, by default None.
         save_path : str, optional
-            Where to save the jobs outputs, by default "jobs.json". Jobs are saved only if so is specified when calling `qiskitML.run`.
+            Where to save the jobs outputs, by default "jobs.json". Jobs are saved only if so is specified when calling `circuitML.run`.
 
         Raises
         ------
@@ -142,9 +142,9 @@ class qiskitML():
 
             return self.run(X, params, shots, job_size)
         except QiskitError:
-            print(f"{asctime()} - Error in qiskitML.run :{exc_info()[0]}", end="\n\n")
+            print(f"{asctime()} - Error in circuitML.run :{exc_info()[0]}", end="\n\n")
             with open("error.log", "w") as f:
-                f.write(f"{asctime()} - Error in qiskitML.run :{exc_info()[0]}\n")
+                f.write(f"{asctime()} - Error in circuitML.run :{exc_info()[0]}\n")
             sleep(10)
             return self.run(X, params, shots, job_size)
 
@@ -284,7 +284,7 @@ class qiskitML():
         raise NotImplementedError
 
     def __repr__(self):
-        return "<qiskitML>"
+        return "<circuitML>"
 
     def __str__(self):
         return self.__repr__()

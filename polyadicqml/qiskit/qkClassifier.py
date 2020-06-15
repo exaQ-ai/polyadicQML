@@ -1,9 +1,9 @@
 from ..quantumClassifier import Classifier
 
-from .qiskitML import qiskitML
+from .circuitML import circuitML
 
 class qkClassifier(Classifier):
-    """Quantum classifier using qiskitML circuits.
+    """Quantum classifier using circuitML circuits.
     """
     def __init__(self, circuit, bitstr, nbshots=None,
                  nbshots_increment=None,
@@ -15,7 +15,7 @@ class qkClassifier(Classifier):
 
         Parameters
         ----------
-        circuit : qiskitML
+        circuit : circuitML
             Quantum circuit wrapper.
         bitstr : list of int or list of str
             Which bitstrings should correspond to each class. The number of classes for the classification is defined by the number of elements.
@@ -56,22 +56,22 @@ class qkClassifier(Classifier):
 
         Parameters
         ----------
-        circuit : qiskitML
+        circuit : circuitML
             circuit implementation for qiskit
 
         Raises
         ------
         TypeError
         """
-        if not isinstance(circuit, qiskitML):
-            raise TypeError(f"Circuit was type {type(circuit)} while qiskitML was expected.")
+        if not isinstance(circuit, circuitML):
+            raise TypeError(f"Circuit was type {type(circuit)} while circuitML was expected.")
     
     def __set_circuit__(self, circuit):
         """Set the circuit after testing for validity.
 
         Parameters
         ----------
-        circuit : qiskitML
+        circuit : circuitML
             circuit implementation for qiskit
 
         Raises

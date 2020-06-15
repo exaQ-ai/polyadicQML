@@ -1,8 +1,8 @@
 from qiskit import execute
-from .qiskitML import qiskitML, np, sleep
+from .circuitML import circuitML, np, sleep
 
-class parallelML(qiskitML):
-    """Quantum ML circuit interface for running two qiskitML circuits on parallel on the same QPU. 
+class parallelML(circuitML):
+    """Quantum ML circuit interface for running two circuitML circuits on parallel on the same QPU. 
     """
     def __init__(self, backend, circuitBuilder, nbqbits, noise_model=None, noise_backend=None,
                  save_path="jobs.json"):
@@ -21,7 +21,7 @@ class parallelML(qiskitML):
         noise_backend : Union[Backends, list, qiskit.IBMQBackend], optional
             IBMQ backend from which the noise model should be generated, by default None.
         save_path : str, optional
-            Where to save the jobs outputs, by default "jobs.json". Jobs are saved only if so is specified when calling `qiskitML.run`.
+            Where to save the jobs outputs, by default "jobs.json". Jobs are saved only if so is specified when calling `circuitML.run`.
 
         Raises
         ------

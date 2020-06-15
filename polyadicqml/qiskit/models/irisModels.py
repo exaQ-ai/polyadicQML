@@ -1,10 +1,10 @@
-from ..qiskitML import qiskitML, np
-from ..parallelQiskitML import parallelML
+from ..circuitML import circuitML, np
+from ..parallelCircuitML import parallelML
 
 ############################################################
 # MODELS
 
-class irisCircuit(qiskitML):
+class irisCircuit(circuitML):
     """Two qubit circuit for four-dimensional input, with 8 parameters.
     """
     def __init__(self, backend, circuitBuilder, noise_model=None, noise_backend=None,
@@ -51,7 +51,7 @@ class irisCircuit(qiskitML):
         return "alldiam() IN(0,x_0)IN(1,x_1) CC(0,1) IN(0,t_0)IN(1,t_1) CC(0,1) IN(0,x_2)IN(1,x_3) CC(0,1) IN(0,t_2)IN(1,t_3) CC(0,1) IN(0,x_0)IN(1,x_1) CC(0,1) IN(0,t_4)IN(1,t_5) CC(0,1) IN(0,x_2)IN(1,x_3) CC(0,1) IN(0,t_6)IN(1,t_7) allmeter() "
 
 
-class irisCircuit16(qiskitML):
+class irisCircuit16(circuitML):
     """Two qubit circuit for four-dimensional input, with 16 parameters.
     """
     def __init__(self, backend, circuitBuilder, noise_model=None, noise_backend=None,
@@ -117,7 +117,7 @@ class irisCircuit16(qiskitML):
         return " alldiam() DIN(0,x_0,t_0)DIN(1,x_1,t_1) CC(0,1) DIN(0,x_2,t_2)DIN(1,x_3,t_3) CC(0,1) IN(0,t_4)IN(1,t_5) CC(0,1) DIN(0,x_0,t_6)DIN(1,x_1,t_7) CC(0,1) DIN(0,x_2,t_8)DIN(1,x_3,t_9) CC(0,1) IN(0,t_10)IN(1,t_11) CC(0,1) DIN(0,x_0,t_12)DIN(1,x_1,t_13) CC(0,1) DIN(0,x_2,t_14)DIN(1,x_3,t_15) allmeter() "
 
 
-class irisCircuit6(qiskitML):
+class irisCircuit6(circuitML):
     """Two qubit circuit for four-dimensional input, with six parameters.
     """
     def __init__(self, backend, circuitBuilder, noise_model=None, noise_backend=None,
@@ -177,7 +177,7 @@ class irisParallel(parallelML):
         noise_backend : Union[Backends, list, qiskit.IBMQBackend], optional
             IBMQ backend from which the noise model should be generated, by default None.
         save_path : str, optional
-            Where to save the jobs outputs, by default "jobs.json". Jobs are saved only if so is specified when calling `qiskitML.run`.
+            Where to save the jobs outputs, by default "jobs.json". Jobs are saved only if so is specified when calling `circuitML.run`.
 
         Raises
         ------
