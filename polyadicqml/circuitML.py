@@ -1,10 +1,14 @@
 """Implementation of circuit for ML
 """
+from numpy import pi, random
 
 class circuitML():
-    def __init__(self, circuitBuilder, nbqbits):
+    def __init__(self, make_circuit, nbqbits, nbparams, cbuilder):
         self.nbqbits = nbqbits
-        self.circuitBuilder = circuitBuilder
+        self.nbparams = nbparams
+
+        self.circuitBuilder = cbuilder
+        self.make_circuit = make_circuit
 
     def run(self, X, params, shots=None, job_size=None):
         """Run the circuit with input `X` and parameters `params`.
@@ -39,7 +43,8 @@ class circuitML():
         -------
         vector
         """
-        raise NotImplementedError
+        if seed: random.seed(seed)
+        return random.randn(self.nbparams)
 
     def make_circuit(self, x, params, shots=None):
         """Generate the circuit corresponding to input `x` and `params`.

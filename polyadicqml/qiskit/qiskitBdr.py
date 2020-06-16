@@ -7,7 +7,7 @@ from ..circuitBuilder import circuitBuilder
 class __qiskitGeneralBuilder__(circuitBuilder):
     """Abstract class for Qiskit-circuits builders. 
     """
-    def __init__(self, nbqbits):
+    def __init__(self, nbqbits, *args, **kwargs):
         super().__init__(nbqbits)
         self.qr = QuantumRegister(self.nbqbits, 'qr')
         self.qc = QuantumCircuit(self.qr)
@@ -73,7 +73,7 @@ class __qiskitGeneralBuilder__(circuitBuilder):
 class qiskitBuilder(__qiskitGeneralBuilder__):
     """Qiskit-circuits builder using rx, rz and cz gates.
     """
-    def __init__(self, nbqbits):
+    def __init__(self, nbqbits, *args, **kwargs):
         super().__init__(nbqbits)
     
     def alldiam(self, idx=None):
@@ -105,7 +105,7 @@ class qiskitBuilder(__qiskitGeneralBuilder__):
 class ibmqNativeBuilder(__qiskitGeneralBuilder__):
     """Qiskit-circuits builder using IBMQ native gates (u1, u2, and cx).
     """
-    def __init__(self, nbqbits):
+    def __init__(self, nbqbits, *args, **kwargs):
         super().__init__(nbqbits)
 
     def alldiam(self, idx=None):

@@ -3,7 +3,7 @@
 class circuitBuilder():
     """Builder to create parametrized circuit with repetitive structures, by defining general operations without directly writing gates.
     """
-    def __init__(self, nbqbits):
+    def __init__(self, nbqbits, *args, **kwargs):
         """Create builder
 
         Parameters

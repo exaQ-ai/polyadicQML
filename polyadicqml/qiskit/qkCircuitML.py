@@ -15,12 +15,15 @@ import json
 
 from .utility.backends import Backends
 from ..circuitML import circuitML
+from .qiskitBdr import ibmqNativeBuilder
 
 class qkCircuitML(circuitML):
     """Quantum ML circuit interface for qiskit and IBMQ.
     Provides a unified interface to run multiple parametric circuits with different input and model parameters. 
     """
-    def __init__(self, backend, circuitBuilder, nbqbits, noise_model=None, noise_backend=None,
+    def __init__(self, backend, make_circuit, nbqbits, nbparams,
+                 cbuilder=ibmqNativeBuilder, 
+                 noise_model=None, noise_backend=None,
                  save_path=None):
         """Create qkCircuitML cricuit.
 
@@ -44,7 +47,7 @@ class qkCircuitML(circuitML):
         ValueError
             If both `noise_model` and `noise_backend` are provided.
         """
-        super().__init__(circuitBuilder, nbqbits)
+        super().__init__(make_circuit, nbqbits, nbparams, cbuilder)
 
         self.save_path = save_path
 
@@ -139,9 +142,9 @@ class qkCircuitML(circuitML):
             List of nb_samples circuits.
         """
         if len(X.shape) < 2:
-            return [self.make_circuit(X, params, shots)]
+            return [self.make_circuit(self, X, params, shots)]
         else:
-            return [self.make_circuit(x, params, shots) for x in X]
+            return [self.make_circuit(self, x, params, shots) for x in X]
 
     def request(self, X, params, shots=None):
         """Create circuits corresponding to samples in `X` and parameters `params` and send jobs to the backend for execution.

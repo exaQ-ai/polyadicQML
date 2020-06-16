@@ -7,7 +7,7 @@ from numpy import pi
 class manyqBdr(circuitBuilder):
     """Abstract class for Qiskit-circuits builders. 
     """
-    def __init__(self, nbqbits, job_size, gpu=False):
+    def __init__(self, nbqbits, job_size, *args, gpu=False, **kwargs):
         super().__init__(nbqbits)
         mq.initQreg(nbqbits, job_size, gpu=gpu)
 

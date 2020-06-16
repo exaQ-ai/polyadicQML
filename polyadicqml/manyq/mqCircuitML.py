@@ -4,31 +4,15 @@ from ..circuitML import circuitML
 
 import numpy as np
 
+from .manyqBdr import manyqBdr
+
 class mqCircuitML(circuitML):
-    def __init__(self, circuitBuilder, nbqbits):
-        super().__init__(circuitBuilder, nbqbits)
+    def __init__(self, make_circuit, nbqbits, nbparams, cbuilder=manyqBdr):
+        super().__init__(make_circuit, nbqbits, nbparams, cbuilder)
 
     def run(self, X, params, shots=None, job_size=None):
         _X = X.T 
         _params = np.hstack(len(X)* (params.reshape(-1,1),))
-        result = self.make_circuit(_X, _params, shots)
+        result = self.make_circuit(self, _X, _params, shots)
+
         return result(shots).T
-
-    def make_circuit(self, x, params, shots=None):
-        """Generate the circuit corresponding to input `x` and `params`.
-
-        Parameters
-        ----------
-        x : vector-like
-            Input sample
-        params : vector-like
-            Parameter vector.
-        shots : int, optional
-            Number of shots, by default None
-
-        Returns
-        -------
-        quantum circuit
-        """
-        raise NotImplementedError
-    
