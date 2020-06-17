@@ -8,7 +8,7 @@ class Backends():
     """Utility class to load quiskit backends and iterate through them.
     """
     def __init__(self, backend_name, noise_name=None, simulator=False,
-                 hub=None, group=None, project=None,
+                 hub="ibm-q", group="open", project="main",
                  repeat=1):
         """Create instance.
 
