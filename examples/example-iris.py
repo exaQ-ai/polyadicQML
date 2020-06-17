@@ -55,15 +55,15 @@ def irisCircuit(circuitml, x, params, shots=None):
 nbqbits = 2
 nbparams = 8
 
-qc = qkCircuitML(make_circuit=irisCircuit,
+qc = mqCircuitML(make_circuit=irisCircuit,
                  nbqbits=nbqbits, nbparams=nbparams)
 
-bitstr = ['00', '10', '01']
-nbshots = 500
+bitstr = ['00', '01', '10']
+nbshots = None
 
 model = Classifier(qc, bitstr, nbshots=nbshots, budget=100)
 
-model.fit(input_train, target_train, method="COBYLA")
+model.fit(input_train, target_train, method="BFGS")
 
 pred_train = model.predict_label(input_train)
 pred_test = model.predict_label(input_test)

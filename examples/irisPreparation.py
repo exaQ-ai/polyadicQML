@@ -4,31 +4,6 @@ import pandas as pd
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 
-def gauss_to_angle(X):
-    """ Rescale to [-.95 * pi, .95 * pi] a standardized matrix, only keeping the points in the 99% confidence interval (in [-3, 3]).
-
-    Parameters
-    ----------
-    X : array
-        Standardized matrix.
-
-    Returns
-    -------
-    array, list
-        Rescaled matrix (w/o outliers), outliers list.
-    """
-    # We drop points outside the 99% Gaussian Confidence Interval (< -3 or > 3)
-    X = X.copy()
-    X[X > 3] = np.nan
-    X[X < -3] = np.nan
-
-    idx_to_drop = X.index[np.where(X.isna())[0]]
-    X.dropna(inplace=True)
-
-    # We project the [-3, 3] interval to [-0.95*\pi, 0.95*\pi]
-    X = X / 3 * 0.95 * np.pi
-    return X, idx_to_drop
-
 COLUMNS = ['sep_len', 'sep_wid', 'pet_len', 'pet_wid']
 COL_ORDER = [0, 1, 2, 3]
 
@@ -80,13 +55,7 @@ def makeDatasets(train_size, test_size, col_order=None, seed=None, **kwargs):
     mean = input_train.mean(axis=0)
     std = input_train.std(axis=0)
 
-    input_train = (input_train - mean) / std
-    input_test = (input_test - mean) / std
-
-    input_train, tr_to_drop = gauss_to_angle(input_train)
-    target_train.drop(index=tr_to_drop, inplace=True)
-
-    input_test, te_to_drop = gauss_to_angle(input_test)
-    target_test.drop(index=te_to_drop, inplace=True)
+    input_train = (input_train - mean) / std / 3 * 0.95 * np.pi
+    input_test = (input_test - mean) / std / 3 * 0.95 * np.pi
 
     return input_train.values, target_train.values, input_test.values, target_test.values
