@@ -214,13 +214,16 @@ class qkCircuitML(circuitML):
         results = job.result()
         if not shots:
             out = [results.get_statevector(qc) for qc in qc_list]
-            return np.abs(out)**2
+            out = np.abs(out)**2
+            order = [int(f"{key:0>{self.nbqbits}b}"[::-1], 2)
+                        for key in range(out.shape[1])]
+            return out[:, order]
         else:
             out = np.zeros((len(qc_list), 2**self.nbqbits))
             for n, qc in enumerate(qc_list):
                 for key, count in results.get_counts(qc).items():
                     # print(f"{key} : {count}")
-                    out[n, int(key, 2)] = count
+                    out[n, int(key[::-1], 2)] = count
 
         if self.save_path: self.save_job(job)
         return out

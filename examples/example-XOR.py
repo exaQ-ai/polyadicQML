@@ -8,6 +8,10 @@ from polyadicqml.qiskit.qkCircuitML import qkCircuitML
 
 from polyadicqml.manyq.mqCircuitML import mqCircuitML
 
+from tqdm import tqdm
+
+SEED= 78
+np.random.seed(SEED)
 ##############################
 # We create a dataset of 200 points corresponding to the XOR problem
 #       1 --|-- 0
@@ -20,22 +24,33 @@ n_pc = 50 # Number of points per cluster
 
 # Create a matrix of vertices of the centered square
 X = np.asarray(n_pc * [[1. ,1.]] +    # First quadrant
-               n_pc * [[-1. ,-1.]] +  # Third quadrant
-               n_pc * [[1. ,-1.]] +   # Second quadrant
-               n_pc * [[-1. ,1.]]     # Fourth quadrant
+            n_pc * [[-1. ,-1.]] +  # Third quadrant
+            n_pc * [[1. ,-1.]] +   # Second quadrant
+            n_pc * [[-1. ,1.]]     # Fourth quadrant
 )
 X *= 1.2
 # Add gaussian noise
 X += .5 * np.random.randn(*X.shape)
 # Rotate of pi/4
 X = X @ [[np.cos(np.pi/4), np.sin(np.pi/4)],
-         [-np.sin(np.pi/4), np.cos(np.pi/4)]]
+        [-np.sin(np.pi/4), np.cos(np.pi/4)]]
 
 # Create target vecor
 y = np.concatenate((np.zeros(2*n_pc), np.ones(2*n_pc)))
 
-# sns.scatterplot(X[:,0], X[:,1], hue=y)
-# plt.show()
+if True:
+    import seaborn as sns
+    sns.set()
+    fig, ax = plt.subplots(figsize=(8,8))
+    idx = y == 1
+    ax.plot(X[idx,0], X[idx,1], ls="", marker="o", color="tab:red",)
+    ax.plot(X[~ idx,0], X[~ idx,1], ls="", marker="o", color="tab:blue",)
+    ax.plot([-np.pi, np.pi], [-np.pi, np.pi], color="black")
+    ax.plot([-np.pi, np.pi], [np.pi, -np.pi], color="black")
+    ax.set(xlim=[-np.pi,np.pi], ylim=[-np.pi,np.pi])
+
+    plt.savefig("XOR-points.png", bbox_inches="tight")
+    plt.close()
 
 ##############################
 # Now we define the make_circuit function using the builder interface
@@ -57,11 +72,6 @@ def make_circuit(circuitml, x, params, shots=None):
     if shots: bdr.measure_all()
     return bdr.circuit()
 
-def random_params(nbparams, seed=None):
-    if seed: np.random.seed(seed)
-    # return np.pi * (np.random.rand(self.n_params) - .5)
-    return 1 / np.sqrt() * np.random.randn(nbparams)
-
 ##############################
 # Now we instanciate a backend and the circuit
 
@@ -70,18 +80,16 @@ nbparams = 4
 
 backend = Backends("qasm_simulator", simulator=True)
 qc = qkCircuitML(backend, 
-                 make_circuit=make_circuit,
-                 nbqbits=nbqbits, nbparams=nbparams)
+                make_circuit=make_circuit,
+                nbqbits=nbqbits, nbparams=nbparams)
 
 qc = mqCircuitML(make_circuit=make_circuit,
-                 nbqbits=nbqbits, nbparams=nbparams)
+                nbqbits=nbqbits, nbparams=nbparams)
 # qc = myCircuit(circuitBuilder=ibmqNativeBuilder, backend=backend)
 # print(qc.make_circuit(X[0], qc.random_params()).draw('text'))
 
 bitstr = ['00', '01']
 nbshots = None
-
-params = qc.random_params()
 
 model = Classifier(qc, bitstr, nbshots=nbshots, budget=100)
 
@@ -106,5 +114,7 @@ if True:
     ax.plot(X[~ idx,0], X[~ idx,1], ls="", marker="o", color="tab:blue",)
     ax.plot([-np.pi, np.pi], [-np.pi, np.pi], color="black")
     ax.plot([-np.pi, np.pi], [np.pi, -np.pi], color="black")
+    ax.set(xlim=[-np.pi,np.pi], ylim=[-np.pi,np.pi])
 
     plt.savefig("figure.png", bbox_inches="tight")
+    plt.close()
