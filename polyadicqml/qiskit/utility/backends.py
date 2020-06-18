@@ -72,8 +72,11 @@ class Backends():
                                                 project=self.__project__)
                     self.__logged__ = True
                 except QiskitError:
+                    error = f"{asctime()} - Error logging : {exc_info()[0]}\n"
+                    print(error)
+                    print("Retrying")
                     with open("error.log", "w") as f:
-                        f.write(f"{asctime()} - Error logging : {exc_info()[0]}\n")
+                        f.write(error)
                     sleep(10)
                     continue
             
