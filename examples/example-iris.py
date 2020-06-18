@@ -65,6 +65,18 @@ model = Classifier(qc, bitstr, nbshots=nbshots, budget=100)
 
 model.fit(input_train, target_train, method="BFGS")
 
+##############################
+# We test it using qiskit
+
+backend = Backends("qasm_simulator", noise_name="ibmq_essex",)
+
+qc = qkCircuitML(backend=backend,
+                 make_circuit=irisCircuit,
+                 nbqbits=nbqbits, nbparams=nbparams)
+
+model.__set_circuit__(qc)
+model.nbshots = 300
+
 pred_train = model.predict_label(input_train)
 pred_test = model.predict_label(input_test)
 

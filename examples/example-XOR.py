@@ -38,7 +38,7 @@ X = X @ [[np.cos(np.pi/4), np.sin(np.pi/4)],
 # Create target vecor
 y = np.concatenate((np.zeros(2*n_pc), np.ones(2*n_pc)))
 
-if True:
+if False:
     import seaborn as sns
     sns.set()
     fig, ax = plt.subplots(figsize=(8,8))
@@ -49,7 +49,7 @@ if True:
     ax.plot([-np.pi, np.pi], [np.pi, -np.pi], color="black")
     ax.set(xlim=[-np.pi,np.pi], ylim=[-np.pi,np.pi])
 
-    plt.savefig("XOR-points.png", bbox_inches="tight")
+    plt.savefig("figures/XOR-points.png", bbox_inches="tight")
     plt.close()
 
 ##############################
@@ -78,15 +78,13 @@ def make_circuit(circuitml, x, params, shots=None):
 nbqbits = 2
 nbparams = 4
 
-backend = Backends("qasm_simulator", simulator=True)
-qc = qkCircuitML(backend, 
-                make_circuit=make_circuit,
-                nbqbits=nbqbits, nbparams=nbparams)
+# backend = Backends("qasm_simulator", simulator=True)
+# qc = qkCircuitML(backend, 
+#                 make_circuit=make_circuit,
+#                 nbqbits=nbqbits, nbparams=nbparams)
 
 qc = mqCircuitML(make_circuit=make_circuit,
                 nbqbits=nbqbits, nbparams=nbparams)
-# qc = myCircuit(circuitBuilder=ibmqNativeBuilder, backend=backend)
-# print(qc.make_circuit(X[0], qc.random_params()).draw('text'))
 
 bitstr = ['00', '01']
 nbshots = None
@@ -116,5 +114,5 @@ if True:
     ax.plot([-np.pi, np.pi], [np.pi, -np.pi], color="black")
     ax.set(xlim=[-np.pi,np.pi], ylim=[-np.pi,np.pi])
 
-    plt.savefig("figure.png", bbox_inches="tight")
+    plt.savefig("figures/figure.png", bbox_inches="tight")
     plt.close()
