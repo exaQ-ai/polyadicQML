@@ -46,7 +46,7 @@ def irisCircuit(circuitml, x, params, shots=None):
     bdr.allin(params[[6,7]])
 
     if shots: bdr.measure_all()
-    # print(qc.draw('text'))
+
     return bdr.circuit()
 
 ##############################
