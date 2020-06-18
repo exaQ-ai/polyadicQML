@@ -48,9 +48,12 @@ class circuitML():
 
     def make_circuit(self, x, params, shots=None):
         """Generate the circuit corresponding to input `x` and `params`.
+        NOTE: This function is provided by the user.
 
         Parameters
         ----------
+        self : circuitML
+            A circuit ML
         x : vector-like
             Input sample
         params : vector-like
