@@ -43,7 +43,6 @@ class parallelML(qkCircuitML):
         wait = 1
         while not job.done():
             sleep(wait)
-            if wait < 120 : wait *= 5
 
         results = job.result()
         if not shots:
@@ -54,8 +53,9 @@ class parallelML(qkCircuitML):
                 for key, count in results.get_counts(qc).items():
                     # print(f"{key} : {count}")
                     #! ATTENTION: the order of the qubits and bitstring is reversed
-                    key1 = key[:(self.nbqbits//2)]
-                    key0 = key[-(self.nbqbits//2):]
+                    key = key[::-1]
+                    key0 = key[:(self.nbqbits//2)]
+                    key1 = key[-(self.nbqbits//2):]
                     out[2*n, int(key0, 2)] += count
                     out[2*n + 1, int(key1, 2)] += count
 

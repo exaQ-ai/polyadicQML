@@ -209,7 +209,6 @@ class qkCircuitML(circuitML):
         while not job.done():
             if job.status() in (JobStatus.CANCELLED, JobStatus.ERROR): raise QiskitError
             sleep(wait)
-            #if wait < 20 : wait *= 5
 
         results = job.result()
         if not shots:
