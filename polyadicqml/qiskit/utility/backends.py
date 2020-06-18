@@ -4,10 +4,12 @@ from qiskit.providers.aer.noise import NoiseModel
 from time import asctime, sleep
 from sys import exc_info
 
+AER_SIMULATORS = {"qasm_simulator", "statevector_simulator", "unitary_simulator"}
+
 class Backends():
     """Utility class to load quiskit backends and iterate through them.
     """
-    def __init__(self, backend_name, noise_name=None, simulator=False,
+    def __init__(self, backend_name, noise_name=None,
                  hub="ibm-q", group="open", project="main",
                  repeat=1):
         """Create instance.
@@ -33,7 +35,12 @@ class Backends():
         self.__names__ = backend_name if isinstance(backend_name, list) else [backend_name]
         self.__noise_names__ = noise_name if isinstance(noise_name, list) else [noise_name] if noise_name is not None else None
         self.__repeat__ = repeat
-        self.__simulator__ = simulator
+        self.__simulator__ = False
+        if set(self.__names__) & AER_SIMULATORS:
+            if set(self.__names__) & AER_SIMULATORS:
+                self.__simulator__ = True
+            else:
+                raise ValueError("Request for both Aer and IBMQ backends")
 
         self.__hub__ =  hub
         self.__group__ =  group
