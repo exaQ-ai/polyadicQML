@@ -149,7 +149,7 @@ class Classifier():
         Parameters
         ----------
         circuit : circuitML
-            circuit implementation for qiskit
+            QML circuit
 
         Raises
         ------
@@ -164,7 +164,7 @@ class Classifier():
         Parameters
         ----------
         circuit : circuitML
-            circuit implementation for qiskit
+            QML circuit
 
         Raises
         ------

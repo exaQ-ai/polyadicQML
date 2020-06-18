@@ -5,7 +5,7 @@ import manyq as mq
 from numpy import pi
 
 class manyqBdr(circuitBuilder):
-    """Abstract class for Qiskit-circuits builders. 
+    """Builder for circuits to be run on manyQ simulator. 
     """
     def __init__(self, nbqbits, job_size, *args, gpu=False, **kwargs):
         super().__init__(nbqbits)
