@@ -20,28 +20,27 @@ input_train, target_train, input_test, target_test = makeDatasets(.6, .4, seed=1
 def irisCircuit(circuitml, x, params, shots=None):
     batch_size = 1 if len(x.shape) <2 else x.shape[1]
     bdr = circuitml.circuitBuilder(circuitml.nbqbits, batch_size)
-    bdr.alldiam()
 
     bdr.allin(x[[0,1]])
-    bdr.cc(0, 1)
+    bdr.cz(0, 1)
 
     bdr.allin(params[[0,1]])
-    bdr.cc(0, 1)
+    bdr.cz(0, 1)
 
     bdr.allin(x[[2,3]])
-    bdr.cc(0, 1)
+    bdr.cz(0, 1)
 
     bdr.allin(params[[2,3]])
-    bdr.cc(0, 1)
+    bdr.cz(0, 1)
 
     bdr.allin(x[[0,1]])
-    bdr.cc(0, 1)
+    bdr.cz(0, 1)
 
     bdr.allin(params[[4,5]])
-    bdr.cc(0, 1)
+    bdr.cz(0, 1)
 
     bdr.allin(x[[2,3]])
-    bdr.cc(0, 1)
+    bdr.cz(0, 1)
 
     bdr.allin(params[[6,7]])
 
@@ -68,9 +67,10 @@ model.fit(input_train, target_train, method="BFGS")
 ##############################
 # We test it using qiskit
 
-backend = Backends("qasm_simulator", noise_name="ibmq_essex",)
+backend = Backends("qasm_simulator",)# noise_name="ibmq_essex",)
 
-qc = qkCircuitML(backend=backend,
+from polyadicqml.qiskit.qiskitBdr import ibmqNativeBuilder, qiskitBuilder
+qc = qkCircuitML(backend=backend, cbuilder=qiskitBuilder,
                  make_circuit=irisCircuit,
                  nbqbits=nbqbits, nbparams=nbparams)
 

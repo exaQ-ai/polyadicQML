@@ -15,14 +15,14 @@ import json
 
 from .utility.backends import Backends
 from ..circuitML import circuitML
-from .qiskitBdr import ibmqNativeBuilder
+from .qiskitBdr import qiskitBuilder
 
 class qkCircuitML(circuitML):
     """Quantum ML circuit interface for qiskit and IBMQ.
     Provides a unified interface to run multiple parametric circuits with different input and model parameters. 
     """
     def __init__(self, backend, make_circuit, nbqbits, nbparams,
-                 cbuilder=ibmqNativeBuilder, 
+                 cbuilder=qiskitBuilder, 
                  noise_model=None, noise_backend=None,
                  save_path=None):
         """Create qkCircuitML cricuit.
@@ -31,10 +31,14 @@ class qkCircuitML(circuitML):
         ----------
         backend : Union[Backends, list, qiskit.providers]
             Backend on which to run the circuits
-        circuitBuilder : circuitBuilder
-            Circuit builder.
+        make_circuit : callable of signature self.make_circuit
+            Function to generate the circuit corresponding to input `x` and `params`.
         nbqbits : int
             Number of qubits.
+        nbparams : int
+            Number of parameters.
+        cbuilder : circuitBuilder, optional
+            Circuit builder, by default qiskitBuilder
         noise_model : Union[list, qiskit.providers.aer.noise.NoiseModel], optional
             Noise model to be provided to the backend, by default None. Cannot be used with `noise_backend`.
         noise_backend : Union[Backends, list, qiskit.IBMQBackend], optional

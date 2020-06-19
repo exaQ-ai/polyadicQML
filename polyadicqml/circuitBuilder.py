@@ -53,18 +53,18 @@ class circuitBuilder():
         """
         raise NotImplementedError
 
-    def allin(self, x):
-        """Add input gate to all qubits and input x.
+    def allin(self, theta):
+        """Add input gate to all qubits and input theta.
 
         Parameters
         ----------
-        x : list-like
+        theta : list-like
             Parameters to input.
         """
         raise NotImplementedError
 
-    def cc(self, a, b):
-        """Add CC gate between qubits `a` and `b`
+    def cz(self, a, b):
+        """Add CZ gate between qubits `a` and `b`
 
         Parameters
         ----------

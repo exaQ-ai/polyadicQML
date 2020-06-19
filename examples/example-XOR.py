@@ -56,14 +56,13 @@ if True:
 def make_circuit(circuitml, x, params, shots=None):
     job_size = 1 if len(x.shape) < 2 else x.shape[1]
     bdr = circuitml.circuitBuilder(circuitml.nbqbits, job_size=job_size)
-    bdr.alldiam()
     
-    bdr.allin(x[[0,1]])
+    bdr.allinY(x[[0,1]])
 
-    bdr.cc(0, 1)
+    bdr.cz(0, 1)
     bdr.allin(params[[0,1]])
 
-    bdr.cc(0, 1)
+    bdr.cz(0, 1)
     bdr.allin(params[[2,3]])
 
 

@@ -39,18 +39,19 @@ class manyqBdr(circuitBuilder):
     def input(self, idx, theta):
         if isinstance(idx, list):
             for p, i in enumerate(idx):
+                mq.SX(i)
                 mq.RZ(self.qr[i], theta[p])
                 mq.SX(i)
         else:
+            mq.SX(idx)
             mq.RZ(self.qr[idx], theta)
             mq.SX(idx)
 
-    def allin(self, x):
+    def allin(self, theta):
         for i in range(self.nbqbits):
-            mq.RZ(i, x[i])
+            mq.SX(i)
+            mq.RZ(i, theta[i])
             mq.SX(i)
 
-    def cc(self, a, b):
+    def cz(self, a, b):
         mq.CZ(a, b)
-        mq.SX(a)
-        mq.SX(b)
