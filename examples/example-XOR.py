@@ -10,8 +10,6 @@ from polyadicqml.manyq.mqCircuitML import mqCircuitML
 
 from tqdm import tqdm
 
-SEED= 78
-np.random.seed(SEED)
 ##############################
 # We create a dataset of 200 points corresponding to the XOR problem
 #       1 --|-- 0
@@ -38,7 +36,7 @@ X = X @ [[np.cos(np.pi/4), np.sin(np.pi/4)],
 # Create target vecor
 y = np.concatenate((np.zeros(2*n_pc), np.ones(2*n_pc)))
 
-if False:
+if True:
     import seaborn as sns
     sns.set()
     fig, ax = plt.subplots(figsize=(8,8))
@@ -61,13 +59,13 @@ def make_circuit(circuitml, x, params, shots=None):
     bdr.alldiam()
     
     bdr.allin(x[[0,1]])
-    bdr.cc(0, 1)
 
+    bdr.cc(0, 1)
     bdr.allin(params[[0,1]])
-    bdr.cc(0, 1)
 
-    bdr.allin(params[[2,3]])
     bdr.cc(0, 1)
+    bdr.allin(params[[2,3]])
+
 
     if shots: bdr.measure_all()
     return bdr.circuit()
@@ -78,7 +76,7 @@ def make_circuit(circuitml, x, params, shots=None):
 nbqbits = 2
 nbparams = 4
 
-# backend = Backends("qasm_simulator", simulator=True)
+backend = Backends("qasm_simulator")
 # qc = qkCircuitML(backend, 
 #                 make_circuit=make_circuit,
 #                 nbqbits=nbqbits, nbparams=nbparams)
@@ -114,5 +112,5 @@ if True:
     ax.plot([-np.pi, np.pi], [np.pi, -np.pi], color="black")
     ax.set(xlim=[-np.pi,np.pi], ylim=[-np.pi,np.pi])
 
-    plt.savefig("figures/figure.png", bbox_inches="tight")
+    plt.savefig("figures/XOR-predictions.png", bbox_inches="tight")
     plt.close()
