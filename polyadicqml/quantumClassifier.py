@@ -36,7 +36,32 @@ def CE_loss(y_true, y_pred, labels=None):
     return log_loss(y_true, softmax(y_pred, axis=1), labels=labels)
 
 class Classifier():
-    """Base class for quantum classifiers. Defines the API for all subclasses, using the sklearn format.
+    """Class for quantum classifiers. Defines the API using the sklearn format.
+
+    Parameters
+    ----------
+    circuit : circuitML
+        Quantum circuit to simulate, how to use and store is defined in child classes.
+    bitstr : list of int or list of str
+        Which bitstrings should correspond to each class. The number of classes for the classification is defined by the number of elements.
+    params : vector, optional
+        Initial model paramters. If None (default) uses circuit.random_params().
+    nbshots : int, optional
+        Number of shots for the quantum circuit. If 0, negative or None, then exact proabilities are computed, by default None
+    nbshots_increment : float, int or callable, optional
+        How to increase the number of shots as optimization progress. If float or int, the increment arise every `nbshots_incr_delay` iterations: if float, then the increment is multiplicative; if int, then it is added. If callable, the new nbshots is computed by calling `nbshots_increment(nbshots, n_iter, loss_value)`.
+    nbshots_incr_delay : int, optional
+        After how many iteration nb_shots has to increse. By default 20, if nbshots_increment is given
+    loss : callable, optional
+        Loss function, by default Negative LogLoss (Cross entropy).
+    job_size : int, optional
+        Number of runs for each circuit job, by default the number of observations.
+    budget : int, optional
+        Maximum number of optimization steps, by default 200
+    name : srt, optional
+        Name to identify this classifier.
+    save_path : str, optional
+        Where to save intermediate training results, by deafult None. If None, intermediate results are not saved.
     """
     def __init__(self, circuit, bitstr,
                  params=None, nbshots=None,
@@ -45,33 +70,6 @@ class Classifier():
                  loss=CE_loss,
                  job_size=None, budget=200,
                  name=None, save_path=None):
-        """Create classifier.
-
-        Parameters
-        ----------
-        circuit : any
-            Quantum circuit to simulate, how to use and store is defined in child classes.
-        bitstr : list of int or list of str
-            Which bitstrings should correspond to each class. The number of classes for the classification is defined by the number of elements.
-        params : vector
-            Initial model paramters.
-        nbshots : int, optional
-            Number of shots for the quantum circuit. If 0, negative or None, then exact proabilities are computed, by default None
-        nbshots_increment : float, int or callable, optional
-            How to increase the number of shots as optimization progress. If float or int, the increment arise every `nbshots_incr_delay` iterations: if float, then the increment is multiplicative; if int, then it is added. If callable, the new nbshots is computed by calling `nbshots_increment(nbshots, n_iter, loss_value)`.
-        nbshots_incr_delay : int, optional
-            After how many iteration nb_shots has to increse. By default 20, if nbshots_increment is given
-        loss : callable, optional
-            Loss function, by default Negative LogLoss (Cross entropy).
-        job_size : int, optional
-            Number of runs for each circuit job, by default the number of observations.
-        budget : int, optional
-            Maximum number of optimization steps, by default 200
-        name : srt, optional
-            Name to identify this classifier.
-        save_path : str, optional
-            Where to save intermediate training results, by deafult None. If None, intermediate results are not saved.
-        """
         super().__init__()
 
         # Testing circuit and setting it
@@ -325,7 +323,7 @@ class Classifier():
 
         Returns
         -------
-        self
+            self
         """
 
         method = 'BFGS' if 'method' not in kwargs.keys() else kwargs.pop('method')
@@ -407,6 +405,13 @@ class Classifier():
         return self
 
     def info_dict(self):
+        """Returns a dictionary containing models information.
+
+        Returns
+        -------
+        dict
+            Information dictionary
+        """
         out = {}
 
         model_info = {

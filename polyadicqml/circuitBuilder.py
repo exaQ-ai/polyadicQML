@@ -2,15 +2,13 @@
 
 class circuitBuilder():
     """Builder to create parametrized circuit with repetitive structures, by defining general operations without directly writing gates.
+
+    Parameters
+    ----------
+    nbqbits : int
+        Number of qubits.
     """
     def __init__(self, nbqbits, *args, **kwargs):
-        """Create builder
-
-        Parameters
-        ----------
-        nbqbits : int
-            Number of qubits.
-        """
         super().__init__()
         self.nbqbits = nbqbits
 
@@ -42,7 +40,9 @@ class circuitBuilder():
         raise NotImplementedError
 
     def input(self, idx, theta):
-        """Add input gate. It is a Y-rotation of angle $\pi - \theta$
+        """Add input gate.
+        
+        It correspond to a rotation of :math:`RX(\\pi/2) RZ(theta) RX(\\pi/2)`.
 
         Parameters
         ----------

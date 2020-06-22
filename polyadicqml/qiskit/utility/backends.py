@@ -8,29 +8,27 @@ AER_SIMULATORS = {"qasm_simulator", "statevector_simulator", "unitary_simulator"
 
 class Backends():
     """Utility class to load quiskit backends and iterate through them.
+
+    Parameters
+    ----------
+    backend_name : Union[str, list[str]]
+        Name of the desired backend[s]
+    noise_name : Union[str, list[str]], optional
+        Name of the backend[s] to use as noise model, by default None. Only used if simulator is True
+    simulator : bool, optional
+        Whether the backend is a simulator, by default False
+    hub : str, optional
+        Name of the IBMQ hub, by default None
+    group : str, optional
+        Name of the IBMQ group, by default None
+    project : str, optional
+        Name of the IBMQ project, by default None
+    repeat : int, optional
+        How many time to repeat each backend during iteration, by default 1
     """
     def __init__(self, backend_name, noise_name=None,
                  hub="ibm-q", group="open", project="main",
                  repeat=1):
-        """Create instance.
-
-        Parameters
-        ----------
-        backend_name : Union[str, list[str]]
-            Name of the desired backend[s]
-        noise_name : Union[str, list[str]], optional
-            Name of the backend[s] to use as noise model, by default None. Only used if simulator is True
-        simulator : bool, optional
-            Whether the backend is a simulator, by default False
-        hub : str, optional
-            Name of the IBMQ hub, by default None
-        group : str, optional
-            Name of the IBMQ group, by default None
-        project : str, optional
-            Name of the IBMQ project, by default None
-        repeat : int, optional
-            How many time to repeat each backend during iteration, by default 1
-        """
         super().__init__()
         self.__names__ = backend_name if isinstance(backend_name, list) else [backend_name]
         self.__noise_names__ = noise_name if isinstance(noise_name, list) else [noise_name] if noise_name is not None else None
@@ -98,15 +96,13 @@ class Backends():
 
 class cycler():
     """Utility class to cycle over a list.
+
+    Parameters
+    ----------
+    l : list
+        List to cycle on.
     """
     def __init__(self, l):
-        """Create cycler
-
-        Parameters
-        ----------
-        l : list
-            List to cycle on.
-        """
         super().__init__()
         self.__list__ = l
         self.__i__ = 0

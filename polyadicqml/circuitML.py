@@ -3,6 +3,20 @@
 from numpy import pi, random
 
 class circuitML():
+    """Abstract Quantum ML circuit interface.
+    Provides a unified interface to run multiple parametric circuits with different input and model parameters, agnostic of the backend, implemented in the subclasses.
+    
+    Parameters
+    ----------
+    make_circuit : callable of signature self.make_circuit
+        Function to generate the circuit corresponding to input `x` and `params`.
+    nbqbits : int
+        Number of qubits.
+    nbparams : int
+        Number of parameters.
+    cbuilder : circuitBuilder, optional
+        Circuit builder, by default qiskitBuilder
+    """
     def __init__(self, make_circuit, nbqbits, nbparams, cbuilder):
         self.nbqbits = nbqbits
         self.nbparams = nbparams
@@ -46,14 +60,14 @@ class circuitML():
         if seed: random.seed(seed)
         return random.randn(self.nbparams)
 
-    def make_circuit(self, x, params, shots=None):
+    def make_circuit(self, bdr, x, params, shots=None):
         """Generate the circuit corresponding to input `x` and `params`.
-        NOTE: This function is provided by the user.
+        NOTE: This function is to be provided by the user, with the present signature.
 
         Parameters
         ----------
-        self : circuitML
-            A circuit ML
+        bdr : circuitBuilder
+            A circuit builder.
         x : vector-like
             Input sample
         params : vector-like

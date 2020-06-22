@@ -20,37 +20,35 @@ from .qiskitBdr import qiskitBuilder
 class qkCircuitML(circuitML):
     """Quantum ML circuit interface for qiskit and IBMQ.
     Provides a unified interface to run multiple parametric circuits with different input and model parameters. 
+
+    Parameters
+    ----------
+    backend : Union[Backends, list, qiskit.providers]
+        Backend on which to run the circuits
+    make_circuit : callable of signature self.make_circuit
+        Function to generate the circuit corresponding to input `x` and `params`.
+    nbqbits : int
+        Number of qubits.
+    nbparams : int
+        Number of parameters.
+    cbuilder : circuitBuilder, optional
+        Circuit builder, by default qiskitBuilder
+    noise_model : Union[list, qiskit.providers.aer.noise.NoiseModel], optional
+        Noise model to be provided to the backend, by default None. Cannot be used with `noise_backend`.
+    noise_backend : Union[Backends, list, qiskit.IBMQBackend], optional
+        IBMQ backend from which the noise model should be generated, by default None.
+    save_path : str, optional
+        Where to save the jobs outputs, by default None. Jobs are saved only if a path is specified
+
+    Raises
+    ------
+    ValueError
+        If both `noise_model` and `noise_backend` are provided.
     """
     def __init__(self, backend, make_circuit, nbqbits, nbparams,
                  cbuilder=qiskitBuilder, 
                  noise_model=None, noise_backend=None,
                  save_path=None):
-        """Create qkCircuitML cricuit.
-
-        Parameters
-        ----------
-        backend : Union[Backends, list, qiskit.providers]
-            Backend on which to run the circuits
-        make_circuit : callable of signature self.make_circuit
-            Function to generate the circuit corresponding to input `x` and `params`.
-        nbqbits : int
-            Number of qubits.
-        nbparams : int
-            Number of parameters.
-        cbuilder : circuitBuilder, optional
-            Circuit builder, by default qiskitBuilder
-        noise_model : Union[list, qiskit.providers.aer.noise.NoiseModel], optional
-            Noise model to be provided to the backend, by default None. Cannot be used with `noise_backend`.
-        noise_backend : Union[Backends, list, qiskit.IBMQBackend], optional
-            IBMQ backend from which the noise model should be generated, by default None.
-        save_path : str, optional
-            Where to save the jobs outputs, by default None. Jobs are saved only if a path is specified
-, 
-        Raises
-        ------
-        ValueError
-            If both `noise_model` and `noise_backend` are provided.
-        """
         super().__init__(make_circuit, nbqbits, nbparams, cbuilder)
 
         self.save_path = save_path
@@ -146,9 +144,11 @@ class qkCircuitML(circuitML):
             List of nb_samples circuits.
         """
         if len(X.shape) < 2:
-            return [self.make_circuit(self, X, params, shots)]
+            return [self.make_circuit(self.circuitBuilder(self.nbqbits),
+                                      X, params, shots)]
         else:
-            return [self.make_circuit(self, x, params, shots) for x in X]
+            return [self.make_circuit(self.circuitBuilder(self.nbqbits),
+                                      x, params, shots) for x in X]
 
     def request(self, X, params, shots=None):
         """Create circuits corresponding to samples in `X` and parameters `params` and send jobs to the backend for execution.
