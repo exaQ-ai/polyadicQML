@@ -211,7 +211,7 @@ Confusion matrix on train:
 [[30  0  0]
  [ 0 30  0]
  [ 0  4 26]]
-Accuracy : 0.9555555555555556
+Accuracy : 0.9556
 ```
 
 ### Model Testing
