@@ -2,12 +2,12 @@ import numpy as np
 
 from examples.irisPreparation import makeDatasets
 
-from polyadicqml.quantumClassifier import Classifier
+from polyadicqml import Classifier
 
-from polyadicqml.qiskit.utility.backends import Backends
-from polyadicqml.qiskit.qkCircuitML import qkCircuitML
+from polyadicqml.qiskit.utility import Backends
+from polyadicqml.qiskit import qkCircuitML
 
-from polyadicqml.manyq.mqCircuitML import mqCircuitML
+from polyadicqml.manyq import mqCircuitML
 
 ##############################
 # We load the datatset

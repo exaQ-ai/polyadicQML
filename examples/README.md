@@ -131,6 +131,8 @@ input_train, input_test, target_train, target_test =\
 Then, we center it and rescale it so that it has zero mean and all the feature values fall between <img src="https://latex.codecogs.com/svg.latex?\inline&space;(-0.95\pi,0.95\pi)" title="(-0.95\pi,0.95\pi)" /> . (Actually, with our scaling, last interval should cover 99% of a gaussian with the same mean and std; it covers all points on almost all splits.)
 
 ```python 
+import numpy as np
+
 # NORMALIZATION
 mean = input_train.mean(axis=0)
 std = input_train.std(axis=0)
@@ -182,6 +184,9 @@ Which corresponds to the following circuit:
 As in the previous example, we need a `circuitML` and a classifier, which we train with the corresponding dataset.
 
 ```python
+from polyadicqml.manyq import mqCircuitML
+from polyadicqml import Classifier
+
 nbqbits = 2
 nbparams = 8
 
@@ -219,8 +224,8 @@ We use the `Backend` utility class, along with the `qkCircuitML`, which implemen
 **NOTE** that we must provide a number of shots, as the backend is not a simulator; the job size is inferred if left empty, but we chose to set it at 40.
 
 ```python
-from polyadicqml.qiskit.utility.backends import Backends
-from polyadicqml.qiskit.qkCircuitML import qkCircuitML
+from polyadicqml.qiskit.utility import Backends
+from polyadicqml.qiskit import qkCircuitML
 
 backend = Backends("ibmq_burlington")
 
