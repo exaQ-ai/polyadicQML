@@ -14,8 +14,8 @@ class circuitML():
         Number of qubits.
     nbparams : int
         Number of parameters.
-    cbuilder : circuitBuilder, optional
-        Circuit builder, by default qiskitBuilder
+    cbuilder : circuitBuilder
+        Circuit builder. The actual class should correspond to the subclass.
     """
     def __init__(self, make_circuit, nbqbits, nbparams, cbuilder):
         self.nbqbits = nbqbits

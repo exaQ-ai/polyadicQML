@@ -36,7 +36,7 @@ def CE_loss(y_true, y_pred, labels=None):
     return log_loss(y_true, softmax(y_pred, axis=1), labels=labels)
 
 class Classifier():
-    """Class for quantum classifiers. Defines the API using the sklearn format.
+    """Class for quantum classifiers. Defines the API using the scikit-learn format.
 
     Parameters
     ----------
