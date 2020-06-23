@@ -62,15 +62,15 @@ model = Classifier(qc, bitstr).fit(input_train, target_train, method="BFGS")
 ##############################
 # We test it using qiskit
 
-backend = Backends("qasm_simulator",)# noise_name="ibmq_essex",)
+backend = Backends("ibmq_burlington")
 
-from polyadicqml.qiskit.qiskitBdr import ibmqNativeBuilder, qiskitBuilder
-qc = qkCircuitML(backend=backend, cbuilder=qiskitBuilder,
+qc = qkCircuitML(backend=backend,
                  make_circuit=irisCircuit,
                  nbqbits=nbqbits, nbparams=nbparams)
 
-model.__set_circuit__(qc)
+model.set_circuit(qc)
 model.nbshots = 300
+model.job_size = 30
 
 pred_train = model.predict_label(input_train)
 pred_test = model.predict_label(input_test)
