@@ -73,7 +73,7 @@ class Classifier():
         super().__init__()
 
         # Testing circuit and setting it
-        self.__set_circuit__(circuit)
+        self.set_circuit(circuit)
 
         # Testing for bitstring validity
         if isinstance(bitstr[0], int):
@@ -155,8 +155,11 @@ class Classifier():
         """
         if not isinstance(circuit, circuitML):
             raise TypeError(f"Circuit was type {type(circuit)} while circuitML was expected.")
+        if hasattr(self, 'circuit'):
+            if self.circuit != circuit:
+                raise ValueError("Given circuit is different from previous circuit")
 
-    def __set_circuit__(self, circuit):
+    def set_circuit(self, circuit):
         """Set the circuit after testing for validity.
 
         Parameters

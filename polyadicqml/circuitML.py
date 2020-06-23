@@ -81,6 +81,9 @@ class circuitML():
         """
         raise NotImplementedError
 
+    def __eq__(self, other):
+        return self.make_circuit is other.make_circuit
+
     def __repr__(self):
         return "<circuitML>"
 
