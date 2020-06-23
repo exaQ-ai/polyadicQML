@@ -238,7 +238,6 @@ pred_test = model.predict_label(input_test)
 Finally, we can print the test scores:
 
 ```python
->>> pred_test = model.predict_label(input_test)
 >>> print("Confusion matrix on test :",
 >>>     confusion_matrix(target_test, pred_test),
 >>>     "Accuracy : " + str(accuracy_score(target_test, pred_test)),
