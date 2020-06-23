@@ -7,9 +7,9 @@ from numpy import pi
 class manyqBdr(circuitBuilder):
     """Builder for circuits to be run on manyQ simulator. 
     """
-    def __init__(self, nbqbits, job_size, *args, gpu=False, **kwargs):
+    def __init__(self, nbqbits, batch_size, *args, gpu=False, **kwargs):
         super().__init__(nbqbits)
-        mq.initQreg(nbqbits, job_size, gpu=gpu)
+        mq.initQreg(nbqbits, batch_size, gpu=gpu)
 
 
     def __run_circuit__(self, shots=None):

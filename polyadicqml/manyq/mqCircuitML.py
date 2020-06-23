@@ -30,14 +30,14 @@ class mqCircuitML(circuitML):
         super().__init__(make_circuit, nbqbits, nbparams, cbuilder)
 
     def __single_run__(self, X, params, shots=None):
-        job_size = 1 if len(X.shape) < 2 else len(X)
+        batch_size = 1 if len(X.shape) < 2 else len(X)
         
         _X = X.T 
-        _params = np.hstack(job_size* (params.reshape(-1,1),))
-        result = self.make_circuit(self.circuitBuilder(self.nbqbits, job_size=job_size),
+        _params = np.hstack(batch_size* (params.reshape(-1,1),))
+        result = self.make_circuit(self.circuitBuilder(self.nbqbits, batch_size=batch_size),
                                    _X, _params, shots)
 
-        return result(shots).T if job_size > 1 else result.ravel()
+        return result(shots).T if batch_size > 1 else result.ravel()
 
     def run(self, X, params, shots=None, job_size=None):
         if job_size:
