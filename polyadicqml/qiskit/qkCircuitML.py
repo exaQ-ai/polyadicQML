@@ -58,9 +58,15 @@ class qkCircuitML(circuitML):
             self.backend = self.__backend__.backends
             self.noise_model = self.__backend__.noise_models
             self.coupling_map = self.__backend__.coupling_maps
+            self.job_limit =  backend.job_limit
 
         else:
-            self.backend = cycle(backend) if isinstance(backend, list) else cycle([backend])
+            backend = backend if isinstance(backend, list) else [backend]
+            try:
+                self.job_limit = min(map(lambda x: x.job_limit(), backend))
+            except AttributeError:
+                self.job_limit = None
+            self.backend = cycle(backend) 
 
             if noise_model is not None and noise_backend is not None:
                 raise ValueError("Only one between 'noise_model' and 'noise_backend' can be passed to the constructor")
@@ -75,6 +81,13 @@ class qkCircuitML(circuitML):
                 self.coupling_map = cycle([_backend.configuration().coupling_map for _backend in _noise_back])
 
     def run(self, X, params, shots=None, job_size=None):
+        if not job_size:
+            if self.job_limit is not None and len(X) > self.job_limit:
+                job_size = self.job_limit
+        elif self.job_limit is not None and job_size > self.job_limit:
+            raise ValueError(
+                f"Job size {job_size} greater that job limit {self.job_limit}"
+            )
         try:
             if not job_size:
                 job, qc_list = self.request(X, params, shots)

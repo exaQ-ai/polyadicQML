@@ -48,10 +48,12 @@ class Backends():
 
         self.load_beckends()
 
+
     def load_beckends(self):
         """Load the desired backends and, if not yet logged, log in.
         """
         backends = []
+        job_limits = []
 
         noise_models = [] #cycle(noise_model) if isinstance(noise_model, list) else cycle([noise_model])
         coupling_maps = [] #cycle([None])
@@ -81,6 +83,10 @@ class Backends():
             if not self.__simulator__:
                 for name in self.__names__:
                     back = provider.get_backend(name)
+
+                    job_limit = back.job_limit().maximum_jobs
+                    if job_limit is not None: job_limits.append(job_limit)
+
                     for _ in range(self.__repeat__):
                         backends.append(back)
             else:
@@ -94,6 +100,12 @@ class Backends():
         self.noise_models = cycler(noise_models)
         self.coupling_maps = cycler(coupling_maps)
 
+        # Set the job limit number
+        if self.__simulator__ or len(job_limits) == 0:
+            self.job_limit = None
+        else:
+            self.job_limit = min(job_limits)
+    
 class cycler():
     """Utility class to cycle over a list.
 
