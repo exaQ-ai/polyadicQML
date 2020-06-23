@@ -152,6 +152,9 @@ class Classifier():
         Raises
         ------
         TypeError
+            If the circuit is not a circuitML
+        ValueError
+            If self has a circuit and the new circuit does not uses the same make_circuit fuction
         """
         if not isinstance(circuit, circuitML):
             raise TypeError(f"Circuit was type {type(circuit)} while circuitML was expected.")
@@ -162,6 +165,7 @@ class Classifier():
     def set_circuit(self, circuit):
         """Set the circuit after testing for validity.
 
+        For a circuit to be valid, it has to be an instance of circuitML and, in case self already has a circuit, to use the same make_circuit function.
         Parameters
         ----------
         circuit : circuitML
@@ -169,7 +173,7 @@ class Classifier():
 
         Raises
         ------
-        TypeError
+        Union[TypeError, ValueError]
             If the circuit is invalid.
         """
         self.__verify_circuit__(circuit)
