@@ -9,6 +9,7 @@ We dispose four points over the cartesian axes so to create a centered square; t
 
 We use numpy to generate a dataset of 200 points by sampling 50 points from 4 gaussian distibutions centered at the said points.
 The label of each sample is given by the center of its distribution.
+
 ```python
 import numpy as np
 
@@ -37,6 +38,25 @@ Now, we define the circuit structure using a `circuitBulder`.
 This function has to respect a precise signature: `make_circuit(bdr, x, params, shots=None)`. 
 ```python
 def make_circuit(bdr, x, params, shots=None):
+    """Generate the circuit corresponding to input `x` and `params`.
+
+    Parameters
+    ----------
+    bdr : circuitBuilder
+        A circuit builder.
+    x : vector-like
+        Input sample
+    params : vector-like
+        Parameter vector.
+    shots : int, optional
+        Number of shots, by default None
+
+    Returns
+    -------
+    circuitBuilder
+        Instructed builder
+    """
+
     bdr.allin(x[[0,1]])
 
     bdr.cz(0, 1)
@@ -46,7 +66,7 @@ def make_circuit(bdr, x, params, shots=None):
     bdr.allin(params[[2,3]])
 
     if shots: bdr.measure_all()
-    return bdr.circuit()
+    return bdr
 ```
 Second last line add a measure gates only if a number of shots is provided. This prevents errors in case we want to use the satevector amplitudes for computations, as measuring the quantum state collapses the probabilities.
 
@@ -172,7 +192,7 @@ def irisCircuit(bdr, x, params, shots=None):
 
     if shots: bdr.measure_all()
 
-    return bdr.circuit()
+    return bdr
 ```
 
 Which corresponds to the following circuit:

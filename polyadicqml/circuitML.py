@@ -77,7 +77,8 @@ class circuitML():
 
         Returns
         -------
-        quantum circuit
+        circuitBuilder
+            Instructed builder
         """
         raise NotImplementedError
 

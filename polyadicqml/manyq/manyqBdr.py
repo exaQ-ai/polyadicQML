@@ -18,6 +18,9 @@ class manyqBdr(circuitBuilder):
         else:
             return mq.makeShots(shots)
 
+    def __call__(self, shots=None):
+        return self.__run_circuit__(shots)
+
     def circuit(self):
         """Return the built circuit.
 
@@ -25,7 +28,7 @@ class manyqBdr(circuitBuilder):
         -------
         quantum circuit
         """
-        return self.__run_circuit__
+        return self
 
     def measure_all(self):
         mq.measureAll()

@@ -67,9 +67,9 @@ def make_circuit(bdr, x, params, shots=None):
     bdr.cz(0, 1)
     bdr.allin(params[[2,3]])
 
-
     if shots: bdr.measure_all()
-    return bdr.circuit()
+
+    return bdr
 
 ##############################
 # Now we instanciate a backend and the circuit

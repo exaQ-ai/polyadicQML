@@ -44,7 +44,7 @@ def irisCircuit(bdr, x, params, shots=None):
 
     if shots: bdr.measure_all()
 
-    return bdr.circuit()
+    return bdr
 
 ##############################
 # We instanciate and train the classifier

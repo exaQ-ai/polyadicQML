@@ -158,10 +158,10 @@ class qkCircuitML(circuitML):
         """
         if len(X.shape) < 2:
             return [self.make_circuit(self.circuitBuilder(self.nbqbits),
-                                      X, params, shots)]
+                                      X, params, shots).circuit()]
         else:
             return [self.make_circuit(self.circuitBuilder(self.nbqbits),
-                                      x, params, shots) for x in X]
+                                      x, params, shots).circuit() for x in X]
 
     def request(self, X, params, shots=None):
         """Create circuits corresponding to samples in `X` and parameters `params` and send jobs to the backend for execution.
