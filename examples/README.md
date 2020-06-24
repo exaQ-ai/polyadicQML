@@ -35,9 +35,9 @@ This generates the following dataset, where the circles represent the samples an
 ### Circuit definition
 
 Now, we define the circuit structure using a `circuitBulder`.
-This function has to respect a precise signature: `make_circuit(bdr, x, params, shots=None)`. 
+This function has to respect a precise signature: `make_circuit(bdr, x, params)`. 
 ```python
-def make_circuit(bdr, x, params, shots=None):
+def make_circuit(bdr, x, params):
     """Generate the circuit corresponding to input `x` and `params`.
 
     Parameters
@@ -48,8 +48,6 @@ def make_circuit(bdr, x, params, shots=None):
         Input sample
     params : vector-like
         Parameter vector.
-    shots : int, optional
-        Number of shots, by default None
 
     Returns
     -------
@@ -65,10 +63,8 @@ def make_circuit(bdr, x, params, shots=None):
     bdr.cz(0, 1)
     bdr.allin(params[[2,3]])
 
-    if shots: bdr.measure_all()
     return bdr
 ```
-Second last line add a measure gates only if a number of shots is provided. This prevents errors in case we want to use the satevector amplitudes for computations, as measuring the quantum state collapses the probabilities.
 
 ### Model training 
 
@@ -166,7 +162,7 @@ input_test = (input_test - mean) / std / 3 * 0.95 * np.pi
 Now, we define a circuit on two qubits, again using the `make_circuit` syntax.
 
 ```python
-def irisCircuit(bdr, x, params, shots=None):
+def irisCircuit(bdr, x, params):
     bdr.allin(x[[0,1]])
     bdr.cz(0, 1)
 
@@ -189,8 +185,6 @@ def irisCircuit(bdr, x, params, shots=None):
     bdr.cz(0, 1)
 
     bdr.allin(params[[6,7]])
-
-    if shots: bdr.measure_all()
 
     return bdr
 ```
