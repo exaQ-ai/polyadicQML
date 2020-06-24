@@ -17,7 +17,7 @@ input_train, target_train, input_test, target_test = makeDatasets(.6, .4, seed=1
 ##############################
 # We define a circuit
 
-def irisCircuit(bdr, x, params, shots=None):
+def irisCircuit(bdr, x, params):
 
     bdr.allin(x[[0,1]])
     bdr.cz(0, 1)
@@ -41,8 +41,6 @@ def irisCircuit(bdr, x, params, shots=None):
     bdr.cz(0, 1)
 
     bdr.allin(params[[6,7]])
-
-    if shots: bdr.measure_all()
 
     return bdr
 

@@ -156,12 +156,24 @@ class qkCircuitML(circuitML):
         list[qiskit.QuantumCircuit]
             List of nb_samples circuits.
         """
+        def post(bdr):
+            if shots: return bdr.measure_all().circuit()
+            return bdr.circuit()
+
         if len(X.shape) < 2:
-            return [self.make_circuit(self.circuitBuilder(self.nbqbits),
-                                      X, params, shots).circuit()]
+            return [post(
+                self.make_circuit(
+                    self.circuitBuilder(self.nbqbits), X, params
+                )
+            )]
         else:
-            return [self.make_circuit(self.circuitBuilder(self.nbqbits),
-                                      x, params, shots).circuit() for x in X]
+            return [
+                post(
+                    self.make_circuit(
+                        self.circuitBuilder(self.nbqbits), x, params
+                    )
+                )
+                for x in X]
 
     def request(self, X, params, shots=None):
         """Create circuits corresponding to samples in `X` and parameters `params` and send jobs to the backend for execution.

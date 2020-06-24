@@ -58,7 +58,7 @@ if True:
 ##############################
 # Now we define the make_circuit function using the builder interface
 
-def make_circuit(bdr, x, params, shots=None):
+def make_circuit(bdr, x, params):
     bdr.allin(x[[0,1]])
 
     bdr.cz(0, 1)
@@ -66,8 +66,6 @@ def make_circuit(bdr, x, params, shots=None):
 
     bdr.cz(0, 1)
     bdr.allin(params[[2,3]])
-
-    if shots: bdr.measure_all()
 
     return bdr
 

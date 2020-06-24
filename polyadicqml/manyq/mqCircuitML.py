@@ -34,8 +34,10 @@ class mqCircuitML(circuitML):
         
         _X = X.T 
         _params = np.hstack(batch_size* (params.reshape(-1,1),))
-        result = self.make_circuit(self.circuitBuilder(self.nbqbits, batch_size=batch_size),
-                                   _X, _params, shots)
+        result = self.make_circuit(
+            self.circuitBuilder(self.nbqbits, batch_size=batch_size),
+                                   _X, _params
+        ).circuit()
 
         return result(shots).T if batch_size > 1 else result.ravel()
 

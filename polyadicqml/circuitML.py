@@ -60,7 +60,7 @@ class circuitML():
         if seed: random.seed(seed)
         return random.randn(self.nbparams)
 
-    def make_circuit(self, bdr, x, params, shots=None):
+    def make_circuit(self, bdr, x, params):
         """Generate the circuit corresponding to input `x` and `params`.
         NOTE: This function is to be provided by the user, with the present signature.
 
@@ -72,8 +72,6 @@ class circuitML():
             Input sample
         params : vector-like
             Parameter vector.
-        shots : int, optional
-            Number of shots, by default None
 
         Returns
         -------
