@@ -26,6 +26,11 @@ class circuitBuilder():
 
     def measure_all(self):
         """Add measurement.
+        
+        Returns
+        -------
+        circuitBuilder
+            self
         """
         raise NotImplementedError
 
@@ -36,6 +41,11 @@ class circuitBuilder():
         ----------
         idx : iterable, optional
             Indices on which to apply the rotation, by default None. If None, apply to all qubits.
+        
+        Returns
+        -------
+        circuitBuilder
+            self
         """
         raise NotImplementedError
 
@@ -50,6 +60,11 @@ class circuitBuilder():
             Index[-ices] of qubits on which to input theta.
         theta : Union[list-like, float]
             Parameter[s] to input. Has to have the same length as `idx`.
+        
+        Returns
+        -------
+        circuitBuilder
+            self
         """
         raise NotImplementedError
 
@@ -60,6 +75,11 @@ class circuitBuilder():
         ----------
         theta : list-like
             Parameters to input.
+        
+        Returns
+        -------
+        circuitBuilder
+            self
         """
         raise NotImplementedError
 
@@ -72,5 +92,10 @@ class circuitBuilder():
             Control qubit
         b : int
             Target qubit.
+        
+        Returns
+        -------
+        circuitBuilder
+            self
         """
         raise NotImplementedError

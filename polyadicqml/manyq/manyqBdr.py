@@ -30,11 +30,15 @@ class manyqBdr(circuitBuilder):
     def measure_all(self):
         mq.measureAll()
 
+        return self
+
     def alldiam(self, idx=None):
         if idx is None:
             idx = range(self.nbqbits)
         for i in idx:
             mq.SX(i)
+
+        return self
 
     def input(self, idx, theta):
         if isinstance(idx, list):
@@ -47,11 +51,17 @@ class manyqBdr(circuitBuilder):
             mq.RZ(self.qr[idx], theta)
             mq.SX(idx)
 
+        return self
+
     def allin(self, theta):
         for i in range(self.nbqbits):
             mq.SX(i)
             mq.RZ(i, theta[i])
             mq.SX(i)
 
+        return self
+
     def cz(self, a, b):
         mq.CZ(a, b)
+
+        return self
