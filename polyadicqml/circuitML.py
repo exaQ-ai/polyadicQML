@@ -15,14 +15,21 @@ class circuitML():
     nbparams : int
         Number of parameters.
     cbuilder : circuitBuilder
-        Circuit builder. The actual class should correspond to the subclass.
+        Circuit builder class to be used. It must correspond to the subclass implementation.
     """
     def __init__(self, make_circuit, nbqbits, nbparams, cbuilder):
         self.nbqbits = nbqbits
         self.nbparams = nbparams
 
-        self.circuitBuilder = cbuilder
+        self.__set_builder__(cbuilder)
         self.make_circuit = make_circuit
+    
+    def __set_builder__(self, cbuilder):
+        self.__verify_builder__(cbuilder)
+        self.circuitBuilder = cbuilder
+
+    def __verify_builder__(self, cbuilder):
+        raise NotImplementedError
 
     def run(self, X, params, shots=None, job_size=None):
         """Run the circuit with input `X` and parameters `params`.

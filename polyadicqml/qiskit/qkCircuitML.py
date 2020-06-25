@@ -15,7 +15,7 @@ import json
 
 from .utility.backends import Backends
 from ..circuitML import circuitML
-from .qiskitBdr import qiskitBuilder
+from .qiskitBdr import __qiskitGeneralBuilder__, qiskitBuilder
 
 class qkCircuitML(circuitML):
     """Quantum ML circuit interface for qiskit and IBMQ.
@@ -80,6 +80,13 @@ class qkCircuitML(circuitML):
                 self.noise_model = cycle([NoiseModel.from_backend(_backend) for _backend in _noise_back])
                 self.coupling_map = cycle([_backend.configuration().coupling_map for _backend in _noise_back])
 
+    def __verify_builder__(self, cbuilder):
+        bdr = cbuilder(1)
+        if isinstance(bdr, __qiskitGeneralBuilder__): return
+        raise TypeError(
+            f"The circuit builder class is not comaptible: provided {cbuilder} expected {__qiskitGeneralBuilder__}"
+        )
+        
     def run(self, X, params, shots=None, job_size=None):
         if not job_size:
             if self.job_limit is not None and len(X) > self.job_limit:
