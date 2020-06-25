@@ -406,7 +406,7 @@ class Classifier():
             self.__output_progress__ = []
             self.__params_progress__ = []
 
-        # we reset the number if shots, as we changet id during training.
+        # we reset the number if nbshots, as we changet id during training.
         self.nbshots = _nbshots
 
         return self

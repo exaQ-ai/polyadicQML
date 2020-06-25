@@ -36,7 +36,7 @@ class mqCircuitML(circuitML):
             f"The circuit builder class is not comaptible: provided {cbuilder} expected {manyqBuilder}"
         )
 
-    def __single_run__(self, X, params, shots=None):
+    def __single_run__(self, X, params, nbshots=None):
         batch_size = 1 if len(X.shape) < 2 else len(X)
         
         _X = X.T 
@@ -46,10 +46,10 @@ class mqCircuitML(circuitML):
                                    _X, _params
         ).circuit()
 
-        return result(shots).T if batch_size > 1 else result.ravel()
+        return result(nbshots).T if batch_size > 1 else result.ravel()
 
-    def run(self, X, params, shots=None, job_size=None):
+    def run(self, X, params, nbshots=None, job_size=None):
         if job_size:
             raise NotImplementedError
 
-        return self.__single_run__(X, params, shots)
+        return self.__single_run__(X, params, nbshots)

@@ -12,18 +12,18 @@ class parallelML(qkCircuitML):
 
         self._len_out = 0
     
-    def make_circuit_list(self, X, params, shots=None):
+    def make_circuit_list(self, X, params, nbshots=None):
         self._len_out = len(X)
-        return [self.make_circuit(X[i:i+2], params, shots)
+        return [self.make_circuit(X[i:i+2], params, nbshots)
                         for i in range(0, self._len_out, 2)]
 
-    def result(self, job, qc_list, shots=None):
+    def result(self, job, qc_list, nbshots=None):
         wait = 1
         while not job.done():
             sleep(wait)
 
         results = job.result()
-        if not shots:
+        if not nbshots:
             raise NotImplementedError
         else:
             out = np.zeros((2*len(qc_list), 2**(self.nbqbits//2)))

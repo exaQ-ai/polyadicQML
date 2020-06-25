@@ -12,14 +12,14 @@ class manyqBuilder(circuitBuilder):
         mq.initQreg(nbqbits, batch_size, gpu=gpu)
 
 
-    def __run_circuit__(self, shots=None):
-        if not shots:
+    def __run_circuit__(self, nbshots=None):
+        if not nbshots:
             return mq.measureAll()
         else:
-            return mq.makeShots(shots)
+            return mq.makeShots(nbshots)
 
-    def __call__(self, shots=None):
-        return self.__run_circuit__(shots)
+    def __call__(self, nbshots=None):
+        return self.__run_circuit__(nbshots)
 
     def circuit(self):
         """Return the built circuit.

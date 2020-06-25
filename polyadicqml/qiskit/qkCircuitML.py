@@ -87,7 +87,7 @@ class qkCircuitML(circuitML):
             f"The circuit builder class is not comaptible: provided {cbuilder} expected {__qiskitGeneralBuilder__}"
         )
         
-    def run(self, X, params, shots=None, job_size=None):
+    def run(self, X, params, nbshots=None, job_size=None):
         if not job_size:
             if self.job_limit is not None and len(X) > self.job_limit:
                 job_size = self.job_limit
@@ -97,9 +97,9 @@ class qkCircuitML(circuitML):
             )
         try:
             if not job_size:
-                job, qc_list = self.request(X, params, shots)
+                job, qc_list = self.request(X, params, nbshots)
                 try:
-                    return self.result(job, qc_list, shots)
+                    return self.result(job, qc_list, nbshots)
                 except:
                     status = job.status()
                     if job.done() or status == JobStatus.DONE:
@@ -114,11 +114,11 @@ class qkCircuitML(circuitML):
                 if not isinstance(job_size, int): raise TypeError("'job_size' has to be int")
 
                 n_jobs = len(X) // job_size
-                requests = [self.request(X[job_size * n : job_size * (n+1)], params, shots) for n in range(n_jobs)] 
+                requests = [self.request(X[job_size * n : job_size * (n+1)], params, nbshots) for n in range(n_jobs)] 
                 if job_size * n_jobs < len(X):
-                    requests.append(self.request(X[job_size * n_jobs :], params, shots))
+                    requests.append(self.request(X[job_size * n_jobs :], params, nbshots))
                 try:
-                    return np.vstack([self.result(job, qc_list, shots) for job, qc_list in requests])
+                    return np.vstack([self.result(job, qc_list, nbshots) for job, qc_list in requests])
                 except:
                     for job, qc_list in requests:
                         status = job.status()
@@ -138,15 +138,15 @@ class qkCircuitML(circuitML):
                 self.noise_model = self.__backend__.noise_models
                 self.coupling_map = self.__backend__.coupling_maps
 
-            return self.run(X, params, shots, job_size)
+            return self.run(X, params, nbshots, job_size)
         except QiskitError:
             print(f"{asctime()} - Error in qkCircuitML.run :{exc_info()[0]}", end="\n\n")
             with open("error.log", "w") as f:
                 f.write(f"{asctime()} - Error in qkCircuitML.run :{exc_info()[0]}\n")
             sleep(10)
-            return self.run(X, params, shots, job_size)
+            return self.run(X, params, nbshots, job_size)
 
-    def make_circuit_list(self, X, params, shots=None):
+    def make_circuit_list(self, X, params, nbshots=None):
         """Generate a circuit for each sample in `X` rows, with parameters `params`.
 
         Parameters
@@ -155,8 +155,8 @@ class qkCircuitML(circuitML):
             Input matrix, of shape (nb_samples, nb_features) or (nb_features,). In the latter case, nb_samples is 1.
         params : vector-like
             Parameter vector.
-        shots : int, optional
-            Number of shots, by default None
+       nbshots : int, optional
+            Number of nbshots, by default None
 
         Returns
         -------
@@ -164,7 +164,7 @@ class qkCircuitML(circuitML):
             List of nb_samples circuits.
         """
         def post(bdr):
-            if shots: return bdr.measure_all().circuit()
+            if nbshots: return bdr.measure_all().circuit()
             return bdr.circuit()
 
         if len(X.shape) < 2:
@@ -182,7 +182,7 @@ class qkCircuitML(circuitML):
                 )
                 for x in X]
 
-    def request(self, X, params, shots=None):
+    def request(self, X, params, nbshots=None):
         """Create circuits corresponding to samples in `X` and parameters `params` and send jobs to the backend for execution.
 
         Parameters
@@ -191,20 +191,20 @@ class qkCircuitML(circuitML):
             Input matrix, of shape (nb_samples, nb_features) or (nb_features,). In the latter case, nb_samples is 1.
         params : vector-like
             Parameter vector.
-        shots : int, optional
-            Number of shots, by default None
+       nbshots : int, optional
+            Number of nbshots, by default None
 
         Returns
         -------
         (qiskit.providers.BaseJob, list[qiskit.QuantumCircuit])
             Job instance derived from BaseJob and list of corresponding circuits.
         """
-        qc_list = self.make_circuit_list(X, params, shots)
+        qc_list = self.make_circuit_list(X, params, nbshots)
 
         # Optional arguments for execute are defined here, if they have been given at construction.
         execute_kwargs = {}
-        if shots:
-            execute_kwargs['shots'] = shots
+        if nbshots:
+            execute_kwargs['shots'] = nbshots
 
         _noise_model = next(self.noise_model)
         if _noise_model is not None:
@@ -219,7 +219,7 @@ class qkCircuitML(circuitML):
                  ), qc_list
 
 
-    def result(self, job, qc_list, shots=None):
+    def result(self, job, qc_list, nbshots=None):
         """Retrieve job results and returns bitstring counts.
 
         Parameters
@@ -228,7 +228,7 @@ class qkCircuitML(circuitML):
             Job instance.
         qc_list : list[qiskit.QuantumCircuit]
             List of quantum circuits executed in `job`, of length nb_samples.
-        shots : int, optional
+       nbshots : int, optional
             Number of shots, by default None. If None, raw counts are returned.
 
         Returns
@@ -247,7 +247,7 @@ class qkCircuitML(circuitML):
             sleep(wait)
 
         results = job.result()
-        if not shots:
+        if not nbshots:
             out = [results.get_statevector(qc) for qc in qc_list]
             out = np.abs(out)**2
             order = [int(f"{key:0>{self.nbqbits}b}"[::-1], 2)

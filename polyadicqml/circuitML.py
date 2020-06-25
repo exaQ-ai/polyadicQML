@@ -31,7 +31,7 @@ class circuitML():
     def __verify_builder__(self, cbuilder):
         raise NotImplementedError
 
-    def run(self, X, params, shots=None, job_size=None):
+    def run(self, X, params, nbshots=None, job_size=None):
         """Run the circuit with input `X` and parameters `params`.
         
         Parameters
@@ -40,7 +40,7 @@ class circuitML():
             Input matrix of shape (nb_samples, nb_features).
         params : vector-like
             Parameter vector.
-        shots : int, optional
+       nbshots : int, optional
             Number of shots for the circuit run, by default None. If None, uses the backend default.
         job_size : int, optional
             Maximum job size, to split the circuit runs, by default None. If None, put all nb_samples in the same job. 
