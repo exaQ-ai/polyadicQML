@@ -41,12 +41,15 @@ class mqCircuitML(circuitML):
         
         _X = X.T 
         _params = np.hstack(batch_size* (params.reshape(-1,1),))
-        result = self.make_circuit(
+        bdr = self.make_circuit(
             self.circuitBuilder(self.nbqbits, batch_size=batch_size),
                                    _X, _params
-        ).circuit()
+        )
+        if nbshots : bdr.measure_all()
 
-        return result(nbshots).T if batch_size > 1 else result.ravel()
+        result = bdr.circuit()(nbshots)
+
+        return result.T if batch_size > 1 else result.ravel()
 
     def run(self, X, params, nbshots=None, job_size=None):
         if job_size:
