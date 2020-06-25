@@ -40,7 +40,7 @@ class circuitML():
             Input matrix of shape (nb_samples, nb_features).
         params : vector-like
             Parameter vector.
-       nbshots : int, optional
+        nbshots : int, optional
             Number of shots for the circuit run, by default None. If None, uses the backend default.
         job_size : int, optional
             Maximum job size, to split the circuit runs, by default None. If None, put all nb_samples in the same job. 

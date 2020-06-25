@@ -155,7 +155,7 @@ class qkCircuitML(circuitML):
             Input matrix, of shape (nb_samples, nb_features) or (nb_features,). In the latter case, nb_samples is 1.
         params : vector-like
             Parameter vector.
-       nbshots : int, optional
+        nbshots : int, optional
             Number of nbshots, by default None
 
         Returns
@@ -191,7 +191,7 @@ class qkCircuitML(circuitML):
             Input matrix, of shape (nb_samples, nb_features) or (nb_features,). In the latter case, nb_samples is 1.
         params : vector-like
             Parameter vector.
-       nbshots : int, optional
+        nbshots : int, optional
             Number of nbshots, by default None
 
         Returns
@@ -228,7 +228,7 @@ class qkCircuitML(circuitML):
             Job instance.
         qc_list : list[qiskit.QuantumCircuit]
             List of quantum circuits executed in `job`, of length nb_samples.
-       nbshots : int, optional
+        nbshots : int, optional
             Number of shots, by default None. If None, raw counts are returned.
 
         Returns
