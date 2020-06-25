@@ -26,11 +26,6 @@ X = np.asarray(n_pc * [[1.5, 0.]] +    # First quadrant
 )
 # Add gaussian noise
 X += .5 * np.random.randn(*X.shape)
-# Rotate of pi/4
-# X = X @ [[np.cos(np.pi/4), np.sin(np.pi/4)],
-#         [-np.sin(np.pi/4), np.cos(np.pi/4)]]
-
-# X = 2 * np.arctan(X)
 
 # Create target vecor
 y = np.concatenate((np.zeros(2*n_pc), np.ones(2*n_pc)))
