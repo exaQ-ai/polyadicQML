@@ -18,6 +18,7 @@ class __qiskitGeneralBuilder__(circuitBuilder):
         Returns
         -------
         qiskit.QuantumCircuit
+            Built circuit
         """
         return self.qc
 
