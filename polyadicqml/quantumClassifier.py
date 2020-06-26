@@ -140,6 +140,7 @@ class Classifier():
             'bitstr': [bin(bit) for bit in self.bitstr],
             'job_size' : job_size if job_size else "FULL",
             }
+        self.nfev = 0
 
     def __verify_circuit__(self, circuit):
         """Test wheter a circuit is valid and raise TypeError if it is not.
@@ -204,6 +205,8 @@ class Classifier():
         """
         if params is None:
             params = self.params
+        
+        self.nfev += 1
 
         return self.circuit.run(X, params, self.nbshots,
                                job_size=self.job_size)
@@ -307,6 +310,13 @@ class Classifier():
         if output:
             self.__output_progress__.append(self.__last_output__.tolist())
             self.__params_progress__.append(params.tolist())
+
+        self.__n_iter__ += 1
+        if self.__save_path__ and self.__n_iter__ % 10 == 0:
+            self.save()
+        
+        self.pbar.update()
+
         
     def fit(self, input_train, target_train, batch_size=None,
             **kwargs):
@@ -366,7 +376,7 @@ class Classifier():
             probas = self.predict_proba(input_train[_indices], params)
             loss_value = self.__loss__(target_train[_indices], probas,
                                        labels=_labels)
-            
+
             self.__last_loss_value__ = loss_value
             self.__last_output__ = probas[np.argsort(_indices)]
 
@@ -374,13 +384,9 @@ class Classifier():
                 self.__min_loss__ = loss_value
                 self.set_params(params.copy())
 
-            self.__n_iter__ += 1
-            if self.__save_path__ and self.__n_iter__ % 10 == 0:
-                self.save()
+            if method == "COBYLA" and (save_loss_progress or save_output_progress):
+                self.__callback__(params, save_loss_progress, save_output_progress)
 
-            if method == "COBYLA" and (save_loss_progress or save_output_progress): self.__callback__(params, save_loss_progress, save_output_progress)
-
-            self.pbar.update()
             return loss_value
 
         # SCIPY.MINIMIZE IMPLEMENTATION
@@ -389,18 +395,22 @@ class Classifier():
         if method == 'L-BFGS-B' and bounds is None:
             bounds = [(-np.pi, np.pi) for _ in self.params]
 
-        mini_out = minimize(to_optimize, self.params,
-                            method=method, bounds=bounds, 
-                            callback= lambda xk : self.__callback__(xk, save_loss_progress,
-                                                                    save_output_progress,),
-                            options=options)
+        mini_kwargs = dict(
+            method=method, bounds=bounds, 
+            options=options,
+        )
+        if method.lower() not in ('cobyla'):
+            mini_kwargs["callback"] = lambda xk : self.__callback__(
+                xk, save_loss_progress, save_output_progress,
+            )
+
+        mini_out = minimize(to_optimize, self.params, **mini_kwargs)
 
         self.set_params(mini_out.x.copy())
 
         if "sim_calls" not in self.__info__.keys():
-            # self.__info__["sim_calls"] = mini_out.nfev
-            self.__info__["sim_calls"] = self.__n_iter__
-            self.nfev = self.__n_iter__
+            self.__info__["nfev"] = self.nfev
+            self.__info__["n_iter"] = self.__n_iter__
 
         del self.__n_iter__
         self.pbar.close()
@@ -416,7 +426,7 @@ class Classifier():
             self.__output_progress__ = []
             self.__params_progress__ = []
 
-        # we reset the number if nbshots, as we changet id during training.
+        # we reset the number if nbshots, as we changed it during training.
         self.nbshots = _nbshots
 
         return self
