@@ -3,6 +3,30 @@ from .qkCircuitML import qkCircuitML, np, sleep, qiskitBuilder
 
 class parallelML(qkCircuitML):
     """Quantum ML circuit interface for running two qkCircuitML circuits on parallel on the same QPU. 
+
+    Parameters
+    ----------
+    backend : Union[Backends, list, qiskit.providers]
+        Backend on which to run the circuits
+    make_circuit : callable of signature self.make_circuit
+        Function to generate the circuit corresponding to input `x` and `params`.
+    nbqbits : int
+        Number of qubits.
+    nbparams : int
+        Number of parameters.
+    cbuilder : circuitBuilder, optional
+        Circuit builder, by default qiskitBuilder
+    noise_model : Union[list, qiskit.providers.aer.noise.NoiseModel], optional
+        Noise model to be provided to the backend, by default None. Cannot be used with `noise_backend`.
+    noise_backend : Union[Backends, list, qiskit.IBMQBackend], optional
+        IBMQ backend from which the noise model should be generated, by default None.
+    save_path : str, optional
+        Where to save the jobs outputs, by default None. Jobs are saved only if a path is specified
+
+    Raises
+    ------
+    ValueError
+        If both `noise_model` and `noise_backend` are provided.
     """
     def __init__(self, backend,  nbqbits, nbparams, cbuilder=qiskitBuilder, noise_model=None, noise_backend=None,
                  save_path=None):

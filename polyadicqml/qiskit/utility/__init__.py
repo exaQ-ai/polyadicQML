@@ -1,5 +1,5 @@
 __all__ = [
-    "backends",
+    "Backends",
 ]
 
 from .backends import Backends

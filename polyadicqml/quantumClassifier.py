@@ -198,6 +198,7 @@ class Classifier():
     def run_circuit(self, X, params=None):
         """Run the circuit with input `X` and parameters `params`.
         
+        Parameters
         ----------
         X : array-like
             Input matrix of shape (nb_samples, nb_features).
