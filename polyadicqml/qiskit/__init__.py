@@ -1,5 +1,6 @@
 __all__ = [
-    "qiskitBdr",
+    "qiskitBuilder",
+    "ibmqNativeBuilder",
     "qkCircuitML",
     "parallelCircuitML",
     "utility"

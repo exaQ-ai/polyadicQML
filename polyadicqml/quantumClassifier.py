@@ -63,14 +63,19 @@ class Classifier():
     save_path : str, optional
         Where to save intermediate training results, by deafult None. If None, intermediate results are not saved.
     """
-    def __init__(self, circuit, bitstr,
-                 params=None, nbshots=None,
-                 nbshots_increment=None,
-                 nbshots_incr_delay=None,
-                 loss=CE_loss,
-                 job_size=None, budget=200,
-                 name=None, save_path=None):
+    def __init__(self, circuit, bitstr, **kwargs):
         super().__init__()
+
+        # Retrieve keyword arguments
+        params = kwargs.get('params')
+        nbshots = kwargs.get('nbshots')
+        nbshots_increment = kwargs.get('nbshots_increment')
+        nbshots_incr_delay = kwargs.get('nbshots_incr_delay')
+        loss = kwargs.get('loss', CE_loss)
+        job_size = kwargs.get('job_size')
+        budget = kwargs.get('budget', 200)
+        name = kwargs.get('name')
+        save_path = kwargs.get('save_path')
 
         # Testing circuit and setting it
         self.set_circuit(circuit)
@@ -167,6 +172,7 @@ class Classifier():
         """Set the circuit after testing for validity.
 
         For a circuit to be valid, it has to be an instance of circuitML and, in case self already has a circuit, to use the same make_circuit function.
+
         Parameters
         ----------
         circuit : circuitML
@@ -347,6 +353,7 @@ class Classifier():
 
         Returns
         -------
+        Classifier
             self
         """
 
