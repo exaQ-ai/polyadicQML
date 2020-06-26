@@ -194,8 +194,8 @@ class Classifier():
         ----------
         X : array-like
             Input matrix of shape (nb_samples, nb_features).
-        params : vector-like
-            Parameter vector.
+        params : vector-like, optional
+            Parameter vector, by default uses the model :attr:`~polyadicqml.Classifier.params`
 
         Returns
         -------
@@ -221,7 +221,7 @@ class Classifier():
         Returns
         -------
         array
-            Predicted bitstring probabilities. Rows correspond to samples and columns to bitstrings, whose order is defined in `quantumClassifier.bitstr`. 
+            Predicted bitstring probabilities. Rows correspond to samples and columns to bitstrings, whose order is defined in :attr:`~polyadicqml.quantumClassifier.bitstr`. 
         """
         out = self.run_circuit(X, params)
 
@@ -229,24 +229,6 @@ class Classifier():
             out = out / float(self.nbshots)
 
         return out[:, self.bitstr]
-
-    def __call__(self, X):
-        """Compute the bitstring probabilities associated to each input point of the design matrix.
-        Equivalent to `quantumClassifier.predict_proba(X)`
-
-        Parameters
-        ----------
-        X : array
-            Design matrix of n samples
-        params : vector, optional
-            Circuit parameters, by default None. If not given, model parameters are used.
-
-        Returns
-        -------
-        array
-            Predicted bitstring probabilities. Rows correspond to samples and columns to bitstrings, whose order is defined in `quantumClassifier.bitstr`. 
-        """
-        return self.predict_proba(X)
 
     def proba_to_label(self, proba) -> np.ndarray:
         """Transforms a matrix of real values in integer labels.
@@ -263,7 +245,7 @@ class Classifier():
         """
         return np.argmax(proba, axis=1)
 
-    def predict_label(self, X):
+    def predict(self, X):
         """Compute the predicted class for each input point of the design matrix.
 
         Parameters
@@ -277,6 +259,24 @@ class Classifier():
             Labels vector
         """
         return self.proba_to_label(self.predict_proba(X))
+
+    def __call__(self, X):
+        """Compute the predicted class for each input point of the design matrix.
+        Equivalent to :meth:`~polyadicqml.quantumClassifier.predict`
+
+        Parameters
+        ----------
+        X : array
+            Design matrix of n samples
+        params : vector, optional
+            Circuit parameters, by default None. If not given, model parameters are used.
+
+        Returns
+        -------
+        vector
+            Labels vector
+        """
+        return self.predict(X)
 
     def set_loss(self, loss=None):
         """Loss function setter.
@@ -309,8 +309,7 @@ class Classifier():
             self.__params_progress__.append(params.tolist())
         
     def fit(self, input_train, target_train, batch_size=None,
-            save_loss_progress=False, save_output_progress=None,
-            seed=None, **kwargs):
+            **kwargs):
         """Fit the model according to the given training data.
 
         Parameters
@@ -321,6 +320,14 @@ class Classifier():
             Labels corresponding to `input_train`.
         batch_size : int, optional
             Minibatches size, by default None. If none uses the full dataset with rndom shuffle at each iteration.
+        method : str, optional
+            Optimization method, by default BFGS
+        bounds : sequence, optional
+            Bounds on variables for L-BFGS-B, TNC, SLSQP, Powell, and
+            trust-constr methods as a sequence of ``(min, max)`` pairs for
+            each element in x. None is used to specify no bound.
+        options : dict, optional
+            Optimizer options, by default {'maxiter': budget}
         save_loss_progress : bool, optional
             Whether to store the loss progress, by default False
         save_output_progress : file path, optional
@@ -333,7 +340,10 @@ class Classifier():
             self
         """
 
-        method = 'BFGS' if 'method' not in kwargs.keys() else kwargs.pop('method')
+        method =  kwargs.get('method', 'BFGS')
+        save_loss_progress = kwargs.get('save_loss_progress')
+        save_output_progress = kwargs.get('save_output_progress')
+        seed = kwargs.get('seed') 
 
         _nbshots = self.nbshots
         if seed is not None:
@@ -374,8 +384,8 @@ class Classifier():
             return loss_value
 
         # SCIPY.MINIMIZE IMPLEMENTATION
-        options = {'maxiter': self.__budget__} if 'options' not in kwargs.keys() else kwargs.pop('options')
-        bounds = None if 'bounds' not in kwargs.keys() else kwargs.pop('bounds')
+        options = kwargs.get('options', {'maxiter': self.__budget__})
+        bounds = kwargs.get('bounds')
         if method == 'L-BFGS-B' and bounds is None:
             bounds = [(-np.pi, np.pi) for _ in self.params]
 
@@ -383,7 +393,7 @@ class Classifier():
                             method=method, bounds=bounds, 
                             callback= lambda xk : self.__callback__(xk, save_loss_progress,
                                                                     save_output_progress,),
-                            options=options, **kwargs)
+                            options=options)
 
         self.set_params(mini_out.x.copy())
 

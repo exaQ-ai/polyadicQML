@@ -85,7 +85,7 @@ model.fit(X, y)
 t = np.linspace(-np.pi,np.pi, num = 50)
 X_test = np.array([[t1, t2] for t1 in t for t2 in t])
 
-y_pred = model.predict_label(X_test)
+y_pred = model.predict(X_test)
 
 if True:
     fig, ax = plt.subplots(figsize=(5,5))

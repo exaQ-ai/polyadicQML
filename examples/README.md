@@ -98,14 +98,14 @@ We can use a model to predict on some new datapoints `X_test` that it never saw 
 To obtain the bitstring probabilities, we can just call the model, by 
 
 ```python
-pred_prob = model(X_test)
+pred_prob = model.predict_proba(X_test)
 ```
 
 Then, we can retrieve the label of each point as the argmax of the corresponding probabilities.
 Otherwise, we can combine the two operation by using the shorthand 
 
 ```python
-y_pred = model.predict_label(X_test)
+y_pred = model(X_test)
 ```
 
 For instance, going back to our XOR problem, we can predict the label of each point on a grid that covers <img src="https://latex.codecogs.com/svg.latex?\inline&space;(-\pi,\pi)\times(-\pi,\pi)" title="(-\pi,\pi)\times(-\pi,\pi)" />, to assess the model accuracy.
@@ -115,7 +115,7 @@ Using some list comprhension, it would look like this:
 t = np.linspace(-np.pi,np.pi, num = 50)
 X_test = np.array([[t1, t2] for t1 in t for t2 in t])
 
-y_pred = model.predict_label(X_test)
+y_pred = model(X_test)
 ```
 
 We can now plot the predictions and see that the model is very close to the bayesian prediction (whose decision boundaries are shown as grey lines), which is the best possible.
@@ -215,7 +215,7 @@ model = Classifier(qc, bitstr).fit(input_train, target_train)
 We can print the training scores.
 
 ```python
->>> pred_train = model.predict_label(input_train)
+>>> pred_train = model(input_train)
 >>> print("Confusion matrix on train :",
 >>>     confusion_matrix(target_train, pred_train),
 >>>     "Accuracy : " + str(accuracy_score(target_train, pred_train)),
@@ -251,7 +251,7 @@ model.set_circuit(qc)
 model.nbshots = 300
 model.job_size = 40
 
-pred_test = model.predict_label(input_test)
+pred_test = model(input_test)
 ```
 
 Finally, we can print the test scores:
