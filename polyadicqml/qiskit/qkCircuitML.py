@@ -35,7 +35,9 @@ class qkCircuitML(circuitML):
         Circuit builder, by default qiskitBuilder
     noise_model : Union[list, qiskit.providers.aer.noise.NoiseModel], optional
         Noise model to be provided to the backend, by default None. Cannot be used with `noise_backend`.
-    noise_backend : Union[Backends, list, qiskit.IBMQBackend], optional
+    coupling_map : list, optional
+        Coupling map to be provided to the backend, by default None. Cannot be used with `noise_backend`.
+    noise_backend : Union[list, qiskit.IBMQBackend], optional
         IBMQ backend from which the noise model should be generated, by default None.
     save_path : str, optional
         Where to save the jobs outputs, by default None. Jobs are saved only if a path is specified
@@ -47,7 +49,8 @@ class qkCircuitML(circuitML):
     """
     def __init__(self, backend, make_circuit, nbqbits, nbparams,
                  cbuilder=qiskitBuilder, 
-                 noise_model=None, noise_backend=None,
+                 noise_model=None, coupling_map=None,
+                 noise_backend=None,
                  save_path=None):
         super().__init__(make_circuit, nbqbits, nbparams, cbuilder)
 
@@ -72,7 +75,7 @@ class qkCircuitML(circuitML):
                 raise ValueError("Only one between 'noise_model' and 'noise_backend' can be passed to the constructor")
 
             self.noise_model = cycle(noise_model) if isinstance(noise_model, list) else cycle([noise_model])
-            self.coupling_map = cycle([None])
+            self.coupling_map = cycle(coupling_map) if isinstance(coupling_map, list) else cycle([coupling_map])
 
             if noise_backend is not None:
                 _noise_back = noise_backend if isinstance(noise_backend, list) else [noise_backend]
