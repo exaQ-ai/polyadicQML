@@ -3,5 +3,5 @@ __all__ = [
     "mqCircuitML",
 ]
 
-from .manyqBdr import mqBuilder
+from .mqBuilder import mqBuilder
 from .mqCircuitML import mqCircuitML

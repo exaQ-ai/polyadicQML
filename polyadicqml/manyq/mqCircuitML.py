@@ -5,7 +5,7 @@ from ..circuitML import circuitML
 import numpy as np
 from cupy import asnumpy, asarray, hstack
 
-from .manyqBdr import mqBuilder
+from .mqBuilder import mqBuilder
 
 class mqCircuitML(circuitML):
     """Quantum ML circuit interface for manyq simulator.
@@ -29,7 +29,7 @@ class mqCircuitML(circuitML):
     """
     def __init__(self, make_circuit, nbqbits, nbparams, gpu=False, cbuilder=mqBuilder):
         super().__init__(make_circuit, nbqbits, nbparams, cbuilder)
-        self._gpu = gpu
+        self.__gpu = gpu
 
     def __verify_builder__(self, cbuilder):
         bdr = cbuilder(1, 1)
@@ -43,15 +43,17 @@ class mqCircuitML(circuitML):
         
         _X = X.T 
         _params = None
-        if self.gpu:
+        if self.__gpu:
             _X = asarray(_X)
             _params =  hstack(batch_size* (asarray(params).reshape(-1,1),))
         else:
             _params =  np.hstack(batch_size* (params.reshape(-1,1),))
 
         bdr = self.make_circuit(
-            self.circuitBuilder(self.nbqbits, batch_size=batch_size, gpu=self._gpu),
-                                   _X, _params
+            self.circuitBuilder(
+                self.nbqbits, batch_size=batch_size, gpu=self.__gpu
+            ),
+            _X, _params
         )
         if nbshots : bdr.measure_all()
 
@@ -68,9 +70,9 @@ class mqCircuitML(circuitML):
     def gpu(self):
         """Switch to cupy.
         """
-        self._gpu = True
+        self.__gpu = True
 
     def cpu(self):
         """Switch to numpy.
         """
-        self._gpu = False
+        self.__gpu = False
