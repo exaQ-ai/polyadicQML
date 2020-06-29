@@ -63,6 +63,7 @@ class circuitML():
         Returns
         -------
         vector
+            Vector of random parameters.
         """
         if seed: random.seed(seed)
         return random.randn(self.nbparams)
