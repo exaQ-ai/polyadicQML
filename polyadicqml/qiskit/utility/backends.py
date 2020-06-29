@@ -27,7 +27,7 @@ class Backends():
         How many time to repeat each backend during iteration, by default 1
     """
     def __init__(self, backend_name, noise_name=None,
-                 hub="ibm-q", group="open", project="main",
+                 hub=None, group=None, project=None,
                  repeat=1):
         super().__init__()
         self.__names__ = backend_name if isinstance(backend_name, list) else [backend_name]
