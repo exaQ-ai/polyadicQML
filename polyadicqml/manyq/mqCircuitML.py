@@ -3,6 +3,7 @@
 from ..circuitML import circuitML
 
 import numpy as np
+from cupy import asnumpy, asarray, hstack
 
 from .manyqBdr import mqBuilder
 
@@ -26,23 +27,30 @@ class mqCircuitML(circuitML):
     ValueError
         If both `noise_model` and `noise_backend` are provided.
     """
-    def __init__(self, make_circuit, nbqbits, nbparams, cbuilder=mqBuilder):
+    def __init__(self, make_circuit, nbqbits, nbparams, gpu=False, cbuilder=mqBuilder):
         super().__init__(make_circuit, nbqbits, nbparams, cbuilder)
+        self.gpu = gpu
 
     def __verify_builder__(self, cbuilder):
         bdr = cbuilder(1, 1)
         if isinstance(bdr, mqBuilder): return 
         raise TypeError(
-            f"The circuit builder class is not comaptible: provided {cbuilder} expected {mqBuilder}"
+            f"The circuit builder class is not compatible: provided {cbuilder} expected {mqBuilder}"
         )
 
     def __single_run__(self, X, params, nbshots=None):
         batch_size = 1 if len(X.shape) < 2 else len(X)
         
         _X = X.T 
-        _params = np.hstack(batch_size* (params.reshape(-1,1),))
+        _params = None
+        if self.gpu:
+            _X = asarray(_X)
+            _params =  hstack(batch_size* (asarray(params).reshape(-1,1),))
+        else:
+            _params =  np.hstack(batch_size* (params.reshape(-1,1),))
+
         bdr = self.make_circuit(
-            self.circuitBuilder(self.nbqbits, batch_size=batch_size),
+            self.circuitBuilder(self.nbqbits, batch_size=batch_size, gpu=self.gpu),
                                    _X, _params
         )
         if nbshots : bdr.measure_all()
