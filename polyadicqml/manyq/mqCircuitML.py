@@ -4,7 +4,7 @@ from ..circuitML import circuitML
 
 import numpy as np
 
-from .manyqBdr import manyqBuilder
+from .manyqBdr import mqBuilder
 
 class mqCircuitML(circuitML):
     """Quantum ML circuit interface for manyq simulator.
@@ -19,21 +19,21 @@ class mqCircuitML(circuitML):
     nbparams : int
         Number of parameters.
     cbuilder : circuitBuilder, optional
-        Circuit builder, by default manyqBuilder
+        Circuit builder, by default mqBuilder
 
     Raises
     ------
     ValueError
         If both `noise_model` and `noise_backend` are provided.
     """
-    def __init__(self, make_circuit, nbqbits, nbparams, cbuilder=manyqBuilder):
+    def __init__(self, make_circuit, nbqbits, nbparams, cbuilder=mqBuilder):
         super().__init__(make_circuit, nbqbits, nbparams, cbuilder)
 
     def __verify_builder__(self, cbuilder):
         bdr = cbuilder(1, 1)
-        if isinstance(bdr, manyqBuilder): return 
+        if isinstance(bdr, mqBuilder): return 
         raise TypeError(
-            f"The circuit builder class is not comaptible: provided {cbuilder} expected {manyqBuilder}"
+            f"The circuit builder class is not comaptible: provided {cbuilder} expected {mqBuilder}"
         )
 
     def __single_run__(self, X, params, nbshots=None):

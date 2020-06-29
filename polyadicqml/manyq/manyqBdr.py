@@ -4,7 +4,7 @@ from ..circuitBuilder import circuitBuilder
 import manyq as mq
 from numpy import pi
 
-class manyqBuilder(circuitBuilder):
+class mqBuilder(circuitBuilder):
     """Builder for circuits to be run on manyQ simulator. 
     """
     def __init__(self, nbqbits, batch_size, *args, gpu=False, **kwargs):

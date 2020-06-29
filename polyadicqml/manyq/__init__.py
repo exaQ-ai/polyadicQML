@@ -1,7 +1,7 @@
 __all__ = [
-    "manyqBuilder",
+    "mqBuilder",
     "mqCircuitML",
 ]
 
-from .manyqBdr import manyqBuilder
+from .manyqBdr import mqBuilder
 from .mqCircuitML import mqCircuitML
