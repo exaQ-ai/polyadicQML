@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.0.1",
     author="William Cappelletti",
     author_email="cappelletti.william@gmail.com",
-    description="ML classifier based on quantum circuits",
+    description="Poliadic Quantum Machine Learning",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://gitlab.com/entropica/polyadic-quantum-ml",
