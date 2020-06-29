@@ -6,7 +6,7 @@ __all__ = [
     "utility"
 ]
 
-from .qiskitBdr import qiskitBuilder, ibmqNativeBuilder
+from .qkBuilder import qiskitBuilder, ibmqNativeBuilder
 from .qkCircuitML import qkCircuitML
 from .parallelCircuitML import parallelML
 

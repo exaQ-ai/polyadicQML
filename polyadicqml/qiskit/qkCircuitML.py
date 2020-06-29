@@ -15,7 +15,7 @@ import json
 
 from .utility.backends import Backends
 from ..circuitML import circuitML
-from .qiskitBdr import __qiskitGeneralBuilder__, qiskitBuilder
+from .qkBuilder import __qiskitGeneralBuilder__, qiskitBuilder
 
 class qkCircuitML(circuitML):
     """Quantum ML circuit interface for qiskit and IBMQ.
