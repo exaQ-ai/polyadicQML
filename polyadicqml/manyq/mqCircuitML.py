@@ -29,7 +29,7 @@ class mqCircuitML(circuitML):
     """
     def __init__(self, make_circuit, nbqbits, nbparams, gpu=False, cbuilder=mqBuilder):
         super().__init__(make_circuit, nbqbits, nbparams, cbuilder)
-        self.gpu = gpu
+        self._gpu = gpu
 
     def __verify_builder__(self, cbuilder):
         bdr = cbuilder(1, 1)
@@ -50,7 +50,7 @@ class mqCircuitML(circuitML):
             _params =  np.hstack(batch_size* (params.reshape(-1,1),))
 
         bdr = self.make_circuit(
-            self.circuitBuilder(self.nbqbits, batch_size=batch_size, gpu=self.gpu),
+            self.circuitBuilder(self.nbqbits, batch_size=batch_size, gpu=self._gpu),
                                    _X, _params
         )
         if nbshots : bdr.measure_all()
@@ -64,3 +64,13 @@ class mqCircuitML(circuitML):
             raise NotImplementedError
 
         return self.__single_run__(X, params, nbshots)
+
+    def gpu(self):
+        """Switch to cupy.
+        """
+        self._gpu = True
+
+    def cpu(self):
+        """Switch to numpy.
+        """
+        self._gpu = False
