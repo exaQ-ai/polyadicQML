@@ -17,30 +17,23 @@ input_train, target_train, input_test, target_test = makeDatasets(.6, .4, seed=1
 ##############################
 # We define a circuit
 
+def block(bdr, x, p):
+    bdr.allin(x[[0,1]])
+    bdr.cz(0,1).allin(p[[0,1]])
+
+    bdr.cz(0,1).allin(x[[2,3]])
+    bdr.cz(0,1).allin(p[[2,3]])
+
 def irisCircuit(bdr, x, params):
+    # The fist block uses all `x`, but
+    # only the first 4 elements of `params`
+    block(bdr, x, params[:4])
 
-    bdr.allin(x[[0,1]])
-    bdr.cz(0, 1)
-
-    bdr.allin(params[[0,1]])
-    bdr.cz(0, 1)
-
-    bdr.allin(x[[2,3]])
-    bdr.cz(0, 1)
-
-    bdr.allin(params[[2,3]])
-    bdr.cz(0, 1)
-
-    bdr.allin(x[[0,1]])
-    bdr.cz(0, 1)
-
-    bdr.allin(params[[4,5]])
-    bdr.cz(0, 1)
-
-    bdr.allin(x[[2,3]])
-    bdr.cz(0, 1)
-
-    bdr.allin(params[[6,7]])
+    # Add one entanglement not to have two adjacent input
+    bdr.cz(0,1)
+    
+    # The block repeats with the other parameters
+    block(bdr, x, params[4:])
 
     return bdr
 
@@ -60,18 +53,20 @@ model = Classifier(qc, bitstr).fit(input_train, target_train, method="BFGS")
 ##############################
 # We test it using qiskit
 
-backend = Backends("ibmq_burlington")
+backend = Backends("ibmq_ourense")
 
-qc = qkCircuitML(backend=backend,
-                 make_circuit=irisCircuit,
-                 nbqbits=nbqbits, nbparams=nbparams)
+qc = qkCircuitML(
+    make_circuit=irisCircuit,
+    nbqbits=nbqbits, nbparams=nbparams,
+    backend=backend,
+)
 
 model.set_circuit(qc)
 model.nbshots = 300
 model.job_size = 30
 
-pred_train = model.predict_label(input_train)
-pred_test = model.predict_label(input_test)
+pred_train = model(input_train)
+pred_test = model(input_test)
 
 ##############################
 # We print the results
