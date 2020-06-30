@@ -23,14 +23,14 @@ class qkCircuitML(circuitML):
 
     Parameters
     ----------
-    backend : Union[Backends, list, qiskit.providers]
-        Backend on which to run the circuits
     make_circuit : callable of signature self.make_circuit
         Function to generate the circuit corresponding to input `x` and `params`.
     nbqbits : int
         Number of qubits.
     nbparams : int
         Number of parameters.
+    backend : Union[Backends, list, qiskit.providers]
+        Backend(s) on which to run the circuits
     cbuilder : circuitBuilder, optional
         Circuit builder, by default qiskitBuilder
     noise_model : Union[list, qiskit.providers.aer.noise.NoiseModel], optional
@@ -47,7 +47,7 @@ class qkCircuitML(circuitML):
     ValueError
         If both `noise_model` and `noise_backend` are provided.
     """
-    def __init__(self, backend, make_circuit, nbqbits, nbparams,
+    def __init__(self, make_circuit, nbqbits, nbparams, backend, 
                  cbuilder=qiskitBuilder, 
                  noise_model=None, coupling_map=None,
                  noise_backend=None,
