@@ -142,11 +142,12 @@ class qkCircuitML(circuitML):
                 self.coupling_map = self.__backend__.coupling_maps
 
             return self.run(X, params, nbshots, job_size)
-        except QiskitError:
-            print(f"{asctime()} - Error in qkCircuitML.run :{exc_info()[0]}", end="\n\n")
+        except QiskitError as descr:
+            error_str = f"{asctime()} - Error in qkCircuitML.run :{exc_info()[0]}\n\t{descr}\n"
+            print(error_str)
             with open("error.log", "w") as f:
-                f.write(f"{asctime()} - Error in qkCircuitML.run :{exc_info()[0]}\n")
-            sleep(10)
+                f.write(error_str)
+            sleep(5)
             return self.run(X, params, nbshots, job_size)
 
     def make_circuit_list(self, X, params, nbshots=None):

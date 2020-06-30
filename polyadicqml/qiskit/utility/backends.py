@@ -72,7 +72,7 @@ class Backends():
                                                 project=self.__project__)
                     self.__logged__ = True
                 except QiskitError as descr:
-                    error = f"{asctime()} - Error logging : {exc_info()[0]}\n\t{descr}"
+                    error = f"{asctime()} - Error logging : {exc_info()[0]}\n\t{descr}\n"
                     print(error)
                     if input("Try again [y/n]? ") in ("y", "Y"):
                         with open("error.log", "w") as f:
