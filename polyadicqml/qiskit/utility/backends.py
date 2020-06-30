@@ -71,24 +71,29 @@ class Backends():
                                                 group=self.__group__,
                                                 project=self.__project__)
                     self.__logged__ = True
-                except QiskitError:
-                    error = f"{asctime()} - Error logging : {exc_info()[0]}\n"
+                except QiskitError as descr:
+                    error = f"{asctime()} - Error logging : {exc_info()[0]}\n\t{descr}"
                     print(error)
-                    print("Retrying")
-                    with open("error.log", "w") as f:
-                        f.write(error)
-                    sleep(10)
-                    continue
+                    if input("Try again [y/n]? ") in ("y", "Y"):
+                        with open("error.log", "w") as f:
+                            f.write(error)
+                        print("Error saved in error.log - Retrying")
+                        continue
+                    else:
+                        raise
             
             if not self.__simulator__:
                 for name in self.__names__:
                     back = provider.get_backend(name)
 
-                    job_limit = back.job_limit().maximum_jobs
-                    if job_limit is not None: job_limits.append(job_limit)
+                    # TODO: verify the circuit limit per run != job limit
+                    # job_limit = back.job_limit().maximum_jobs
+                    # if job_limit is not None: job_limits.append(job_limit)
 
                     for _ in range(self.__repeat__):
                         backends.append(back)
+                # Known limit
+                job_limits.append(45)
             else:
                 for name in self.__noise_names__:
                     back = provider.get_backend(name)
