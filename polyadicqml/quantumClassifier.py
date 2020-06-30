@@ -33,6 +33,7 @@ def CE_loss(y_true, y_pred, labels=None):
     float
         Loss value.
     """
+    # TODO: verify advantage of penalizing missing probabilities
     # Add remaining probabilities as unrepresented class
     # if labels is None:
     #     labels = np.unique(y_pred)
