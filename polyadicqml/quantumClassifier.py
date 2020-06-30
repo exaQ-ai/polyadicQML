@@ -33,6 +33,12 @@ def CE_loss(y_true, y_pred, labels=None):
     float
         Loss value.
     """
+    # Add remaining probabilities as unrepresented class
+    # if labels is None:
+    #     labels = np.unique(y_pred)
+    # labels=np.concatenate((labels, [len(labels)]))
+    # _y = np.hstack((y_pred, (1 - y_pred.sum(axis=1)).reshape(-1,1)))
+
     return log_loss(y_true, softmax(y_pred, axis=1), labels=labels)
 
 class Classifier():
@@ -392,7 +398,7 @@ class Classifier():
                 self.__min_loss__ = loss_value
                 self.set_params(params.copy())
 
-            if method == "COBYLA" and (save_loss_progress or save_output_progress):
+            if method == "COBYLA":
                 self.__callback__(params, save_loss_progress, save_output_progress)
 
             return loss_value
