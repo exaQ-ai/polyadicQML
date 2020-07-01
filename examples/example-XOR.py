@@ -10,19 +10,20 @@ np.random.seed(SEED)
 
 ##############################
 # We create a dataset of 200 points corresponding to the XOR problem
-#       1 --|-- 0
-#       |   |   |
-#      -----|------
-#       |   |   |
-#       0 --|-- 1
+#           0    
+#           |    
+#     --1---|---1---
+#           |    
+#           0    
 
 n_pc = 50 # Number of points per cluster
 
 # Create a matrix of vertices of the centered square
-X = np.asarray(n_pc * [[1.5, 0.]] +    # First quadrant
-            n_pc * [[-1.5, 0.]] +  # Third quadrant
-            n_pc * [[0., -1.5]] +   # Second quadrant
-            n_pc * [[0., 1.5]]     # Fourth quadrant
+X = np.asarray(
+    n_pc * [[1.5, 0.]] +    # First quadrant
+    n_pc * [[-1.5, 0.]] +  # Third quadrant
+    n_pc * [[0., -1.5]] +   # Second quadrant
+    n_pc * [[0., 1.5]]     # Fourth quadrant
 )
 # Add gaussian noise
 X += .5 * np.random.randn(*X.shape)
