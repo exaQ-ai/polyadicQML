@@ -210,6 +210,7 @@ class Classifier():
         Parameters
         ----------
         params : vector
+            Parameters vector
         """
         self.params = params
 
