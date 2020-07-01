@@ -62,7 +62,7 @@ class qkParallelML(qkCircuitML):
         return [
             post(
                 self.make_circuit(
-                    self.__circuitBuilder(self.nbqbits, self.total_qbits if i+2 < self._len_out else None),
+                    self._circuitBuilder(self.nbqbits, self.total_qbits if i+2 < self._len_out else None),
                     X[i:i+2].T, params
                 )
             )

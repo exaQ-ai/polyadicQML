@@ -181,14 +181,14 @@ class qkCircuitML(circuitML):
         if len(X.shape) < 2:
             return [post(
                 self.make_circuit(
-                    self.__circuitBuilder(self.nbqbits), X, params
+                    self._circuitBuilder(self.nbqbits), X, params
                 )
             )]
         else:
             return [
                 post(
                     self.make_circuit(
-                        self.__circuitBuilder(self.nbqbits), x, params
+                        self._circuitBuilder(self.nbqbits), x, params
                     )
                 )
                 for x in X]

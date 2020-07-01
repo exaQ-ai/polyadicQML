@@ -33,7 +33,7 @@ class circuitML():
     
     def __set_builder__(self, cbuilder):
         self.__verify_builder__(cbuilder)
-        self.__circuitBuilder = cbuilder
+        self._circuitBuilder = cbuilder
 
     def __verify_builder__(self, cbuilder):
         raise NotImplementedError

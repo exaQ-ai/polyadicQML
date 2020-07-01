@@ -57,7 +57,7 @@ class mqCircuitML(circuitML):
             _params =  np.hstack(batch_size* (params.reshape(-1,1),))
 
         bdr = self.make_circuit(
-            self.__circuitBuilder(
+            self._circuitBuilder(
                 self.nbqbits, batch_size=batch_size, gpu=self.__gpu
             ),
             _X, _params
