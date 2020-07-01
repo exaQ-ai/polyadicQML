@@ -37,18 +37,18 @@ class circuitML():
         Parameters
         ----------
         X : array-like
-            Input matrix of shape (nb_samples, nb_features).
+            Input matrix of shape *(nb_samples, nb_features)*.
         params : vector-like
             Parameter vector.
         nbshots : int, optional
-            Number of shots for the circuit run, by default None. If None, uses the backend default.
+            Number of shots for the circuit run, by default ``None``. If ``None``, uses the backend default.
         job_size : int, optional
-            Maximum job size, to split the circuit runs, by default None. If None, put all nb_samples in the same job. 
+            Maximum job size, to split the circuit runs, by default ``None``. If ``None``, put all *nb_samples* in the same job. 
 
         Returns
         -------
         array
-            Bitstring counts as an array of shape (nb_samples, 2**nbqbits)
+            Bitstring counts as an array of shape *(nb_samples, 2**nbqbits)*
         """
         raise NotImplementedError
 
@@ -58,7 +58,7 @@ class circuitML():
         Parameters
         ----------
         seed : int, optional
-            random seed, by default None
+            random seed, by default ``None``
 
         Returns
         -------

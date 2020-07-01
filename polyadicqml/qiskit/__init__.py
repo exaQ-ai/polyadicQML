@@ -1,13 +1,13 @@
 __all__ = [
-    "qiskitBuilder",
+    "qkBuilder",
     "ibmqNativeBuilder",
     "qkCircuitML",
-    "parallelCircuitML",
+    "qkParallelML",
     "utility"
 ]
 
-from .qkBuilder import qiskitBuilder, ibmqNativeBuilder
+from .qkBuilder import qkBuilder, ibmqNativeBuilder, qkParallelBuilder
 from .qkCircuitML import qkCircuitML
-from .parallelCircuitML import parallelML
+from .qkParallelML import qkParallelML
 
 from . import utility

@@ -15,7 +15,7 @@ import json
 
 from .utility.backends import Backends
 from ..circuitML import circuitML
-from .qkBuilder import __qiskitGeneralBuilder__, qiskitBuilder
+from .qkBuilder import __qiskitGeneralBuilder__, qkBuilder
 
 class qkCircuitML(circuitML):
     """Quantum ML circuit interface for qiskit and IBMQ.
@@ -29,18 +29,18 @@ class qkCircuitML(circuitML):
         Number of qubits.
     nbparams : int
         Number of parameters.
-    backend : Union[Backends, list, qiskit.providers]
+    backend : Union[Backends, list, qiskit.providers.BaseBackend]
         Backend(s) on which to run the circuits
     cbuilder : circuitBuilder, optional
-        Circuit builder, by default qiskitBuilder
+        Circuit builder, by default :class:`qkBuilder`
     noise_model : Union[list, qiskit.providers.aer.noise.NoiseModel], optional
-        Noise model to be provided to the backend, by default None. Cannot be used with `noise_backend`.
+        Noise model to be provided to the backend, by default ``None``. Cannot be used with `noise_backend`.
     coupling_map : list, optional
-        Coupling map to be provided to the backend, by default None. Cannot be used with `noise_backend`.
-    noise_backend : Union[list, qiskit.IBMQBackend], optional
-        IBMQ backend from which the noise model should be generated, by default None.
+        Coupling map to be provided to the backend, by default ``None``. Cannot be used with `noise_backend`.
+    noise_backend : Union[list, qiskit.providers.ibmq.IBMQBackend], optional
+        IBMQ backend from which the noise model should be generated, by default ``None``.
     save_path : str, optional
-        Where to save the jobs outputs, by default None. Jobs are saved only if a path is specified
+        Where to save the jobs outputs, by default ``None``. Jobs are saved only if a path is specified
 
     Raises
     ------
@@ -48,7 +48,7 @@ class qkCircuitML(circuitML):
         If both `noise_model` and `noise_backend` are provided.
     """
     def __init__(self, make_circuit, nbqbits, nbparams, backend, 
-                 cbuilder=qiskitBuilder, 
+                 cbuilder=qkBuilder, 
                  noise_model=None, coupling_map=None,
                  noise_backend=None,
                  save_path=None):
@@ -156,16 +156,16 @@ class qkCircuitML(circuitML):
         Parameters
         ----------
         X : array-like
-            Input matrix, of shape (nb_samples, nb_features) or (nb_features,). In the latter case, nb_samples is 1.
+            Input matrix, of shape *(nb_samples, nb_features)* or *(nb_features,)*. In the latter case, *nb_samples* is 1.
         params : vector-like
             Parameter vector.
         nbshots : int, optional
-            Number of nbshots, by default None
+            Number of nbshots, by default ``None``
 
         Returns
         -------
         list[qiskit.QuantumCircuit]
-            List of nb_samples circuits.
+            List of *nb_samples* circuits.
         """
         def post(bdr):
             if nbshots: return bdr.measure_all().circuit()
@@ -192,11 +192,11 @@ class qkCircuitML(circuitML):
         Parameters
         ----------
         X : array-like
-            Input matrix, of shape (nb_samples, nb_features) or (nb_features,). In the latter case, nb_samples is 1.
+            Input matrix, of shape *(nb_samples, nb_features)* or *(nb_features,)*. In the latter case, *nb_samples* is 1.
         params : vector-like
             Parameter vector.
         nbshots : int, optional
-            Number of nbshots, by default None
+            Number of nbshots, by default ``None``
 
         Returns
         -------
@@ -230,15 +230,15 @@ class qkCircuitML(circuitML):
         ----------
         job : qiskit.providers.BaseJob
             Job instance.
-        qc_list : list[qiskit.QuantumCircuit]
-            List of quantum circuits executed in `job`, of length nb_samples.
+        qc_list : list[qiskit.circuit.QuantumCircuit]
+            List of quantum circuits executed in `job`, of length *nb_samples*.
         nbshots : int, optional
-            Number of shots, by default None. If None, raw counts are returned.
+            Number of shots, by default ``None``. If ``None``, raw counts are returned.
 
         Returns
         -------
         array
-            Bitstring counts as an array of shape (nb_samples, 2**nbqbits), in the same order as `qc_list`.
+            Bitstring counts as an array of shape *(nb_samples, 2**nbqbits)*, in the same order as `qc_list`.
 
         Raises
         ------
@@ -275,7 +275,7 @@ class qkCircuitML(circuitML):
         job : qiskit.providers.BaseJob
             Job instance.
         save_path : path, optional
-            Where to save the output, by default None. If None, uses `self.save_path`.
+            Where to save the output, by default ``None``. If None, uses :attr:`qkCircuitML.save_path`.
         """
         save_path = self.save_path if save_path is None else save_path
 

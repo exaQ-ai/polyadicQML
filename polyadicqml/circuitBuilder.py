@@ -35,12 +35,12 @@ class circuitBuilder():
         raise NotImplementedError
 
     def alldiam(self, idx=None):
-        """Add X-rotation of pi/2.
+        """Add X-rotation of :math:`\\pi/2`.
 
         Parameters
         ----------
         idx : iterable, optional
-            Indices on which to apply the rotation, by default None. If None, apply to all qubits.
+            Indices on which to apply the rotation, by default ``None``. If ``None``, apply to all qubits.
         
         Returns
         -------
@@ -59,7 +59,7 @@ class circuitBuilder():
         idx : Union[iterable, int]
             Index[-ices] of qubits on which to input theta.
         theta : Union[list-like, float]
-            Parameter[s] to input. Has to have the same length as `idx`.
+            Parameter[s] to input. Has to have the same length as ``idx``.
         
         Returns
         -------

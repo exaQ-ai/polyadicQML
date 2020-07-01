@@ -28,8 +28,13 @@ class __qiskitGeneralBuilder__(circuitBuilder):
         return self
 
 
-class qiskitBuilder(__qiskitGeneralBuilder__):
+class qkBuilder(__qiskitGeneralBuilder__):
     """Qiskit-circuits builder using rx, rz and cz gates.
+
+    Parameters
+    ----------
+    nbqbits : int
+        Number of qubits.
     """
     def __init__(self, nbqbits, *args, **kwargs):
         super().__init__(nbqbits)
@@ -43,12 +48,6 @@ class qiskitBuilder(__qiskitGeneralBuilder__):
 
         return self
 
-    # def inputY(self, idx, theta):
-    #     if isinstance(idx, list):
-    #         for p, i in enumerate(idx):
-    #             self.qc.ry(pi - theta[p], self.qr[i])
-    #     else:
-    #         self.qc.ry(pi - theta, self.qr[idx])
     def input(self, idx, theta):
         if isinstance(idx, list):
             for p, i in enumerate(idx):
@@ -62,13 +61,10 @@ class qiskitBuilder(__qiskitGeneralBuilder__):
 
         return self
 
-    # def allinY(self, theta):
-    #     for i, qb in enumerate(self.qr):
-    #         self.qc.ry(pi - theta[i], qb)
-    def allin(self, x):
+    def allin(self, theta):
         self.qc.rx(pi/2, self.qr)
         for i, qb in enumerate(self.qr):
-            self.qc.rz(x[i], qb)
+            self.qc.rz(theta[i], qb)
         self.qc.rx(pi/2, self.qr)
 
         return self
@@ -80,6 +76,11 @@ class qiskitBuilder(__qiskitGeneralBuilder__):
 
 class ibmqNativeBuilder(__qiskitGeneralBuilder__):
     """Qiskit-circuits builder using IBMQ native gates (u1, u2, and cz).
+
+    Parameters
+    ----------
+    nbqbits : int
+        Number of qubits.
     """
     def __init__(self, nbqbits, *args, **kwargs):
         super().__init__(nbqbits)
@@ -117,5 +118,96 @@ class ibmqNativeBuilder(__qiskitGeneralBuilder__):
 
     def cz(self, a, b):
         self.qc.cz(self.qr[a], self.qr[b])
+
+        return self
+
+class qkParallelBuilder(__qiskitGeneralBuilder__):
+    """Qiskit-circuits builder for running parallel on same QPU.
+    Uses rx, rz and cz gates.
+
+    Parameters
+    ----------
+    nbqbits : int
+        Number of qubits.
+    total_qbits : int, optional
+        Number if qubits in the QPU, by default None. If None, this is equivalent to :class:`qkBuilder`
+    """
+    def __init__(self, nbqbits, total_qbits=None, *args, **kwargs):
+        super().__init__(total_qbits if total_qbits else nbqbits)
+        self.c_nbq = nbqbits
+        self.start_2 = total_qbits - nbqbits if total_qbits else None
+    
+    def alldiam(self, idx=None):
+        if idx is None:
+            self.qc.rx(pi/2, self.qr[:self.c_nbq])
+            if self.start_2:
+                self.qc.rx(pi/2, self.qr[self.start_2:])
+        else:
+            for i in idx:
+                self.qc.rx(pi/2, self.qr[i])
+                if self.start_2:
+                    self.qc.rx(pi/2, self.qr[self.start_2 + i])
+
+        return self
+
+    def input(self, idx, theta):
+        if isinstance(idx, list):
+            if len(theta.shape) > 1:
+                t1, t2 = theta.T
+            else:
+                t1, t2 = theta, theta
+            for p, i in enumerate(idx):
+                self.qc.rx(pi/2, self.qr[i])
+                self.qc.rz(t1[p], self.qr[i])
+                self.qc.rx(pi/2, self.qr[i])
+
+                if self.start_2:
+                    self.qc.rx(pi/2, self.qr[self.start_2 + i])
+                    self.qc.rz(t2[p], self.qr[self.start_2 + i])
+                    self.qc.rx(pi/2, self.qr[self.start_2 + i])
+        else:
+            try:
+                t1, t2 = theta
+            except:
+                t1, t2 = theta, theta
+            self.qc.rx(pi/2, self.qr[idx])
+            self.qc.rz(t1, self.qr[idx])
+            self.qc.rx(pi/2, self.qr[idx])
+
+            if self.start_2:
+                self.qc.rx(pi/2, self.qr[self.start_2 + idx])
+                self.qc.rz(t2, self.qr[self.start_2 + idx])
+                self.qc.rx(pi/2, self.qr[self.start_2 + idx])
+
+        return self
+
+    def allin(self, theta):
+        if len(theta.shape) > 1:
+            t1, t2 = theta.T
+        else:
+            t1, t2 = theta, theta
+
+        qr1 = self.qr[:self.c_nbq]
+        self.qc.rx(pi/2, qr1)
+        for i, qb in enumerate(qr1):
+            self.qc.rz(t1[i], qb)
+        self.qc.rx(pi/2, qr1)
+
+        if self.start_2:
+            qr2 = self.qr[self.start_2:]
+            self.qc.rx(pi/2, qr2)
+            for i, qb in enumerate(qr2):
+                self.qc.rz(t2[i], qb)
+            self.qc.rx(pi/2, qr2)
+
+        return self
+
+    def cz(self, a, b):
+        self.qc.cz(self.qr[a], self.qr[b])
+
+        if self.start_2:
+            self.qc.cz(
+                self.qr[self.start_2 + a], self.qr[self.start_2 + b]
+            )
 
         return self
