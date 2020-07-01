@@ -69,6 +69,17 @@ class Classifier():
         Name to identify this classifier.
     save_path : str, optional
         Where to save intermediate training results, by deafult None. If None, intermediate results are not saved.
+
+    Attributes
+    ----------
+    bitstr : list[int]
+        Bitstrings (as int) on which to read the classes
+    nbshots : int
+        Number of shots to run circuit
+    job_size : int
+        Number of circuits to run in each backend job
+    nfev : int
+        Number if times the circuit has been run
     """
     def __init__(self, circuit, bitstr, **kwargs):
         super().__init__()

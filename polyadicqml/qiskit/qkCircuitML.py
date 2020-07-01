@@ -42,6 +42,13 @@ class qkCircuitML(circuitML):
     save_path : str, optional
         Where to save the jobs outputs, by default ``None``. Jobs are saved only if a path is specified
 
+    Attributes
+    ----------
+    nbqbits : int
+        Number of qubits.
+    nbparams : int
+        Number of parameters.
+
     Raises
     ------
     ValueError
@@ -174,14 +181,14 @@ class qkCircuitML(circuitML):
         if len(X.shape) < 2:
             return [post(
                 self.make_circuit(
-                    self.circuitBuilder(self.nbqbits), X, params
+                    self.__circuitBuilder(self.nbqbits), X, params
                 )
             )]
         else:
             return [
                 post(
                     self.make_circuit(
-                        self.circuitBuilder(self.nbqbits), x, params
+                        self.__circuitBuilder(self.nbqbits), x, params
                     )
                 )
                 for x in X]

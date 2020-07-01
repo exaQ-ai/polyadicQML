@@ -22,6 +22,13 @@ class mqCircuitML(circuitML):
     cbuilder : circuitBuilder, optional
         Circuit builder, by default mqBuilder
 
+    Attributes
+    ----------
+    nbqbits : int
+        Number of qubits.
+    nbparams : int
+        Number of parameters.
+
     Raises
     ------
     ValueError
@@ -50,7 +57,7 @@ class mqCircuitML(circuitML):
             _params =  np.hstack(batch_size* (params.reshape(-1,1),))
 
         bdr = self.make_circuit(
-            self.circuitBuilder(
+            self.__circuitBuilder(
                 self.nbqbits, batch_size=batch_size, gpu=self.__gpu
             ),
             _X, _params

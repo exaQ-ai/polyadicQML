@@ -16,6 +16,13 @@ class circuitML():
         Number of parameters.
     cbuilder : circuitBuilder
         Circuit builder class to be used. It must correspond to the subclass implementation.
+
+    Attributes
+    ----------
+    nbqbits : int
+        Number of qubits.
+    nbparams : int
+        Number of parameters.
     """
     def __init__(self, make_circuit, nbqbits, nbparams, cbuilder):
         self.nbqbits = nbqbits
@@ -26,7 +33,7 @@ class circuitML():
     
     def __set_builder__(self, cbuilder):
         self.__verify_builder__(cbuilder)
-        self.circuitBuilder = cbuilder
+        self.__circuitBuilder = cbuilder
 
     def __verify_builder__(self, cbuilder):
         raise NotImplementedError

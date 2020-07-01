@@ -18,7 +18,7 @@ class qkParallelML(qkCircuitML):
     backend : Union[Backends, list, qiskit.providers.BaseBackend]
         Backend on which to run the circuits
     total_qbits : int
-        Number of toatal qubits of the QPU.
+        Number of toatal qubits in the QPU.
     cbuilder : circuitBuilder, optional
         Circuit builder, by default :class:`qkParallelBuilder`
     noise_model : Union[list, qiskit.providers.aer.noise.NoiseModel], optional
@@ -27,6 +27,15 @@ class qkParallelML(qkCircuitML):
         IBMQ backend from which the noise model should be generated, by default ``None``.
     save_path : str, optional
         Where to save the jobs outputs, by default ``None``. Jobs are saved only if a path is specified
+
+    Attributes
+    ----------
+    nbqbits : int
+        Number of qubits.
+    total_qbits : int
+        Number of tatal qubits in the QPU
+    nbparams : int
+        Number of parameters.
 
     Raises
     ------
@@ -53,7 +62,7 @@ class qkParallelML(qkCircuitML):
         return [
             post(
                 self.make_circuit(
-                    self.circuitBuilder(self.nbqbits, self.total_qbits if i+2 < self._len_out else None),
+                    self.__circuitBuilder(self.nbqbits, self.total_qbits if i+2 < self._len_out else None),
                     X[i:i+2].T, params
                 )
             )
