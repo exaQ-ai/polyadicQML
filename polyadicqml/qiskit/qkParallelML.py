@@ -17,7 +17,7 @@ class qkParallelML(qkCircuitML):
         Number of parameters.
     backend : Union[Backends, list, qiskit.providers.BaseBackend]
         Backend on which to run the circuits
-    total_qbits : int
+    tot_nbqbits : int
         Number of toatal qubits in the QPU.
     cbuilder : circuitBuilder, optional
         Circuit builder, by default :class:`qkParallelBuilder`
@@ -32,7 +32,7 @@ class qkParallelML(qkCircuitML):
     ----------
     nbqbits : int
         Number of qubits.
-    total_qbits : int
+    tot_nbqbits : int
         Number of tatal qubits in the QPU
     nbparams : int
         Number of parameters.
@@ -43,14 +43,14 @@ class qkParallelML(qkCircuitML):
         If both `noise_model` and `noise_backend` are provided.
     """
     def __init__(self, make_circuit, nbqbits, nbparams, backend,
-        total_qbits, cbuilder=qkParallelBuilder,
+        tot_nbqbits, cbuilder=qkParallelBuilder,
         noise_model=None, noise_backend=None,
         save_path=None):
         super().__init__(make_circuit, nbqbits, nbparams, backend, cbuilder=cbuilder,
                          noise_model=noise_model, noise_backend=noise_backend,
                          save_path=save_path)
 
-        self.total_qbits = total_qbits
+        self.tot_nbqbits = tot_nbqbits
         self._len_out = 0
     
     def make_circuit_list(self, X, params, nbshots=None):
@@ -62,7 +62,7 @@ class qkParallelML(qkCircuitML):
         return [
             post(
                 self.make_circuit(
-                    self._circuitBuilder(self.nbqbits, self.total_qbits if i+2 < self._len_out else None),
+                    self._circuitBuilder(self.nbqbits, self.tot_nbqbits if i+2 < self._len_out else None),
                     X[i:i+2].T, params
                 )
             )
@@ -77,7 +77,7 @@ class qkParallelML(qkCircuitML):
         if not nbshots:
             raise NotImplementedError
         else:
-            out = np.zeros((2*len(qc_list), 2**self.total_qbits))
+            out = np.zeros((2*len(qc_list), 2**self.tot_nbqbits))
             for n, qc in enumerate(qc_list):
                 for key, count in results.get_counts(qc).items():
                     # print(f"{key} : {count}")

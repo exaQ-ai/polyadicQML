@@ -129,13 +129,13 @@ class qkParallelBuilder(__qiskitGeneralBuilder__):
     ----------
     nbqbits : int
         Number of qubits.
-    total_qbits : int, optional
+    tot_nbqbits : int, optional
         Number if qubits in the QPU, by default None. If None, this is equivalent to :class:`qkBuilder`
     """
-    def __init__(self, nbqbits, total_qbits=None, *args, **kwargs):
-        super().__init__(total_qbits if total_qbits else nbqbits)
+    def __init__(self, nbqbits, tot_nbqbits=None, *args, **kwargs):
+        super().__init__(tot_nbqbits if tot_nbqbits else nbqbits)
         self.c_nbq = nbqbits
-        self.start_2 = total_qbits - nbqbits if total_qbits else None
+        self.start_2 = tot_nbqbits - nbqbits if tot_nbqbits else None
     
     def alldiam(self, idx=None):
         if idx is None:
