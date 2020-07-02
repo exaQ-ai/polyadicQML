@@ -18,7 +18,7 @@ class qkParallelML(qkCircuitML):
     backend : Union[Backends, list, qiskit.providers.BaseBackend]
         Backend on which to run the circuits
     tot_nbqbits : int
-        Number of toatal qubits in the QPU.
+        Number of total qubits in the QPU. Has to be at least twice `nbqbits`.
     cbuilder : circuitBuilder, optional
         Circuit builder, by default :class:`qkParallelBuilder`
     noise_model : Union[list, qiskit.providers.aer.noise.NoiseModel], optional
@@ -41,6 +41,7 @@ class qkParallelML(qkCircuitML):
     ------
     ValueError
         If both `noise_model` and `noise_backend` are provided.
+        If QPU size cannot contain two circuits.
     """
     def __init__(self, make_circuit, nbqbits, nbparams, backend,
         tot_nbqbits, cbuilder=qkParallelBuilder,
@@ -50,6 +51,10 @@ class qkParallelML(qkCircuitML):
                          noise_model=noise_model, noise_backend=noise_backend,
                          save_path=save_path)
 
+        if tot_nbqbits < 2 * nbqbits:
+            raise ValueError(f"QPU too small to run two circuits (tot_nbqbits {tot_nbqbits} < 2 * {nbqbits})")
+
+        if self.job_limit: self.job_limit *= 2
         self.tot_nbqbits = tot_nbqbits
         self._len_out = 0
     
@@ -90,3 +95,9 @@ class qkParallelML(qkCircuitML):
 
         if self.save_path: self.save_job(job)
         return out[:self._len_out]
+
+    def run(self, X, params, nbshots=None, job_size=None):
+        return super().run(
+            X, params, nbshots=nbshots,
+            job_size= 2 * job_size if job_size else job_size
+        )

@@ -182,7 +182,7 @@ class qkParallelBuilder(__qiskitGeneralBuilder__):
         return self
 
     def allin(self, theta):
-        if len(theta.shape) > 1:
+        if len(theta.shape) > 1 and theta.shape[1] > 1:
             t1, t2 = theta.T
         else:
             t1, t2 = theta, theta

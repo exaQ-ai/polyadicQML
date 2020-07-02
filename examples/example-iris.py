@@ -53,7 +53,7 @@ model = Classifier(qc, bitstr).fit(input_train, target_train, method="BFGS")
 ##############################
 # We test it using qiskit
 
-backend = Backends("ibmq_ourense")
+backend = Backends("ibmq_ourense", hub="ibm-q")
 
 qc = qkCircuitML(
     make_circuit=irisCircuit,
