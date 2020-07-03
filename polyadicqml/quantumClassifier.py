@@ -64,7 +64,7 @@ class Classifier():
     job_size : int, optional
         Number of runs for each circuit job, by default the number of observations.
     budget : int, optional
-        Maximum number of optimization steps, by default 200
+        Maximum number of optimization steps, by default 100
     name : srt, optional
         Name to identify this classifier.
     save_path : str, optional
@@ -91,7 +91,7 @@ class Classifier():
         nbshots_incr_delay = kwargs.get('nbshots_incr_delay')
         loss = kwargs.get('loss', CE_loss)
         job_size = kwargs.get('job_size')
-        budget = kwargs.get('budget', 200)
+        budget = kwargs.get('budget', 100)
         name = kwargs.get('name')
         save_path = kwargs.get('save_path')
 
@@ -331,7 +331,7 @@ class Classifier():
         output : bool, optional
             Wheter to store the current output and parameters , by default False
         """
-        if loss:
+        if loss or output:
             self.__loss_progress__.append(self.__last_loss_value__)
         if output:
             self.__output_progress__.append(self.__last_output__.tolist())
