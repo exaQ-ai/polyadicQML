@@ -5,7 +5,11 @@ from ..circuitML import circuitML
 import numpy as np
 
 # TODO: verify import
-from cupy import asnumpy, asarray, hstack
+__gpu_available__ = True
+try:
+    from cupy import asnumpy, asarray, hstack
+except ModuleNotFoundError:
+    __gpu_available__ = False
 
 from .mqBuilder import mqBuilder
 
@@ -38,6 +42,7 @@ class mqCircuitML(circuitML):
     """
     def __init__(self, make_circuit, nbqbits, nbparams, gpu=False, cbuilder=mqBuilder):
         super().__init__(make_circuit, nbqbits, nbparams, cbuilder)
+        if gpu and not __gpu_available__: raise ModuleNotFoundError("No module named 'cupy', install for gpu support.")
         self.__gpu = gpu
 
     def __verify_builder__(self, cbuilder):
@@ -79,6 +84,7 @@ class mqCircuitML(circuitML):
     def gpu(self):
         """Switch to cupy.
         """
+        if not __gpu_available__: raise ModuleNotFoundError("No module named 'cupy', install for gpu support.")
         self.__gpu = True
 
     def cpu(self):
