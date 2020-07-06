@@ -22,7 +22,7 @@ def CE_loss(y_true, y_pred, labels=None):
     y_true : vector
         Ground truth (correct) labels for n_samples samples
     y_pred : vector
-        Predicted probabilities, as returned by a classifier’s `predict_proba` method.
+        Predicted probabilities, as returned by a classifier’s ``predict_proba`` method.
     labels : vector, optional
         If not provided, labels will be inferred from `y_true`.
 
@@ -39,6 +39,28 @@ def CE_loss(y_true, y_pred, labels=None):
     # _y = np.hstack((y_pred, (1 - y_pred.sum(axis=1)).reshape(-1,1)))
 
     return log_loss(y_true, softmax(y_pred, axis=1), labels=labels)
+
+def CE_grad(y_true, y_pred):
+    """Cross entropy loss gradient, w.r.t. y_pred columns.
+
+    Parameters
+    ----------
+    y_true : vector
+        Ground truth (correct) labels for n_samples samples
+    y_pred : vector
+        Predicted probabilities, as returned by a classifier’s ``predict_proba`` method.
+
+    Returns
+    -------
+    float
+        Loss value.
+    """
+
+    n = len(y_pred)
+
+    sigma = softmax(y_pred, axis=1)
+    sigma[range(n), y_true] -= 1
+    return sigma.sum(axis=0) / n
 
 class Classifier():
     """Class for quantum classifiers. Defines the API using the scikit-learn format.
