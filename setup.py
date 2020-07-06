@@ -25,7 +25,7 @@ setuptools.setup(
         'scipy',
         'sklearn',
         'qiskit',
-        'manyq @ git+https://gitlab.com/entropica/manyq#egg=manyq'
+        'manyq @ git+https://gitlab.com/entropica/manyq#egg=manyq',
         'tqdm'
     ],
     # dependency_links=['http://github.com/user/repo/tarball/master#egg=package-1.0'],
