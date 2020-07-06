@@ -36,9 +36,9 @@ The label of each sample is given by the center of its distribution.
 
     # Create a matrix of vertices of the centered square
     X = np.asarray(n_pc * [[1.5, 0.]] +
-                n_pc * [[-1.5, 0.]] + 
-                n_pc * [[0., -1.5]] + 
-                n_pc * [[0., 1.5]]
+                   n_pc * [[-1.5, 0.]] + 
+                   n_pc * [[0., -1.5]] + 
+                   n_pc * [[0., 1.5]]
     )
     # Add gaussian noise
     X += .5 * np.random.randn(*X.shape)
