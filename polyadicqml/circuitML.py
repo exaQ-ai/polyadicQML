@@ -105,7 +105,7 @@ class circuitML():
         return self.__repr__()
     
     def grad(self, X, params, v=None, nbshots=None, job_size=None):
-        """Compute the gratind circuit w.r.t. parameters *params* on input *X*.
+        """Compute the gradient of the circuit w.r.t. parameters *params* on input *X*.
 
         Uses finite differences of the circuit runs.
         
