@@ -1,6 +1,6 @@
 """Implementation of circuit for ML
 """
-from numpy import pi, random
+from numpy import pi, random, zeros_like, zeros, log10
 
 class circuitML():
     """Abstract Quantum ML circuit interface.
@@ -104,3 +104,42 @@ class circuitML():
     def __str__(self):
         return self.__repr__()
     
+    def grad(self, X, params, v=None, nbshots=None, job_size=None):
+        """Compute the gratind circuit w.r.t. parameters *params* on input *X*.
+
+        Uses finite differences of the circuit runs.
+        
+        Parameters
+        ----------
+        X : array-like
+            Input matrix of shape *(nb_samples, nb_features)*.
+        params : vector-like
+            Parameter vector of length *nb_params*.
+        v : array-like
+            Vector or matrix to right multiply the Jacobian with.
+        nbshots : int, optional
+            Number of shots for the circuit run, by default ``None``. If ``None``, uses the backend default.
+        job_size : int, optional
+            Maximum job size, to split the circuit runs, by default ``None``. If ``None``, put all *nb_samples* in the same job. 
+
+        Returns
+        -------
+        array
+            Jacobian matix as an array of shape *(nb_params, 2**nbqbits)* if v is None,
+            else Jacobian-vector product: ``J(circuit) @ v``
+        """
+        dim_out = 2**self.nbqbits if v is None else v.shape[0] if len(v.shape) > 1 else 1
+
+        eps = 1e-8 if nbshots is None else pi/(2**log10(nbshots))
+        num = eps if nbshots is None else eps * nbshots
+
+        out = zeros((self.nbparams, dim_out))
+        run_out = self.run(X, params, nbshots, job_size) / num
+        for i in range(len(params)):
+            d = zeros_like(params)
+            d[i] = eps
+            pd = self.run(X, params + d, nbshots, job_size) / num  - run_out
+
+            out[i] = pd if v is None else pd @ v
+
+        return out
