@@ -2,15 +2,13 @@
 """
 import numpy as np
 
-from scipy.optimize import minimize
-from sklearn.metrics import log_loss, accuracy_score
-
 import pickle
 import json
 from tqdm.auto import tqdm
 
 import datetime
 
+from scipy.optimize import minimize
 from sklearn.metrics import log_loss
 from scipy.special import softmax
 
