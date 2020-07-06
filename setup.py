@@ -1,6 +1,6 @@
 import setuptools
 
-with open("README.md", "r") as fh:
+with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
@@ -10,7 +10,7 @@ setuptools.setup(
     author_email="cappelletti.william@gmail.com",
     description="Poliadic Quantum Machine Learning",
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/x-rst",
     url="https://gitlab.com/entropica/polyadic-quantum-ml",
     packages=setuptools.find_packages(
         exclude=('examples')
@@ -25,8 +25,9 @@ setuptools.setup(
         'scipy',
         'sklearn',
         'qiskit',
-        'manyq',
+        'manyq @ git+https://gitlab.com/entropica/manyq#egg=manyq'
         'tqdm'
     ],
+    # dependency_links=['http://github.com/user/repo/tarball/master#egg=package-1.0'],
     python_requires='>=3.6',
 )
