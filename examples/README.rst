@@ -84,11 +84,9 @@ This function has to respect a precise signature: |make_c| (``bdr``,
 
         bdr.allin(x[[0,1]])
 
-        bdr.cz(0, 1)
-        bdr.allin(params[[0,1]])
+        bdr.cz(0, 1).allin(params[[0,1]])
 
-        bdr.cz(0, 1)
-        bdr.allin(params[[2,3]])
+        bdr.cz(0, 1).allin(params[[2,3]])
 
         return bdr
 
@@ -210,32 +208,28 @@ Circuit definition
 ------------------
 
 Now, we define a circuit on two qubits, again using the |make_c| syntax.
+Thanks to the functional nature, we can use other fuctions to group
+repeated instructions.
 
 .. code-block:: python
 
+    def block(bdr, x, p):
+        bdr.allin(x[[0,1]])
+        bdr.cz(0,1).allin(p[[0,1]])
+
+        bdr.cz(0,1).allin(x[[2,3]])
+        bdr.cz(0,1).allin(p[[2,3]])
+
     def irisCircuit(bdr, x, params):
-        bdr.allin(x[[0,1]])
-        bdr.cz(0, 1)
+        # The fist block uses all `x`, but
+        # only the first 4 elements of `params`
+        block(bdr, x, params[:4])
 
-        bdr.allin(params[[0,1]])
-        bdr.cz(0, 1)
-
-        bdr.allin(x[[2,3]])
-        bdr.cz(0, 1)
-
-        bdr.allin(params[[2,3]])
-        bdr.cz(0, 1)
-
-        bdr.allin(x[[0,1]])
-        bdr.cz(0, 1)
-
-        bdr.allin(params[[4,5]])
-        bdr.cz(0, 1)
-
-        bdr.allin(x[[2,3]])
-        bdr.cz(0, 1)
-
-        bdr.allin(params[[6,7]])
+        # Add one entanglement not to have two adjacent input
+        bdr.cz(0,1)
+        
+        # The block repeats with the other parameters
+        block(bdr, x, params[4:])
 
         return bdr
 
@@ -303,7 +297,7 @@ simulator; the job size is inferred if left empty, but we chose to set it at 40.
     from polyadicqml.qiskit.utility import Backends
     from polyadicqml.qiskit import qkCircuitML
 
-    backend = Backends("ibmq_burlington")
+    backend = Backends("ibmq_burlington", hub="ibm-q")
 
     qc = qkCircuitML(backend=backend,
                     make_circuit=irisCircuit,
