@@ -3,6 +3,8 @@
 from ..circuitML import circuitML
 
 import numpy as np
+
+# TODO: verify import
 from cupy import asnumpy, asarray, hstack
 
 from .mqBuilder import mqBuilder
