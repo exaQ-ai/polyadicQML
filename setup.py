@@ -28,6 +28,5 @@ setuptools.setup(
         'manyq @ git+https://gitlab.com/entropica/manyq#egg=manyq',
         'tqdm'
     ],
-    # dependency_links=['http://github.com/user/repo/tarball/master#egg=package-1.0'],
     python_requires='>=3.6',
 )
