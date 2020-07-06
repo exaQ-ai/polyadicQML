@@ -28,7 +28,7 @@ We use numpy to generate a dataset of 200 points by sampling 50 points
 from 4 gaussian distibutions centered at the said points.
 The label of each sample is given by the center of its distribution.
 
-::
+.. code-block:: python
 
     import numpy as np
 
@@ -51,7 +51,7 @@ samples and the squares the distribution centers.
 
 .. image:: ../figures/XOR-points.png
    :alt: XOR scatterplot
-   :scale: 30 %
+   :scale: 80 %
    :align: center
 
 Circuit definition
@@ -61,7 +61,8 @@ Now, we define the circuit structure using a `circuitBulder`.
 This function has to respect a precise signature: |make_c| (``bdr``,
 ``x``, ``params``). 
 
-::
+.. code-block:: python
+
 
     def make_circuit(bdr, x, params):
         """Generate the circuit corresponding to input `x` and `params`.
@@ -97,7 +98,8 @@ Model training
 Finally, we can create and train the classifier. 
 We instanciate the |circuitML| subclass that we prefer, in this case the one using the fast *manyq* simualtor, specifying the number of qubits and of parameters.
 
-::
+.. code-block:: python
+
 
     from polyadicqml.manyq import mqCircuitML
 
@@ -110,7 +112,8 @@ We instanciate the |circuitML| subclass that we prefer, in this case the one usi
 Then, we create and train the quantum classifer, specifying on which
 bitstrings we want to read the predicted classes.
 
-::
+.. code-block:: python
+
 
     from polyadicqml import Classifier
 
@@ -124,20 +127,26 @@ Predict on new data
 
 We can use a model to predict on some new datapoints ``X_test`` that it
 never saw before.
-To obtain the bitstring probabilities, we can just call the model::
+To obtain the bitstring probabilities, we can just call the model:
+
+.. code-block:: python
 
     pred_prob = model.predict_proba(X_test)
 
 Then, we can retrieve the label of each point as the argmax of the
 corresponding probabilities.
-Otherwise, we can combine the two operation by using the shorthand::
+Otherwise, we can combine the two operation by using the shorthand:
+
+.. code-block:: python
 
     y_pred = model(X_test)
 
 For instance, going back to our XOR problem, we can predict the label of
 each point on a grid that covers :math:`(-\pi,\pi)\times(-\pi,\pi)`, to
 assess the model accuracy.
-Using some list comprhension, it would look like this::
+Using some list comprhension, it would look like this:
+
+.. code-block:: python
 
     t = np.linspace(-np.pi,np.pi, num = 50)
     X_test = np.array([[t1, t2] for t1 in t for t2 in t])
@@ -168,7 +177,7 @@ Data preparation
 We load the dataset from scikit-learn_ and we split it in a train and a
 test set, representing respectively 60% and 40% of the samples.
 
-::
+.. code-block:: python
 
     from sklearn import datasets
     from sklearn.model_selection import train_test_split
@@ -186,7 +195,7 @@ feature values fall between :math:`(-0.95\pi,0.95\pi)`. (Actually, with
 our scaling, last interval should cover 99% of a gaussian with the same
 mean and std; it covers all points on almost all splits.)
 
-::
+.. code-block:: python
 
     import numpy as np
 
@@ -202,7 +211,7 @@ Circuit definition
 
 Now, we define a circuit on two qubits, again using the |make_c| syntax.
 
-::
+.. code-block:: python
 
     def irisCircuit(bdr, x, params):
         bdr.allin(x[[0,1]])
@@ -242,7 +251,7 @@ Model training
 
 As in the previous example, we need a |circuitML| and a classifier, which we train with the corresponding dataset.
 
-::
+.. code-block:: python
 
     from polyadicqml.manyq import mqCircuitML
     from polyadicqml import Classifier
@@ -259,7 +268,7 @@ As in the previous example, we need a |circuitML| and a classifier, which we tra
 
 We can print the training scores.
 
-::
+.. code-block:: python
 
     >>> pred_train = model(input_train)
     >>> print("Confusion matrix on train :",
@@ -289,7 +298,7 @@ implements |circuitML| for qiksit use.
 **NOTE** that we must provide a number of shots, as the backend is not a
 simulator; the job size is inferred if left empty, but we chose to set it at 40.
 
-::
+.. code-block:: python
 
     from polyadicqml.qiskit.utility import Backends
     from polyadicqml.qiskit import qkCircuitML
@@ -306,7 +315,9 @@ simulator; the job size is inferred if left empty, but we chose to set it at 40.
 
     pred_test = model(input_test)
 
-Finally, we can print the test scores::
+Finally, we can print the test scores:
+
+.. code-block:: python
 
     >>> print("Confusion matrix on test :",
     >>>     confusion_matrix(target_test, pred_test),
