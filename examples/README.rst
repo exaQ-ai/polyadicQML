@@ -17,15 +17,19 @@ Example 1 : The XOR problem
 ===========================
 
 Our first example is the XOR problem.
-We dispose four points over the cartesian axes so to create a centered square; the two points on *x*-axis are labeled as 1, while those on *y*-axis as 0.
+We dispose four points over the cartesian axes so to create a centered
+square; the two points on *x*-axis are labeled as 1, while those on
+*y*-axis as 0.
 
 Dataset generation
 ------------------
 
-We use numpy to generate a dataset of 200 points by sampling 50 points from 4 gaussian distibutions centered at the said points.
+We use numpy to generate a dataset of 200 points by sampling 50 points
+from 4 gaussian distibutions centered at the said points.
 The label of each sample is given by the center of its distribution.
 
 ::
+
     import numpy as np
 
     n_pc = 50 # Number of points per cluster
@@ -42,9 +46,10 @@ The label of each sample is given by the center of its distribution.
     # Create target vecor
     y = np.concatenate((np.zeros(2*n_pc), np.ones(2*n_pc)))
 
-This generates the following dataset, where the circles represent the samples and the squares the distribution centers.
+This generates the following dataset, where the circles represent the
+samples and the squares the distribution centers.
 
-.. image:: ../figures/XOR-points.png "XOR scatterplot"
+.. image:: ../figures/XOR-points.png
    :alt: XOR scatterplot
    :scale: 30 %
    :align: center
@@ -53,9 +58,11 @@ Circuit definition
 ------------------
 
 Now, we define the circuit structure using a `circuitBulder`.
-This function has to respect a precise signature: |make_c|(``bdr``, ``x``, ``params``). 
+This function has to respect a precise signature: |make_c| (``bdr``,
+``x``, ``params``). 
 
 ::
+
     def make_circuit(bdr, x, params):
         """Generate the circuit corresponding to input `x` and `params`.
 
@@ -91,6 +98,7 @@ Finally, we can create and train the classifier.
 We instanciate the |circuitML| subclass that we prefer, in this case the one using the fast *manyq* simualtor, specifying the number of qubits and of parameters.
 
 ::
+
     from polyadicqml.manyq import mqCircuitML
 
     nbqbits = 2
@@ -99,9 +107,11 @@ We instanciate the |circuitML| subclass that we prefer, in this case the one usi
     qc = mqCircuitML(make_circuit=make_circuit,
                     nbqbits=nbqbits, nbparams=nbparams)
 
-Then, we create and train the quantum classifer, specifying on which bitstrings we want to read the predicted classes.
+Then, we create and train the quantum classifer, specifying on which
+bitstrings we want to read the predicted classes.
 
 ::
+
     from polyadicqml import Classifier
 
     bitstr = ['00', '01']
@@ -112,17 +122,21 @@ Then, we create and train the quantum classifer, specifying on which bitstrings 
 Predict on new data
 -------------------
 
-We can use a model to predict on some new datapoints ``X_test`` that it never saw before.
+We can use a model to predict on some new datapoints ``X_test`` that it
+never saw before.
 To obtain the bitstring probabilities, we can just call the model::
 
     pred_prob = model.predict_proba(X_test)
 
-Then, we can retrieve the label of each point as the argmax of the corresponding probabilities.
+Then, we can retrieve the label of each point as the argmax of the
+corresponding probabilities.
 Otherwise, we can combine the two operation by using the shorthand::
 
     y_pred = model(X_test)
 
-For instance, going back to our XOR problem, we can predict the label of each point on a grid that covers :math:`(-\pi,\pi)\times(-\pi,\pi)`, to assess the model accuracy.
+For instance, going back to our XOR problem, we can predict the label of
+each point on a grid that covers :math:`(-\pi,\pi)\times(-\pi,\pi)`, to
+assess the model accuracy.
 Using some list comprhension, it would look like this::
 
     t = np.linspace(-np.pi,np.pi, num = 50)
@@ -130,25 +144,32 @@ Using some list comprhension, it would look like this::
 
     y_pred = model(X_test)
 
-We can now plot the predictions and see that the model is very close to the bayesian prediction (whose decision boundaries are shown as grey lines), which is the best possible.
+We can now plot the predictions and see that the model is very close to
+the bayesian prediction (whose decision boundaries are shown as grey
+lines), which is the best possible.
 
-.. image:: ../figures/XOR-predictions.png "XOR predictions"
+.. image:: ../figures/XOR-predictions.png
    :alt: XOR predictions
-   :scale: 30 %
+   :scale: 80 %
    :align: center
 
 Example 2: The Iris Flower dataset
 ==================================
 
-For the second example, we perform teranry classification on the Iris Flower dataset.
-In this case, we will train the model using a simulator and then test it on a real quantum computer, using IBMQ access.
+For the second example, we perform ternary classification on the Iris Flower dataset.
+In this case, we will train the model using a simulator and then test it
+on a real quantum computer, using IBMQ access.
 
 Data preparation
 ----------------
 
-We load the dataset from scikit-learn and we split it in a train and a test set, representing respectively 60% and 40% of the samples.
+.. _scikit-learn: https://scikit-learn.org/
+
+We load the dataset from scikit-learn_ and we split it in a train and a
+test set, representing respectively 60% and 40% of the samples.
 
 ::
+
     from sklearn import datasets
     from sklearn.model_selection import train_test_split
 
@@ -160,9 +181,13 @@ We load the dataset from scikit-learn and we split it in a train and a test set,
     input_train, input_test, target_train, target_test =\
         train_test_split(data, target, test_size=.4, train_size=.6, stratify=target)
 
-Then, we center it and rescale it so that it has zero mean and all the feature values fall between :math:`(-0.95\pi,0.95\pi)`. (Actually, with our scaling, last interval should cover 99% of a gaussian with the same mean and std; it covers all points on almost all splits.)
+Then, we center it and rescale it so that it has zero mean and all the
+feature values fall between :math:`(-0.95\pi,0.95\pi)`. (Actually, with
+our scaling, last interval should cover 99% of a gaussian with the same
+mean and std; it covers all points on almost all splits.)
 
 ::
+
     import numpy as np
 
     # NORMALIZATION
@@ -178,6 +203,7 @@ Circuit definition
 Now, we define a circuit on two qubits, again using the |make_c| syntax.
 
 ::
+
     def irisCircuit(bdr, x, params):
         bdr.allin(x[[0,1]])
         bdr.cz(0, 1)
@@ -208,7 +234,7 @@ Which corresponds to the following circuit:
 
 .. image:: ../figures/iris-circuit.png
    :alt: Iris circuit
-   :scale: 30 %
+   :scale: 40 %
    :align: center
 
 Model training
@@ -217,6 +243,7 @@ Model training
 As in the previous example, we need a |circuitML| and a classifier, which we train with the corresponding dataset.
 
 ::
+
     from polyadicqml.manyq import mqCircuitML
     from polyadicqml import Classifier
 
@@ -233,6 +260,7 @@ As in the previous example, we need a |circuitML| and a classifier, which we tra
 We can print the training scores.
 
 ::
+
     >>> pred_train = model(input_train)
     >>> print("Confusion matrix on train :",
     >>>     confusion_matrix(target_train, pred_train),
@@ -251,13 +279,18 @@ Model Testing
 .. _`IBMQ account`: https://qiskit.org/ibmqaccount/
 
 Once the model is trained, we can test it.
-Furthermore, we can keep the trained parameters and change the circuit backend, as long as the |make_c| function is the same.
-So, if we have an `IBMQ account`_ configured and access to a quantum backend (in this case *ibmq-burlington*), we can run the test on an actual hardware.
+Furthermore, we can keep the trained parameters and change the circuit
+backend, as long as the |make_c| function is the same.
+So, if we have an `IBMQ account`_ configured and access to a quantum
+backend (in this case *ibmq-burlington*), we can run the test on an actual hardware.
 
-We use the |back| utility class, along with the |qkCircuitML|, which implements |circuitML| for qiksit use.
-**NOTE** that we must provide a number of shots, as the backend is not a simulator; the job size is inferred if left empty, but we chose to set it at 40.
+We use the |back| utility class, along with the |qkCircuitML|, which
+implements |circuitML| for qiksit use.
+**NOTE** that we must provide a number of shots, as the backend is not a
+simulator; the job size is inferred if left empty, but we chose to set it at 40.
 
 ::
+
     from polyadicqml.qiskit.utility import Backends
     from polyadicqml.qiskit import qkCircuitML
 
@@ -289,8 +322,11 @@ Finally, we can print the test scores::
 Source code
 ===========
 
-The git page contains the source code that produced the results and the figures in this examples.
-Note that the second experiment being run on a physical quantum computer, the test output is random, so it could slightly differ form the presented one - run on IBMq-burlington the 23rd June 2020. 
+The git page contains the source code that produced the results and the
+figures in this examples.
+Note that the second experiment being run on a physical quantum computer,
+the test output is random, so it could slightly differ form the presented
+one -- run on IBMq-burlington the 23rd June 2020. 
 
 From the root directory, the examples can be run by command line as:
 
