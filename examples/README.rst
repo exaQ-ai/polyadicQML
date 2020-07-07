@@ -331,7 +331,7 @@ The git page contains the source code that produced the results and the
 figures in this examples.
 Note that the second experiment being run on a physical quantum computer,
 the test output is random, so it could slightly differ form the presented
-one -- run on IBMq-burlington the 23rd June 2020. 
+one -- run on ibmq_burlington the 23rd June 2020. 
 
 From the root directory, the examples can be run by command line as:
 

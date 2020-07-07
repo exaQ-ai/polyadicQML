@@ -9,7 +9,7 @@ This package provides an high level API to define, train and deploy
 
 It implements a general interface which can be used with any quantum provider.
 As for now, it supports a fast simulator, *manyq*, and
-qiskit_.
+Qiskit_.
 More are coming.
 
 As an introduction to the algorithm you can check out this `video
@@ -37,7 +37,7 @@ You can find a tutorial_ and the module references_ at polyadicqml.entropicalabs
 
 .. _`video presentation`: https://youtu.be/QZ8ynyG-O9U
 .. _polyadicQML: https://polyadicqml.entropicalabs.io/
-.. _qiskit: https://qiskit.org/
+.. _Qiskit: https://qiskit.org/
 .. _polyadicqml.entropicalabs.io: https://polyadicqml.entropicalabs.io
 .. _tutorial: https://polyadicqml.entropicalabs.io/tutorial
 .. _references: https://polyadicqml.entropicalabs.io/#modules
