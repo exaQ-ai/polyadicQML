@@ -1,6 +1,7 @@
-from os.path import isdir, mkdir
+from os.path import isdir
 
 if not isdir("figure-ex"):
+    from os import mkdir
     mkdir("figure-ex")
 #############################################
 
