@@ -25,7 +25,7 @@ setuptools.setup(
         'scipy',
         'sklearn',
         'qiskit',
-        'manyq @ git+git@gitlab.com:entropica/manyq.git#egg=manyq',
+        'manyq @ git+ssh://gitlab.com/entropica/manyq#egg=manyq',
         'tqdm'
     ],
     python_requires='>=3.6',
