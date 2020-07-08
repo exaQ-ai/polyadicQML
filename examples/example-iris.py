@@ -1,3 +1,9 @@
+from os.path import isdir, mkdir
+
+if not isdir("figure-ex"):
+    mkdir("figure-ex")
+#############################################
+
 import numpy as np
 
 from examples.irisPreparation import makeDatasets

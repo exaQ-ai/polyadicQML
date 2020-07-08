@@ -1,3 +1,9 @@
+from os.path import isdir, mkdir
+
+if not isdir("figure-ex"):
+    mkdir("figure-ex")
+#############################################
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -48,7 +54,7 @@ if True:
     ax.set(xlim=[-np.pi,np.pi], ylim=[-np.pi,np.pi])
     ax.legend(loc="upper right")
 
-    plt.savefig("figures/XOR-points.png", bbox_inches="tight")
+    plt.savefig("figures-ex/XOR-points.png", bbox_inches="tight")
     plt.close()
 
 ##############################
@@ -108,5 +114,5 @@ if True:
     ax.set(xlim=[-np.pi,np.pi], ylim=[-np.pi,np.pi],)
     ax.legend(loc="upper right")
 
-    plt.savefig("figures/XOR-predictions.png", bbox_inches="tight")
+    plt.savefig("figures-ex/XOR-predictions.png", bbox_inches="tight")
     plt.close()

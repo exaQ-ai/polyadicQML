@@ -1,3 +1,9 @@
+from os.path import isdir, mkdir
+
+if not isdir("figure-ex"):
+    mkdir("figure-ex")
+#############################################
+
 from polyadicqml.manyq import mqCircuitML
 import numpy as np
 
@@ -47,7 +53,7 @@ def figure(P, name):
             )
     ax[1].tick_params(labelleft=False, labelright=True)
     
-    plt.savefig(f"figures/circuit-run-{name}.svg", bbox_inches="tight")
+    plt.savefig(f"figures-ex/circuit-run-{name}.svg", bbox_inches="tight")
     plt.close(fig)
 
 figure(probs, "probs")

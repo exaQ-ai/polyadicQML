@@ -1,3 +1,9 @@
+from os.path import isdir, mkdir
+
+if not isdir("figure-ex"):
+    mkdir("figure-ex")
+#############################################
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -48,7 +54,7 @@ if FIGURES:
     ax.set(xlim=[-np.pi,np.pi], ylim=[-np.pi,np.pi])
     ax.legend(loc="upper left")
 
-    plt.savefig("figures/binary-points.svg", bbox_inches="tight")
+    plt.savefig("figures-ex/binary-points.svg", bbox_inches="tight")
     plt.close()
 
 ##############################
@@ -91,7 +97,7 @@ if FIGURES:
     ax.legend((l1, l2), ('BFGS - simulated QPU', 'COBYLA - shots'),
             loc='upper right')
 
-    plt.savefig("figures/binary-loss-progress.svg", bbox_inches='tight')
+    plt.savefig("figures-ex/binary-loss-progress.svg", bbox_inches='tight')
     plt.close()
 
 ##############################
@@ -121,7 +127,7 @@ if FIGURES:
     ax.set(xlim=[-np.pi,np.pi], ylim=[-np.pi,np.pi],)
     ax.legend(loc="upper left")
 
-    plt.savefig("figures/binary-predictions.svg", bbox_inches="tight")
+    plt.savefig("figures-ex/binary-predictions.svg", bbox_inches="tight")
     plt.close()
 
 #############################################
@@ -154,5 +160,5 @@ if FIGURES:
         ax[label].set(xticks=x, xticklabels=bitstr, ylim=(0,300), xlim=(-.5,3.5))
     ax[1].tick_params(labelleft=False, labelright=True)
 
-    plt.savefig("figures/binary-counts.svg", bbox_inches="tight")
+    plt.savefig("figures-ex/binary-counts.svg", bbox_inches="tight")
     plt.close()
