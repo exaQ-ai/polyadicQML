@@ -47,11 +47,11 @@ class mqBuilder(circuitBuilder):
         if isinstance(idx, list):
             for p, i in enumerate(idx):
                 mq.SX(i)
-                mq.RZ(self.qr[i], theta[p])
+                mq.RZ(i, theta[p])
                 mq.SX(i)
         else:
             mq.SX(idx)
-            mq.RZ(self.qr[idx], theta)
+            mq.RZ(idx, theta)
             mq.SX(idx)
 
         return self
