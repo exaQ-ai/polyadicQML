@@ -11,7 +11,7 @@ import numpy as np
 def simple_circuit(bdr, x, params):
     return bdr.allin(x).cz(0,1).allin(params)
 
-# We instanciate the circuitML
+# We instantiate the circuitML
 from polyadicqml.manyq import mqCircuitML
 
 circuit = mqCircuitML(simple_circuit, nbqbits=2, nbparams=2)

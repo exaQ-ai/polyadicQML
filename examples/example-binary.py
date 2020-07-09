@@ -67,7 +67,7 @@ def simple_circuit(bdr, x, params):
     return bdr
 
 ##############################
-# Now we instanciate the circuit
+# Now we instantiate the circuit
 
 nbqbits = 2
 nbparams = 4

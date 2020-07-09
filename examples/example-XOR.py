@@ -73,7 +73,7 @@ def make_circuit(bdr, x, params):
     return bdr
 
 ##############################
-# Now we instanciate a backend and the circuit
+# Now we instantiate a backend and the circuit
 
 nbqbits = 2
 nbparams = 6

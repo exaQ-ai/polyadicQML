@@ -45,7 +45,7 @@ def irisCircuit(bdr, x, params):
     return bdr
 
 ##############################
-# We instanciate and train the classifier
+# We instantiate and train the classifier
 
 nbqbits = 2
 nbparams = 8

@@ -94,7 +94,7 @@ Model training
 ---------------
 
 Finally, we can create and train the classifier. 
-We instanciate the |circuitML| subclass that we prefer, in this case the one using the fast *manyq* simualtor, specifying the number of qubits and of parameters.
+We instantiate the |circuitML| subclass that we prefer, in this case the one using the fast *manyq* simualtor, specifying the number of qubits and of parameters.
 
 .. code-block:: python
 
