@@ -1,6 +1,6 @@
 """Implementation of circuit for ML
 """
-from numpy import pi, random, zeros_like, zeros
+from numpy import pi, random, zeros_like, zeros, log2
 
 class circuitML():
     """Abstract Quantum ML circuit interface.
@@ -134,7 +134,7 @@ class circuitML():
         dim_out = 2**self.nbqbits if v is None else v.shape[0] if len(v.shape) > 1 else 1
 
         if eps is None:
-            eps = 1e-8 if nbshots is None else max(min(pi/4, 2/nbshots**.25), 1e-8)
+            eps = 1e-8 if nbshots is None else max(log2(nbqbits)*2*pi/3 * min(.5, 1/nbshots**.25), 1e-8)
 
         num = eps if nbshots is None else eps * nbshots
 
