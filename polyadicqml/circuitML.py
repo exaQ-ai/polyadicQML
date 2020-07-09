@@ -1,6 +1,6 @@
 """Implementation of circuit for ML
 """
-from numpy import pi, random, zeros_like, zeros, log10
+from numpy import pi, random, zeros_like, zeros
 
 class circuitML():
     """Abstract Quantum ML circuit interface.
@@ -104,7 +104,7 @@ class circuitML():
     def __str__(self):
         return self.__repr__()
     
-    def grad(self, X, params, v=None, nbshots=None, job_size=None):
+    def grad(self, X, params, v=None, eps=None, nbshots=None, job_size=None):
         """Compute the gradient of the circuit w.r.t. parameters *params* on input *X*.
 
         Uses finite differences of the circuit runs.
@@ -117,6 +117,9 @@ class circuitML():
             Parameter vector of length *nb_params*.
         v : array-like
             Vector or matrix to right multiply the Jacobian with.
+        eps : float, optional
+            Epsilon for finite differences. By default uses ``1e-8`` if `nbshots` is not provided,
+            else uses :math:`\\pi / \\sqrt{\\text{nbshots}}`
         nbshots : int, optional
             Number of shots for the circuit run, by default ``None``. If ``None``, uses the backend default.
         job_size : int, optional
@@ -130,7 +133,9 @@ class circuitML():
         """
         dim_out = 2**self.nbqbits if v is None else v.shape[0] if len(v.shape) > 1 else 1
 
-        eps = 1e-8 if nbshots is None else pi/(2**log10(nbshots))
+        if eps is None:
+            eps = 1e-8 if nbshots is None else max(min(pi/4, 2/nbshots**.25), 1e-8)
+
         num = eps if nbshots is None else eps * nbshots
 
         out = zeros((self.nbparams, dim_out))
