@@ -364,6 +364,9 @@ class Classifier():
             batch_size = len(target_train)
 
         _labels = np.unique(target_train)
+        if len(_labels) > len(self.bitstr):
+            raise ValueError(f"Too many labels: expected {len(self.bitstr)}, found {len(_labels)} in target_train")
+
         indices = np.arange(len(target_train))
 
         def to_optimize(params):
