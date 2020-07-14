@@ -104,20 +104,15 @@ class Classifier():
         self.nbshots = nbshots
 
         # Testing for nbshots_incr_delay
-        if not (isinstance(nbshots_incr_delay, int) or (nbshots_incr_delay is None)):
+        if not (
+            isinstance(nbshots_incr_delay, int) or (nbshots_incr_delay is None)
+        ):
             raise TypeError("Invalid `nbshots_incr_delay` type")
-        self.nbshots_incr_delay = 20 if nbshots_incr_delay is None else nbshots_incr_delay
+        self.nbshots_incr_delay = 20
+        if nbshots_incr_delay is not None:
+            self.nbshots_incr_delay = nbshots_incr_delay
 
-        if nbshots_increment is None:
-            self.nbshots_increment = lambda nbshots, n_iter, loss_value: nbshots
-        elif isinstance(nbshots_increment, float):
-            self.nbshots_increment = lambda nbshots, n_iter, loss_value: int(
-                nbshots_increment * nbshots) if n_iter % self.nbshots_incr_delay == 0 else nbshots
-        elif isinstance(nbshots_increment, int):
-            self.nbshots_increment = lambda nbshots, n_iter, loss_value: nbshots + \
-                nbshots_increment if n_iter % self.nbshots_incr_delay == 0 else nbshots
-        else:
-            self.nbshots_increment = nbshots_increment
+        self.__set_nbshots_increment__(nbshots_increment)
 
         if not isinstance(budget, int):
             raise TypeError("Invalid `budget` type")
@@ -212,6 +207,26 @@ class Classifier():
             self.bitstr = [int(bit, 2) for bit in bitstr]
         else:
             raise TypeError("Bitstrings must be either int or binary strings")
+    
+    def __set_nbshots_increment__(self, nbshots_increment):
+        __incr__ = nbshots_increment
+        if nbshots_increment is None:
+            def __incr__(nbshots, n_iter, loss_value):
+                return nbshots
+        elif isinstance(nbshots_increment, float):
+            def __incr__(nbshots, n_iter, loss_value):
+                if n_iter % self.nbshots_incr_delay == 0:
+                    return int( nbshots_increment * nbshots)
+                else:
+                    return nbshots
+        elif isinstance(nbshots_increment, int):
+            def __incr__(nbshots, n_iter, loss_value):
+                if n_iter % self.nbshots_incr_delay == 0:
+                    return nbshots + nbshots_increment
+                else:
+                    return nbshots
+
+        self.nbshots_increment = __incr__
 
     def run_circuit(self, X, params=None):
         """Run the circuit with input `X` and parameters `params`.
