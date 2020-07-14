@@ -146,18 +146,26 @@ class Classifier():
         TypeError
             If the circuit is not a circuitML
         ValueError
-            If self has a circuit and the new circuit does not uses the same make_circuit fuction
+            If self has a circuit and the new circuit does not uses the same
+            make_circuit fuction
         """
         if not isinstance(circuit, circuitML):
-            raise TypeError(f"Circuit was type {type(circuit)} while circuitML was expected.")
+            raise TypeError(
+                f"Circuit was type {type(circuit)} while circuitML was \
+                expected."
+            )
         if hasattr(self, 'circuit'):
             if self.circuit != circuit:
-                raise ValueError("Given circuit is different from previous circuit")
+                raise ValueError(
+                    "Given circuit is different from previous circuit"
+                )
 
     def set_circuit(self, circuit):
         """Set the circuit after testing for validity.
 
-        For a circuit to be valid, it has to be an instance of circuitML and, in case self already has a circuit, to use the same make_circuit function.
+        For a circuit to be valid, it has to be an instance of circuitML and,
+        in case self already has a circuit, to use the same make_circuit
+        function.
 
         Parameters
         ----------
@@ -207,7 +215,7 @@ class Classifier():
             self.bitstr = [int(bit, 2) for bit in bitstr]
         else:
             raise TypeError("Bitstrings must be either int or binary strings")
-    
+
     def __set_nbshots_increment__(self, nbshots_increment):
         __incr__ = nbshots_increment
         if nbshots_increment is None:
@@ -216,7 +224,7 @@ class Classifier():
         elif isinstance(nbshots_increment, float):
             def __incr__(nbshots, n_iter, loss_value):
                 if n_iter % self.nbshots_incr_delay == 0:
-                    return int( nbshots_increment * nbshots)
+                    return int(nbshots_increment * nbshots)
                 else:
                     return nbshots
         elif isinstance(nbshots_increment, int):
@@ -230,13 +238,14 @@ class Classifier():
 
     def run_circuit(self, X, params=None):
         """Run the circuit with input `X` and parameters `params`.
-        
+
         Parameters
         ----------
         X : array-like
             Input matrix of shape (nb_samples, nb_features).
         params : vector-like, optional
-            Parameter vector, by default uses the model :attr:`~polyadicqml.Classifier.params`
+            Parameter vector, by default uses the model
+            :attr:`~polyadicqml.Classifier.params`
 
         Returns
         -------
@@ -248,22 +257,28 @@ class Classifier():
 
         self.nfev += 1
 
-        return self.circuit.run(X, params, self.nbshots, job_size=self.job_size)
+        return self.circuit.run(
+            X, params, self.nbshots, job_size=self.job_size
+        )
 
     def predict_proba(self, X, params=None):
-        """Compute the bitstring probabilities associated to each input point of the design matrix.
+        """Compute the bitstring probabilities associated to each input point
+        of the design matrix.
 
         Parameters
         ----------
         X : array
             Design matrix of n samples
         params : vector, optional
-            Circuit parameters, by default None. If not given, model parameters are used.
+            Circuit parameters, by default None. If not given, model
+            parameters are used.
 
         Returns
         -------
         array
-            Predicted bitstring probabilities. Rows correspond to samples and columns to bitstrings, whose order is defined in :attr:`~polyadicqml.quantumClassifier.bitstr`. 
+            Predicted bitstring probabilities. Rows correspond to samples and
+            columns to bitstrings, whose order is defined in
+            :attr:`~polyadicqml.quantumClassifier.bitstr`.
         """
         out = self.run_circuit(X, params)
 
@@ -288,7 +303,8 @@ class Classifier():
         return np.argmax(proba, axis=1)
 
     def predict(self, X):
-        """Compute the predicted class for each input point of the design matrix.
+        """Compute the predicted class for each input point of the design
+        matrix.
 
         Parameters
         ----------
@@ -303,7 +319,8 @@ class Classifier():
         return self.proba_to_label(self.predict_proba(X))
 
     def __call__(self, X):
-        """Compute the predicted class for each input point of the design matrix.
+        """Compute the predicted class for each input point of the design
+        matrix.
         Equivalent to :meth:`~polyadicqml.quantumClassifier.predict`
 
         Parameters
@@ -311,7 +328,8 @@ class Classifier():
         X : array
             Design matrix of n samples
         params : vector, optional
-            Circuit parameters, by default None. If not given, model parameters are used.
+            Circuit parameters, by default None. If not given, model
+            parameters are used.
 
         Returns
         -------
@@ -326,8 +344,8 @@ class Classifier():
         Parameters
         ----------
         loss : callable, optional
-            Loss function of the form loss(y_true, y_pred, labels), by default None.
-            If None is given, nothing happens.
+            Loss function of the form loss(y_true, y_pred, labels), by default
+            None. If None is given, nothing happens.
         """
         if loss is not None:
             self.__loss__ = loss
@@ -342,7 +360,8 @@ class Classifier():
         loss : bool, optional
             Wheter to store the loss value, by default False
         output : bool, optional
-            Wheter to store the current output and parameters , by default False
+            Wheter to store the current output and parameters , by default
+            False
         """
         if loss or output:
             self.__loss_progress__.append(self.__last_loss_value__)
@@ -353,14 +372,14 @@ class Classifier():
         self.__n_iter__ += 1
         if self.__save_path__ and self.__n_iter__ % 10 == 0:
             self.save()
-        
+
         # We randomize the indices only after the callback
         # this is necessary to estimate the gradient by FD
         self._rnd_indices = np.random.choice(
             self.__indices, size=self.__batch_size, replace=False)
 
         self.pbar.update()
-    
+
     def __scipy_minimize__(
             self, input_train, target_train, labels, method,
             save_loss_progress, save_output_progress,
@@ -399,18 +418,18 @@ class Classifier():
             bounds = [(-np.pi, np.pi) for _ in self.params]
 
         mini_kwargs = dict(
-            method=method, bounds=bounds, 
+            method=method, bounds=bounds,
             options=options,
         )
         if method.lower() not in ('cobyla'):
-            mini_kwargs["callback"] = lambda xk : self.__callback__(
+            mini_kwargs["callback"] = lambda xk: self.__callback__(
                 xk, save_loss_progress, save_output_progress,
             )
 
         mini_out = minimize(to_optimize, self.params, **mini_kwargs)
 
         self.set_params(mini_out.x.copy())
-    
+
     def __inner_opt__(self):
         pass
 
@@ -425,7 +444,8 @@ class Classifier():
         target_train : vector
             Labels corresponding to `input_train`.
         batch_size : int, optional
-            Minibatches size, by default None. If none uses the full dataset with rndom shuffle at each iteration.
+            Minibatches size, by default None. If none uses the full dataset
+            with rndom shuffle at each iteration.
         method : str, optional
             Optimization method, by default BFGS
         bounds : sequence, optional
@@ -437,7 +457,8 @@ class Classifier():
         save_loss_progress : bool, optional
             Whether to store the loss progress, by default False
         save_output_progress : file path, optional
-            Path where to save the output evolution , by default None. If none is given, the output is not saved.
+            Path where to save the output evolution , by default None. If none
+            is given, the output is not saved.
         seed : int, optional
             Random seed, by default None
 
@@ -526,7 +547,9 @@ class Classifier():
             model_info["loss_progress"] = self.__loss_progress__
         model_info["n_iter"] = self.__n_iter__
 
-        name = self.__name__ if self.__name__ is not None else "quantumClassifier"
+        name = "quantumClassifier"
+        if self.__name__ is not None:
+            name = self.__name__
 
         out[str(name)] = model_info
         return out
