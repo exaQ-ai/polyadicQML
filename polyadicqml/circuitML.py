@@ -2,20 +2,25 @@
 """
 from numpy import pi, random, zeros_like, zeros, log2
 
+
 class circuitML():
     """Abstract Quantum ML circuit interface.
-    Provides a unified interface to run multiple parametric circuits with different input and model parameters, agnostic of the backend, implemented in the subclasses.
-    
+    Provides a unified interface to run multiple parametric circuits with
+    different input and model parameters, agnostic of the backend, implemented
+    in the subclasses.
+
     Parameters
     ----------
     make_circuit : callable of signature self.make_circuit
-        Function to generate the circuit corresponding to input `x` and `params`.
+        Function to generate the circuit corresponding to input `x` and
+        `params`.
     nbqbits : int
         Number of qubits.
     nbparams : int
         Number of parameters.
     cbuilder : circuitBuilder
-        Circuit builder class to be used. It must correspond to the subclass implementation.
+        Circuit builder class to be used. It must correspond to the subclass
+        implementation.
 
     Attributes
     ----------
@@ -30,7 +35,7 @@ class circuitML():
 
         self.__set_builder__(cbuilder)
         self.make_circuit = make_circuit
-    
+
     def __set_builder__(self, cbuilder):
         self.__verify_builder__(cbuilder)
         self._circuitBuilder = cbuilder
@@ -40,7 +45,7 @@ class circuitML():
 
     def run(self, X, params, nbshots=None, job_size=None):
         """Run the circuit with input `X` and parameters `params`.
-        
+
         Parameters
         ----------
         X : array-like
@@ -48,9 +53,11 @@ class circuitML():
         params : vector-like
             Parameter vector.
         nbshots : int, optional
-            Number of shots for the circuit run, by default ``None``. If ``None``, uses the backend default.
+            Number of shots for the circuit run, by default ``None``. If
+            ``None``, uses the backend default.
         job_size : int, optional
-            Maximum job size, to split the circuit runs, by default ``None``. If ``None``, put all *nb_samples* in the same job. 
+            Maximum job size, to split the circuit runs, by default ``None``.
+            If ``None``, put all *nb_samples* in the same job.
 
         Returns
         -------
@@ -77,7 +84,8 @@ class circuitML():
 
     def make_circuit(self, bdr, x, params):
         """Generate the circuit corresponding to input `x` and `params`.
-        NOTE: This function is to be provided by the user, with the present signature.
+        NOTE: This function is to be provided by the user, with the present
+        signature.
 
         Parameters
         ----------
@@ -103,12 +111,13 @@ class circuitML():
 
     def __str__(self):
         return self.__repr__()
-    
+
     def grad(self, X, params, v=None, eps=None, nbshots=None, job_size=None):
-        """Compute the gradient of the circuit w.r.t. parameters *params* on input *X*.
+        """Compute the gradient of the circuit w.r.t. parameters *params* on
+        input *X*.
 
         Uses finite differences of the circuit runs.
-        
+
         Parameters
         ----------
         X : array-like
@@ -118,23 +127,34 @@ class circuitML():
         v : array-like
             Vector or matrix to right multiply the Jacobian with.
         eps : float, optional
-            Epsilon for finite differences. By default uses ``1e-8`` if `nbshots` is not provided,
-            else uses :math:`\\pi / \\sqrt{\\text{nbshots}}`
+            Epsilon for finite differences. By default uses ``1e-8`` if
+            `nbshots` is not provided, else uses :math:`\\pi /
+            \\sqrt{\\text{nbshots}}`
         nbshots : int, optional
-            Number of shots for the circuit run, by default ``None``. If ``None``, uses the backend default.
+            Number of shots for the circuit run, by default ``None``. If
+            ``None``, uses the backend default.
         job_size : int, optional
-            Maximum job size, to split the circuit runs, by default ``None``. If ``None``, put all *nb_samples* in the same job. 
+            Maximum job size, to split the circuit runs, by default ``None``.
+            If ``None``, put all *nb_samples* in the same job.
 
         Returns
         -------
         array
-            Jacobian matix as an array of shape *(nb_params, 2**nbqbits)* if v is None,
-            else Jacobian-vector product: ``J(circuit) @ v``
+            Jacobian matix as an array of shape *(nb_params, 2**nbqbits)* if
+            `v` is None, else Jacobian-vector product: ``J(circuit) @ v``
         """
-        dim_out = 2**self.nbqbits if v is None else v.shape[0] if len(v.shape) > 1 else 1
+        dim_out = 2**self.nbqbits
+        if v is not None:
+            if len(v.shape) > 1:
+                dim_out = v.shape[0]
+            else:
+                dim_out = 1
 
         if eps is None:
-            eps = 1e-8 if nbshots is None else max(log2(nbqbits)*2*pi/3 * min(.5, 1/nbshots**.25), 1e-8)
+            if nbshots is None:
+                eps = 1e-8
+            else:
+                max(log2(self.nbqbits)*2*pi/3 * min(.5, 1/nbshots**.25), 1e-8)
 
         num = eps if nbshots is None else eps * nbshots
 
@@ -143,7 +163,7 @@ class circuitML():
         for i in range(len(params)):
             d = zeros_like(params)
             d[i] = eps
-            pd = self.run(X, params + d, nbshots, job_size) / num  - run_out
+            pd = self.run(X, params + d, nbshots, job_size) / num - run_out
 
             out[i] = pd if v is None else pd @ v
 
