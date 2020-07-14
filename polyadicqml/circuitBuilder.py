@@ -1,7 +1,9 @@
 """Circuit builders"""
 
+
 class circuitBuilder():
-    """Builder to create parametrized circuit with repetitive structures, by defining general operations without directly writing gates.
+    """Builder to create parametrized circuit with repetitive structures, by
+    defining general operations without directly writing gates.
 
     Parameters
     ----------
@@ -21,12 +23,12 @@ class circuitBuilder():
         """
         raise NotImplementedError
 
-    ############################################# 
+    ##############################
     # GATES
 
     def measure_all(self):
         """Add measurement.
-        
+
         Returns
         -------
         circuitBuilder
@@ -40,8 +42,9 @@ class circuitBuilder():
         Parameters
         ----------
         idx : iterable, optional
-            Indices on which to apply the rotation, by default ``None``. If ``None``, apply to all qubits.
-        
+            Indices on which to apply the rotation, by default ``None``.
+            If ``None``, apply to all qubits.
+
         Returns
         -------
         circuitBuilder
@@ -51,7 +54,7 @@ class circuitBuilder():
 
     def input(self, idx, theta):
         """Add input gate.
-        
+
         It correspond to a rotation of :math:`RX(\\pi/2) RZ(theta) RX(\\pi/2)`.
 
         Parameters
@@ -60,7 +63,7 @@ class circuitBuilder():
             Index[-ices] of qubits on which to input theta.
         theta : Union[list-like, float]
             Parameter[s] to input. Has to have the same length as ``idx``.
-        
+
         Returns
         -------
         circuitBuilder
@@ -75,7 +78,7 @@ class circuitBuilder():
         ----------
         theta : list-like
             Parameters to input.
-        
+
         Returns
         -------
         circuitBuilder
@@ -92,7 +95,7 @@ class circuitBuilder():
             Control qubit
         b : int
             Target qubit.
-        
+
         Returns
         -------
         circuitBuilder

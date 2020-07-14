@@ -1,9 +1,11 @@
 import numpy as np
 from sklearn.metrics import log_loss
 
+
 def stable_softmax(X, axis=None):
-    exps = np.exp(X - np.max(X, axis=axis).reshape(-1,1))
-    return exps / np.sum(exps, axis=axis).reshape(-1,1)
+    exps = np.exp(X - np.max(X, axis=axis).reshape(-1, 1))
+    return exps / np.sum(exps, axis=axis).reshape(-1, 1)
+
 
 def CE_loss(y_true, y_pred, labels=None):
     """Cross entropy loss.
@@ -13,7 +15,8 @@ def CE_loss(y_true, y_pred, labels=None):
     y_true : vector
         Ground truth (correct) labels for n_samples samples
     y_pred : vector
-        Predicted probabilities, as returned by a classifier’s ``predict_proba`` method.
+        Predicted probabilities, as returned by a classifier’s
+        ``predict_proba`` method.
     labels : vector, optional
         If not provided, labels will be inferred from `y_true`.
 
@@ -31,6 +34,7 @@ def CE_loss(y_true, y_pred, labels=None):
 
     return log_loss(y_true, stable_softmax(y_pred, axis=1), labels=labels)
 
+
 def CE_grad(y_true, y_pred):
     """Cross entropy loss gradient, w.r.t. y_pred columns.
 
@@ -39,7 +43,8 @@ def CE_grad(y_true, y_pred):
     y_true : vector
         Ground truth (correct) labels for n_samples samples
     y_pred : vector
-        Predicted probabilities, as returned by a classifier’s ``predict_proba`` method.
+        Predicted probabilities, as returned by a classifier’s
+        ``predict_proba`` method.
 
     Returns
     -------

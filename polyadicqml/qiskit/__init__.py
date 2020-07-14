@@ -1,6 +1,7 @@
 __all__ = [
     "qkBuilder",
     "ibmqNativeBuilder",
+    "qkParallelBuilder",
     "qkCircuitML",
     "qkParallelML",
     "utility"

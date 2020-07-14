@@ -17,14 +17,17 @@ from .utility.backends import Backends
 from ..circuitML import circuitML
 from .qkBuilder import __qiskitGeneralBuilder__, qkBuilder
 
+
 class qkCircuitML(circuitML):
     """Quantum ML circuit interface for qiskit and IBMQ.
-    Provides a unified interface to run multiple parametric circuits with different input and model parameters. 
+    Provides a unified interface to run multiple parametric circuits with
+    different input and model parameters.
 
     Parameters
     ----------
     make_circuit : callable of signature self.make_circuit
-        Function to generate the circuit corresponding to input `x` and `params`.
+        Function to generate the circuit corresponding to input `x` and
+        `params`.
     nbqbits : int
         Number of qubits.
     nbparams : int
@@ -34,13 +37,17 @@ class qkCircuitML(circuitML):
     cbuilder : circuitBuilder, optional
         Circuit builder, by default :class:`qkBuilder`
     noise_model : Union[list, qiskit.providers.aer.noise.NoiseModel], optional
-        Noise model to be provided to the backend, by default ``None``. Cannot be used with `noise_backend`.
+        Noise model to be provided to the backend, by default ``None``. Cannot
+        be used with `noise_backend`.
     coupling_map : list, optional
-        Coupling map to be provided to the backend, by default ``None``. Cannot be used with `noise_backend`.
+        Coupling map to be provided to the backend, by default ``None``.
+        Cannot be used with `noise_backend`.
     noise_backend : Union[list, qiskit.providers.ibmq.IBMQBackend], optional
-        IBMQ backend from which the noise model should be generated, by default ``None``.
+        IBMQ backend from which the noise model should be generated, by
+        default ``None``.
     save_path : str, optional
-        Where to save the jobs outputs, by default ``None``. Jobs are saved only if a path is specified
+        Where to save the jobs outputs, by default ``None``. Jobs are saved
+        only if a path is specified
 
     Attributes
     ----------
@@ -54,8 +61,8 @@ class qkCircuitML(circuitML):
     ValueError
         If both `noise_model` and `noise_backend` are provided.
     """
-    def __init__(self, make_circuit, nbqbits, nbparams, backend, 
-                 cbuilder=qkBuilder, 
+    def __init__(self, make_circuit, nbqbits, nbparams, backend,
+                 cbuilder=qkBuilder,
                  noise_model=None, coupling_map=None,
                  noise_backend=None,
                  save_path=None):
@@ -68,7 +75,7 @@ class qkCircuitML(circuitML):
             self.backend = self.__backend__.backends
             self.noise_model = self.__backend__.noise_models
             self.coupling_map = self.__backend__.coupling_maps
-            self.job_limit =  backend.job_limit
+            self.job_limit = backend.job_limit
 
         else:
             backend = backend if isinstance(backend, list) else [backend]
@@ -76,27 +83,46 @@ class qkCircuitML(circuitML):
                 self.job_limit = min(map(lambda x: x.job_limit(), backend))
             except AttributeError:
                 self.job_limit = None
-            self.backend = cycle(backend) 
+            self.backend = cycle(backend)
 
             if noise_model is not None and noise_backend is not None:
-                raise ValueError("Only one between 'noise_model' and 'noise_backend' can be passed to the constructor")
+                raise ValueError(
+                    "Only one between 'noise_model' and 'noise_backend' can \
+be passed to the constructor"
+                )
 
-            self.noise_model = cycle(noise_model) if isinstance(noise_model, list) else cycle([noise_model])
-            self.coupling_map = cycle(coupling_map) if isinstance(coupling_map, list) else cycle([coupling_map])
+            if isinstance(noise_model, list):
+                self.noise_model = cycle(noise_model)
+            else:
+                self.noise_model = cycle([noise_model])
+
+            if isinstance(coupling_map, list):
+                self.coupling_map = cycle(coupling_map)
+            else:
+                self.coupling_map = cycle([coupling_map])
 
             if noise_backend is not None:
-                _noise_back = noise_backend if isinstance(noise_backend, list) else [noise_backend]
+                _noise_back = noise_backend
+                if not isinstance(noise_backend, list):
+                    _noise_back = [noise_backend]
 
-                self.noise_model = cycle([NoiseModel.from_backend(_backend) for _backend in _noise_back])
-                self.coupling_map = cycle([_backend.configuration().coupling_map for _backend in _noise_back])
+                self.noise_model = cycle(
+                    [NoiseModel.from_backend(_backend)
+                        for _backend in _noise_back]
+                )
+                self.coupling_map = cycle(
+                    [_backend.configuration().coupling_map
+                        for _backend in _noise_back]
+                )
 
     def __verify_builder__(self, cbuilder):
         bdr = cbuilder(1)
         if isinstance(bdr, __qiskitGeneralBuilder__): return
         raise TypeError(
-            f"The circuit builder class is not comaptible: provided {cbuilder} expected {__qiskitGeneralBuilder__}"
+            f"The circuit builder class is not comaptible: provided \
+{cbuilder} expected {__qiskitGeneralBuilder__}"
         )
-        
+
     def run(self, X, params, nbshots=None, job_size=None):
         if not job_size:
             if self.job_limit is not None and len(X) > self.job_limit:
@@ -121,14 +147,23 @@ class qkCircuitML(circuitML):
                         job.cancel()
                     raise
             else:
-                if not isinstance(job_size, int): raise TypeError("'job_size' has to be int")
+                if not isinstance(job_size, int):
+                    raise TypeError("'job_size' has to be int")
 
                 n_jobs = len(X) // job_size
-                requests = [self.request(X[job_size * n : job_size * (n+1)], params, nbshots) for n in range(n_jobs)] 
+                requests = [
+                    self.request(X[job_size * n : job_size * (n+1)], params, nbshots)
+                    for n in range(n_jobs)
+                ]
                 if job_size * n_jobs < len(X):
-                    requests.append(self.request(X[job_size * n_jobs :], params, nbshots))
+                    requests.append(
+                        self.request(X[job_size * n_jobs :], params, nbshots)
+                    )
                 try:
-                    return np.vstack([self.result(job, qc_list, nbshots) for job, qc_list in requests])
+                    return np.vstack([
+                        self.result(job, qc_list, nbshots)
+                        for job, qc_list in requests
+                    ])
                 except:
                     for job, qc_list in requests:
                         status = job.status()
@@ -158,12 +193,14 @@ class qkCircuitML(circuitML):
             return self.run(X, params, nbshots, job_size)
 
     def make_circuit_list(self, X, params, nbshots=None):
-        """Generate a circuit for each sample in `X` rows, with parameters `params`.
+        """Generate a circuit for each sample in `X` rows, with parameters
+        `params`.
 
         Parameters
         ----------
         X : array-like
-            Input matrix, of shape *(nb_samples, nb_features)* or *(nb_features,)*. In the latter case, *nb_samples* is 1.
+            Input matrix, of shape *(nb_samples, nb_features)* or
+            *(nb_features,)*. In the latter case, *nb_samples* is 1.
         params : vector-like
             Parameter vector.
         nbshots : int, optional
@@ -175,7 +212,8 @@ class qkCircuitML(circuitML):
             List of *nb_samples* circuits.
         """
         def post(bdr):
-            if nbshots: return bdr.measure_all().circuit()
+            if nbshots:
+                return bdr.measure_all().circuit()
             return bdr.circuit()
 
         if len(X.shape) < 2:
@@ -194,12 +232,14 @@ class qkCircuitML(circuitML):
                 for x in X]
 
     def request(self, X, params, nbshots=None):
-        """Create circuits corresponding to samples in `X` and parameters `params` and send jobs to the backend for execution.
+        """Create circuits corresponding to samples in `X` and parameters
+        `params` and send jobs to the backend for execution.
 
         Parameters
         ----------
         X : array-like
-            Input matrix, of shape *(nb_samples, nb_features)* or *(nb_features,)*. In the latter case, *nb_samples* is 1.
+            Input matrix, of shape *(nb_samples, nb_features)* or
+            *(nb_features,)*. In the latter case, *nb_samples* is 1.
         params : vector-like
             Parameter vector.
         nbshots : int, optional
@@ -208,11 +248,13 @@ class qkCircuitML(circuitML):
         Returns
         -------
         (qiskit.providers.BaseJob, list[qiskit.QuantumCircuit])
-            Job instance derived from BaseJob and list of corresponding circuits.
+            Job instance derived from BaseJob and list of corresponding
+            circuits.
         """
         qc_list = self.make_circuit_list(X, params, nbshots)
 
-        # Optional arguments for execute are defined here, if they have been given at construction.
+        # Optional arguments for execute are defined here, if they have been
+        # given at construction.
         execute_kwargs = {}
         if nbshots:
             execute_kwargs['shots'] = nbshots
@@ -225,10 +267,10 @@ class qkCircuitML(circuitML):
         if _coupling_map is not None:
             execute_kwargs['coupling_map'] = _coupling_map
 
-        return qk.execute(qc_list, next(self.backend),
-                  **execute_kwargs,
-                 ), qc_list
-
+        return qk.execute(
+            qc_list, next(self.backend),
+            **execute_kwargs,
+        ), qc_list
 
     def result(self, job, qc_list, nbshots=None):
         """Retrieve job results and returns bitstring counts.
@@ -240,12 +282,14 @@ class qkCircuitML(circuitML):
         qc_list : list[qiskit.circuit.QuantumCircuit]
             List of quantum circuits executed in `job`, of length *nb_samples*.
         nbshots : int, optional
-            Number of shots, by default ``None``. If ``None``, raw counts are returned.
+            Number of shots, by default ``None``. If ``None``, raw counts are
+            returned.
 
         Returns
         -------
         array
-            Bitstring counts as an array of shape *(nb_samples, 2**nbqbits)*, in the same order as `qc_list`.
+            Bitstring counts as an array of shape *(nb_samples, 2**nbqbits)*,
+            in the same order as `qc_list`.
 
         Raises
         ------
@@ -254,15 +298,18 @@ class qkCircuitML(circuitML):
         """
         wait = 1
         while not job.done():
-            if job.status() in (JobStatus.CANCELLED, JobStatus.ERROR): raise QiskitError
+            if job.status() in (JobStatus.CANCELLED, JobStatus.ERROR):
+                raise QiskitError
             sleep(wait)
 
         results = job.result()
         if not nbshots:
             out = [results.get_statevector(qc) for qc in qc_list]
             out = np.abs(out)**2
-            order = [int(f"{key:0>{self.nbqbits}b}"[::-1], 2)
-                        for key in range(out.shape[1])]
+            order = [
+                int(f"{key:0>{self.nbqbits}b}"[::-1], 2)
+                for key in range(out.shape[1])
+            ]
             return out[:, order]
         else:
             out = np.zeros((len(qc_list), 2**self.nbqbits))
@@ -271,7 +318,8 @@ class qkCircuitML(circuitML):
                     # print(f"{key} : {count}")
                     out[n, int(key[::-1], 2)] = count
 
-        if self.save_path: self.save_job(job)
+        if self.save_path:
+            self.save_job(job)
         return out
 
     def save_job(self, job, save_path=None):
@@ -282,7 +330,8 @@ class qkCircuitML(circuitML):
         job : qiskit.providers.BaseJob
             Job instance.
         save_path : path, optional
-            Where to save the output, by default ``None``. If None, uses :attr:`qkCircuitML.save_path`.
+            Where to save the output, by default ``None``. If None, uses
+            :attr:`qkCircuitML.save_path`.
         """
         save_path = self.save_path if save_path is None else save_path
 
@@ -290,7 +339,7 @@ class qkCircuitML(circuitML):
             try:
                 with open(save_path) as f:
                     out = json.load(f)
-            except:
+            except (FileNotFoundError, json.decoder.JSONDecodeError):
                 print(f"ATTENTION: file {save_path} is broken, confirm overwriting!")
                 input("Keybord interrupt ([ctrl-c]) to abort")
                 out = {}
@@ -301,7 +350,7 @@ class qkCircuitML(circuitML):
             job_id = job.job_id()
             try:
                 times = job.time_per_step()
-                info = {key : str(times[key]) for key in times}
+                info = {key: str(times[key]) for key in times}
             except AttributeError:
                 info = {}
             info['results'] = job.result().to_dict()

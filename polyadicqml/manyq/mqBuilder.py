@@ -2,15 +2,14 @@
 from ..circuitBuilder import circuitBuilder
 
 import manyq as mq
-from numpy import pi
+
 
 class mqBuilder(circuitBuilder):
-    """Builder for circuits to be run on manyQ simulator. 
+    """Builder for circuits to be run on manyQ simulator.
     """
     def __init__(self, nbqbits, batch_size, *args, gpu=False, **kwargs):
         super().__init__(nbqbits)
         mq.initQreg(nbqbits, batch_size, gpu=gpu)
-
 
     def __run_circuit__(self, nbshots=None):
         if not nbshots:

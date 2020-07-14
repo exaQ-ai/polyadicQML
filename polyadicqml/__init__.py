@@ -1,7 +1,7 @@
 __all__ = [
     "circuitBuilder",
     "circuitML",
-    "Classifier", 
+    "Classifier",
     "manyq",
     "qiskit"
 ]

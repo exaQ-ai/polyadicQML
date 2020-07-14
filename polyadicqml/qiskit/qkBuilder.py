@@ -4,8 +4,9 @@ from numpy import pi
 
 from ..circuitBuilder import circuitBuilder
 
+
 class __qiskitGeneralBuilder__(circuitBuilder):
-    """Abstract class for Qiskit-circuits builders. 
+    """Abstract class for Qiskit-circuits builders.
     """
     def __init__(self, nbqbits, *args, **kwargs):
         super().__init__(nbqbits)
@@ -38,7 +39,7 @@ class qkBuilder(__qiskitGeneralBuilder__):
     """
     def __init__(self, nbqbits, *args, **kwargs):
         super().__init__(nbqbits)
-    
+
     def alldiam(self, idx=None):
         if idx is None:
             self.qc.rx(pi/2, self.qr)
@@ -73,6 +74,7 @@ class qkBuilder(__qiskitGeneralBuilder__):
         self.qc.cz(self.qr[a], self.qr[b])
 
         return self
+
 
 class ibmqNativeBuilder(__qiskitGeneralBuilder__):
     """Qiskit-circuits builder using IBMQ native gates (u1, u2, and cz).
@@ -121,6 +123,7 @@ class ibmqNativeBuilder(__qiskitGeneralBuilder__):
 
         return self
 
+
 class qkParallelBuilder(__qiskitGeneralBuilder__):
     """Qiskit-circuits builder for running parallel on same QPU.
     Uses rx, rz and cz gates.
@@ -130,13 +133,14 @@ class qkParallelBuilder(__qiskitGeneralBuilder__):
     nbqbits : int
         Number of qubits.
     tot_nbqbits : int, optional
-        Number if qubits in the QPU, by default None. If None, this is equivalent to :class:`qkBuilder`
+        Number if qubits in the QPU, by default None. If None, this is
+        equivalent to :class:`qkBuilder`
     """
     def __init__(self, nbqbits, tot_nbqbits=None, *args, **kwargs):
         super().__init__(tot_nbqbits if tot_nbqbits else nbqbits)
         self.c_nbq = nbqbits
         self.start_2 = tot_nbqbits - nbqbits if tot_nbqbits else None
-    
+
     def alldiam(self, idx=None):
         if idx is None:
             self.qc.rx(pi/2, self.qr[:self.c_nbq])
@@ -168,8 +172,9 @@ class qkParallelBuilder(__qiskitGeneralBuilder__):
         else:
             try:
                 t1, t2 = theta
-            except:
+            except (TypeError, ValueError):
                 t1, t2 = theta, theta
+
             self.qc.rx(pi/2, self.qr[idx])
             self.qc.rz(t1, self.qr[idx])
             self.qc.rx(pi/2, self.qr[idx])
