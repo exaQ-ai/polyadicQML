@@ -6,41 +6,58 @@ import pickle
 import json
 from tqdm.auto import tqdm
 
-import datetime
-
 from scipy.optimize import minimize
 
 from .circuitML import circuitML
 
 from .utility import CE_loss
 
+SCIPY_METHODS = {
+    'bfgs', 'nelder-mead', 'powell', 'cg',
+    'newton-cg', 'l-bfgs-b', 'tnc', 'cobyla',
+    'slsqp', 'trust-constr', 'dogleg',
+}
+
+
 class Classifier():
-    """Class for quantum classifiers. Defines the API using the scikit-learn format.
+    """Class for quantum classifiers. Defines the API using the scikit-learn
+    format.
 
     Parameters
     ----------
     circuit : circuitML
-        Quantum circuit to simulate, how to use and store is defined in child classes.
+        Quantum circuit to simulate, how to use and store is defined in child
+        classes.
     bitstr : list of int or list of str
-        Which bitstrings should correspond to each class. The number of classes for the classification is defined by the number of elements.
+        Which bitstrings should correspond to each class. The number of
+        classes for the classification is defined by the number of elements.
     params : vector, optional
-        Initial model paramters. If None (default) uses circuit.random_params().
+        Initial model paramters. If ``None`` (default) uses
+        :meth:`circuitML.random_params`.
     nbshots : int, optional
-        Number of shots for the quantum circuit. If 0, negative or None, then exact proabilities are computed, by default None
+        Number of shots for the quantum circuit. If 0, negative or None, then
+        exact proabilities are computed, by default ``None``.
     nbshots_increment : float, int or callable, optional
-        How to increase the number of shots as optimization progress. If float or int, the increment arise every `nbshots_incr_delay` iterations: if float, then the increment is multiplicative; if int, then it is added. If callable, the new nbshots is computed by calling `nbshots_increment(nbshots, n_iter, loss_value)`.
+        How to increase the number of shots as optimization progress. If float
+        or int, the increment arise every `nbshots_incr_delay` iterations: if
+        float, then the increment is multiplicative; if int, then it is added.
+        If callable, the new nbshots is computed by calling
+        `nbshots_increment(nbshots, n_iter, loss_value)`.
     nbshots_incr_delay : int, optional
-        After how many iteration nb_shots has to increse. By default 20, if nbshots_increment is given
+        After how many iteration nb_shots has to increse. By default 20, if
+        nbshots_increment is given
     loss : callable, optional
         Loss function, by default Negative LogLoss (Cross entropy).
     job_size : int, optional
-        Number of runs for each circuit job, by default the number of observations.
+        Number of runs for each circuit job, by default the number of
+        observations.
     budget : int, optional
         Maximum number of optimization steps, by default 100
     name : srt, optional
         Name to identify this classifier.
     save_path : str, optional
-        Where to save intermediate training results, by deafult None. If None, intermediate results are not saved.
+        Where to save intermediate training results, by deafult None. If
+        ``None``, intermediate results are not saved.
 
     Attributes
     ----------
@@ -206,8 +223,7 @@ class Classifier():
         
         self.nfev += 1
 
-        return self.circuit.run(X, params, self.nbshots,
-                               job_size=self.job_size)
+        return self.circuit.run(X, params, self.nbshots, job_size=self.job_size)
 
     def predict_proba(self, X, params=None):
         """Compute the bitstring probabilities associated to each input point of the design matrix.
@@ -313,9 +329,66 @@ class Classifier():
         if self.__save_path__ and self.__n_iter__ % 10 == 0:
             self.save()
         
-        self.pbar.update()
+        # We randomize the indices only after the callback
+        # this is necessary to estimate the gradient by FD
+        self._rnd_indices = np.random.choice(
+            self.__indices, size=self.__batch_size, replace=False)
 
-        
+        self.pbar.update()
+    
+    def __scipy_minimize__(
+            self, input_train, target_train, labels, method,
+            save_loss_progress, save_output_progress,
+            **kwargs
+    ):
+
+        def to_optimize(params):
+            self.nbshots = self.nbshots_increment(
+                self.nbshots, self.__n_iter__, self.__min_loss__)
+
+            probas = self.predict_proba(
+                input_train[self.__rnd_indices], params
+            )
+            loss_value = self.__loss__(
+                target_train[self.__rnd_indices], probas, labels=labels
+            )
+
+            self.__last_loss_value__ = loss_value
+            self.__last_output__ = probas[np.argsort(self.__rnd_indices)]
+
+            if loss_value < self.__min_loss__:
+                self.__min_loss__ = loss_value
+                self.set_params(params.copy())
+
+            if method.lower() == "cobyla":
+                self.__callback__(
+                    params, save_loss_progress, save_output_progress
+                )
+
+            return loss_value
+
+        # SCIPY.MINIMIZE IMPLEMENTATION
+        options = kwargs.get('options', {'maxiter': self.__budget__})
+        bounds = kwargs.get('bounds')
+        if method == 'L-BFGS-B' and bounds is None:
+            bounds = [(-np.pi, np.pi) for _ in self.params]
+
+        mini_kwargs = dict(
+            method=method, bounds=bounds, 
+            options=options,
+        )
+        if method.lower() not in ('cobyla'):
+            mini_kwargs["callback"] = lambda xk : self.__callback__(
+                xk, save_loss_progress, save_output_progress,
+            )
+
+        mini_out = minimize(to_optimize, self.params, **mini_kwargs)
+
+        self.set_params(mini_out.x.copy())
+    
+    def __inner_opt__(self):
+        pass
+
     def fit(self, input_train, target_train, batch_size=None,
             **kwargs):
         """Fit the model according to the given training data.
@@ -349,66 +422,42 @@ class Classifier():
             self
         """
 
-        method =  kwargs.get('method', 'BFGS')
+        method = kwargs.pop('method', 'BFGS')
         save_loss_progress = kwargs.get('save_loss_progress')
         save_output_progress = kwargs.get('save_output_progress')
-        seed = kwargs.get('seed') 
+        seed = kwargs.get('seed')
 
-        _nbshots = self.nbshots
         if seed is not None:
             np.random.seed(seed)
+
+        _nbshots = self.nbshots
         self.pbar = tqdm(total=self.__budget__, desc="Training", leave=False)
         self.__n_iter__ = 0
 
-        if not batch_size:
-            batch_size = len(target_train)
+        if batch_size:
+            self.__batch_size = batch_size
+        else:
+            self.__batch_size = len(target_train)
 
         _labels = np.unique(target_train)
         if len(_labels) > len(self.bitstr):
-            raise ValueError(f"Too many labels: expected {len(self.bitstr)}, found {len(_labels)} in target_train")
-
-        indices = np.arange(len(target_train))
-
-        def to_optimize(params):
-            _indices = np.random.choice(
-                indices, size=batch_size, replace=False)
-            self.nbshots = self.nbshots_increment(
-                self.nbshots, self.__n_iter__, self.__min_loss__)
-
-            probas = self.predict_proba(input_train[_indices], params)
-            loss_value = self.__loss__(target_train[_indices], probas,
-                                       labels=_labels)
-
-            self.__last_loss_value__ = loss_value
-            self.__last_output__ = probas[np.argsort(_indices)]
-
-            if loss_value < self.__min_loss__:
-                self.__min_loss__ = loss_value
-                self.set_params(params.copy())
-
-            if method == "COBYLA":
-                self.__callback__(params, save_loss_progress, save_output_progress)
-
-            return loss_value
-
-        # SCIPY.MINIMIZE IMPLEMENTATION
-        options = kwargs.get('options', {'maxiter': self.__budget__})
-        bounds = kwargs.get('bounds')
-        if method == 'L-BFGS-B' and bounds is None:
-            bounds = [(-np.pi, np.pi) for _ in self.params]
-
-        mini_kwargs = dict(
-            method=method, bounds=bounds, 
-            options=options,
-        )
-        if method.lower() not in ('cobyla'):
-            mini_kwargs["callback"] = lambda xk : self.__callback__(
-                xk, save_loss_progress, save_output_progress,
+            raise ValueError(
+                f"Too many labels: expected {len(self.bitstr)}, found \
+                {len(_labels)} in target_train"
             )
 
-        mini_out = minimize(to_optimize, self.params, **mini_kwargs)
+        self.__indices = np.arange(len(target_train))
+        self.__rnd_indices = np.random.choice(
+            self.__indices, size=self.__batch_size, replace=False
+        )
 
-        self.set_params(mini_out.x.copy())
+        if method.lower() in SCIPY_METHODS:
+            self.__scipy_minimize__(
+                input_train, target_train, _labels,
+                method, save_loss_progress, save_output_progress, **kwargs
+            )
+        else:
+            pass
 
         if "sim_calls" not in self.__info__.keys():
             self.__info__["nfev"] = self.nfev
