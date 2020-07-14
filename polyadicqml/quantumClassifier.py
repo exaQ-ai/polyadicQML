@@ -88,18 +88,7 @@ class Classifier():
         self.set_circuit(circuit)
 
         # Testing for bitstring validity
-        if isinstance(bitstr[0], int):
-            for i in bitstr:
-                if not isinstance(i, int):
-                    raise TypeError("All bitstrings must have the same type")
-            self.bitstr = bitstr
-        elif isinstance(bitstr[0], str):
-            for i in bitstr:
-                if not isinstance(i, str):
-                    raise TypeError("All bitstrings must have the same type")
-            self.bitstr = [int(bit, 2) for bit in bitstr]
-        else:
-            raise TypeError("Bitstrings must be either int or binary strings")
+        self.set_bitstr(bitstr)
 
         if params is None:
             self.set_params(circuit.random_params())
@@ -202,6 +191,32 @@ class Classifier():
             Parameters vector
         """
         self.params = params
+
+    def set_bitstr(self, bitstr):
+        """Bitstring setter
+
+        Parameters
+        ----------
+        bitstr : list[str] or list[int]
+            Bitstrings on which to read the class predictions.
+
+        Raises
+        ------
+        TypeError
+            If bitstrings are of wrong type or have eterogenous types
+        """
+        if isinstance(bitstr[0], int):
+            for i in bitstr:
+                if not isinstance(i, int):
+                    raise TypeError("All bitstrings must have the same type")
+            self.bitstr = bitstr
+        elif isinstance(bitstr[0], str):
+            for i in bitstr:
+                if not isinstance(i, str):
+                    raise TypeError("All bitstrings must have the same type")
+            self.bitstr = [int(bit, 2) for bit in bitstr]
+        else:
+            raise TypeError("Bitstrings must be either int or binary strings")
 
     def run_circuit(self, X, params=None):
         """Run the circuit with input `X` and parameters `params`.
