@@ -87,20 +87,23 @@ class Classifier():
         # Testing circuit and setting it
         self.set_circuit(circuit)
 
-        # Testing for bitstring validity
+        # Setting bitstrings
         self.set_bitstr(bitstr)
 
+        # Setting parameters
         if params is None:
             self.set_params(circuit.random_params())
         else:
             self.set_params(params)
 
+        # Testing for nbshots type
         if not (isinstance(nbshots, int) or (nbshots is None)):
             raise TypeError("Invalid `nbshots` type")
         if nbshots is not None and nbshots < 1:
             nbshots = None
         self.nbshots = nbshots
 
+        # Testing for nbshots_incr_delay
         if not (isinstance(nbshots_incr_delay, int) or (nbshots_incr_delay is None)):
             raise TypeError("Invalid `nbshots_incr_delay` type")
         self.nbshots_incr_delay = 20 if nbshots_incr_delay is None else nbshots_incr_delay
@@ -133,14 +136,6 @@ class Classifier():
         self.__params_progress__ = []
         self.__name__ = name
         self.__save_path__ = save_path
-        self.__info__ = {
-            'circuit': str(circuit),
-            'nbshots': nbshots,
-            'nbshots_increment': str(nbshots_increment),
-            'nbshots_incr_delay': str(nbshots_incr_delay),
-            'bitstr': [bin(bit) for bit in self.bitstr],
-            'job_size' : job_size if job_size else "FULL",
-            }
         self.nfev = 0
 
     def __verify_circuit__(self, circuit):
@@ -235,7 +230,7 @@ class Classifier():
         """
         if params is None:
             params = self.params
-        
+
         self.nfev += 1
 
         return self.circuit.run(X, params, self.nbshots, job_size=self.job_size)
@@ -474,11 +469,6 @@ class Classifier():
         else:
             pass
 
-        if "sim_calls" not in self.__info__.keys():
-            self.__info__["nfev"] = self.nfev
-            self.__info__["n_iter"] = self.__n_iter__
-
-        del self.__n_iter__
         self.pbar.close()
         del self.pbar
 
@@ -509,11 +499,17 @@ class Classifier():
 
         model_info = {
             "parameters": self.params.tolist(),
+            'circuit': str(self.circuit),
+            'nbshots': self.nbshots,
+            'nbshots_increment': str(self.nbshots_increment),
+            'nbshots_incr_delay': str(self.nbshots_incr_delay),
+            'bitstr': [bin(bit) for bit in self.bitstr],
+            'job_size': self.job_size if self.job_size else "FULL",
+            'nfev': self.nfev,
         }
         if self.__loss_progress__:
             model_info["loss_progress"] = self.__loss_progress__
-
-        model_info.update(self.__info__)
+        model_info["n_iter"] = self.__n_iter__
 
         name = self.__name__ if self.__name__ is not None else "quantumClassifier"
 
@@ -523,12 +519,6 @@ class Classifier():
     def save(self, path=None):
         if path is None:
             path = self.__save_path__
-        model_info = {
-            "parameters": self.params.tolist(),
-        }
-        if self.__loss_progress__:
-            model_info["loss_progress"] = self.__loss_progress__
 
-        model_info.update(self.__info__)
         with open(path, 'wb') as f:
-            pickle.dump(model_info, f)
+            pickle.dump(self.info_dict, f)
