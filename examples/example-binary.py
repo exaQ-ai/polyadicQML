@@ -1,8 +1,8 @@
 from os.path import isdir
 
-if not isdir("figure-ex"):
+if not isdir("figures-ex"):
     from os import mkdir
-    mkdir("figure-ex")
+    mkdir("figures-ex")
 #############################################
 
 import numpy as np

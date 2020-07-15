@@ -1,7 +1,7 @@
 from os.path import isdir, mkdir
 
-if not isdir("figure-ex"):
-    mkdir("figure-ex")
+if not isdir("figures-ex"):
+    mkdir("figures-ex")
 #############################################
 
 from polyadicqml.manyq import mqCircuitML
