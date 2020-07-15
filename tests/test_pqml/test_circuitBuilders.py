@@ -1,7 +1,7 @@
 import unittest
 
 import polyadicqml as pqml
-
+import numpy as np
 
 def make_builder_test(builder_class):
 
@@ -35,7 +35,7 @@ def make_builder_test(builder_class):
         def test_invalid_idx_raises_in_input(self):
             with self.subTest("out of bounds"):
                 idxes = [10, -1, [-1, 5]]
-                angles = [0, 2.1, [-1, 2]]
+                angles = [0, 2.1, np.array([-1, 2])]
                 for idx, theta in zip(idxes, angles):
                     with self.subTest(idx=idx, theta=theta):
                         self.assertRaises(
