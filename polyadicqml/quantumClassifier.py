@@ -469,9 +469,9 @@ class Classifier():
         """
 
         method = kwargs.pop('method', 'BFGS')
-        save_loss_progress = kwargs.get('save_loss_progress')
-        save_output_progress = kwargs.get('save_output_progress')
-        seed = kwargs.get('seed')
+        save_loss_progress = kwargs.pop('save_loss_progress', None)
+        save_output_progress = kwargs.pop('save_output_progress', None)
+        seed = kwargs.pop('seed', None)
 
         if seed is not None:
             np.random.seed(seed)
