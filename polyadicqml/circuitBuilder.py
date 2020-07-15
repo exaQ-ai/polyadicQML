@@ -14,6 +14,28 @@ class circuitBuilder():
         super().__init__()
         self.nbqbits = nbqbits
 
+    def __verify_index__(self, idx):
+        """Test if the index is valid for this circuit.
+
+        Parameters
+        ----------
+        idx : int
+            Index
+
+        Raises
+        ------
+        ValueError
+            If the index is out of bounds
+        TypeError
+            If the index is not int
+        """
+        if not isinstance(idx, int):
+            raise TypeError("Index must be integer")
+        if self.nbqbits < idx or idx < 0:
+            raise ValueError(
+                f"Index {idx} is out of range for circuit with {self.nbqbits} qubits"
+            )
+
     def circuit(self):
         """Return the built circuit.
 
@@ -49,6 +71,13 @@ class circuitBuilder():
         -------
         circuitBuilder
             self
+        
+        Raises
+        ------
+        ValueError
+            If idx is out of range
+        TypeError
+            If the indices are not int
         """
         raise NotImplementedError
 
@@ -68,6 +97,13 @@ class circuitBuilder():
         -------
         circuitBuilder
             self
+        
+        Raises
+        ------
+        ValueError
+            If idx is out of range
+        TypeError
+            If the indices are not int
         """
         raise NotImplementedError
 
@@ -100,5 +136,12 @@ class circuitBuilder():
         -------
         circuitBuilder
             self
+        
+        Raises
+        ------
+        ValueError
+            If a or b are out of range
+        TypeError
+            If the indices are not int
         """
         raise NotImplementedError

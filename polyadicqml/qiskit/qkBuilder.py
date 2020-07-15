@@ -44,7 +44,10 @@ class qkBuilder(__qiskitGeneralBuilder__):
         if idx is None:
             self.qc.rx(pi/2, self.qr)
         else:
+            if isinstance(idx, int):
+                idx = [idx]
             for i in idx:
+                self.__verify_index__(i)
                 self.qc.rx(pi/2, self.qr[i])
 
         return self
@@ -52,10 +55,14 @@ class qkBuilder(__qiskitGeneralBuilder__):
     def input(self, idx, theta):
         if isinstance(idx, list):
             for p, i in enumerate(idx):
+                self.__verify_index__(i)
+
                 self.qc.rx(pi/2, self.qr[i])
                 self.qc.rz(theta[p], self.qr[i])
                 self.qc.rx(pi/2, self.qr[i])
         else:
+            self.__verify_index__(idx)
+
             self.qc.rx(pi/2, self.qr[idx])
             self.qc.rz(theta, self.qr[idx])
             self.qc.rx(pi/2, self.qr[idx])
@@ -71,8 +78,10 @@ class qkBuilder(__qiskitGeneralBuilder__):
         return self
 
     def cz(self, a, b):
-        self.qc.cz(self.qr[a], self.qr[b])
+        self.__verify_index__(a)
+        self.__verify_index__(b)
 
+        self.qc.cz(self.qr[a], self.qr[b])
         return self
 
 
@@ -91,7 +100,10 @@ class ibmqNativeBuilder(__qiskitGeneralBuilder__):
         if idx is None:
             self.qc.u2(-pi/2, pi/2, self.qr)
         else:
+            if isinstance(idx, int):
+                idx = [idx]
             for i in idx:
+                self.__verify_index__(i)
                 self.qc.u2(-pi/2, pi/2, self.qr[i])
 
         return self
@@ -99,10 +111,14 @@ class ibmqNativeBuilder(__qiskitGeneralBuilder__):
     def input(self, idx, theta):
         if isinstance(idx, list):
             for p, i in enumerate(idx):
+                self.__verify_index__(i)
+
                 self.qc.u2(-pi/2, pi/2, self.qr[i])
                 self.qc.u1(theta[p], self.qr[i])
                 self.qc.u2(-pi/2, pi/2, self.qr[i])
         else:
+            self.__verify_index__(idx)
+
             self.qc.u2(-pi/2, pi/2, self.qr[idx])
             self.qc.u1(theta, self.qr[idx])
             self.qc.u2(-pi/2, pi/2, self.qr[idx])
@@ -119,8 +135,10 @@ class ibmqNativeBuilder(__qiskitGeneralBuilder__):
         return self
 
     def cz(self, a, b):
-        self.qc.cz(self.qr[a], self.qr[b])
+        self.__verify_index__(a)
+        self.__verify_index__(b)
 
+        self.qc.cz(self.qr[a], self.qr[b])
         return self
 
 
@@ -147,7 +165,11 @@ class qkParallelBuilder(__qiskitGeneralBuilder__):
             if self.start_2:
                 self.qc.rx(pi/2, self.qr[self.start_2:])
         else:
+            if isinstance(idx, int):
+                idx = [idx]
             for i in idx:
+                self.__verify_index__(i)
+
                 self.qc.rx(pi/2, self.qr[i])
                 if self.start_2:
                     self.qc.rx(pi/2, self.qr[self.start_2 + i])
@@ -161,6 +183,8 @@ class qkParallelBuilder(__qiskitGeneralBuilder__):
             else:
                 t1, t2 = theta, theta
             for p, i in enumerate(idx):
+                self.__verify_index__(i)
+
                 self.qc.rx(pi/2, self.qr[i])
                 self.qc.rz(t1[p], self.qr[i])
                 self.qc.rx(pi/2, self.qr[i])
@@ -170,6 +194,8 @@ class qkParallelBuilder(__qiskitGeneralBuilder__):
                     self.qc.rz(t2[p], self.qr[self.start_2 + i])
                     self.qc.rx(pi/2, self.qr[self.start_2 + i])
         else:
+            self.__verify_index__(idx)
+
             try:
                 t1, t2 = theta
             except (TypeError, ValueError):
@@ -208,6 +234,9 @@ class qkParallelBuilder(__qiskitGeneralBuilder__):
         return self
 
     def cz(self, a, b):
+        self.__verify_index__(a)
+        self.__verify_index__(b)
+
         self.qc.cz(self.qr[a], self.qr[b])
 
         if self.start_2:
