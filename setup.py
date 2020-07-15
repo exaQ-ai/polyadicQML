@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="polyadicqml",
-    version="0.1.0a1.dev1",
+    version="0.1.0a1",
     author="William Cappelletti",
     author_email="cappelletti.william@gmail.com",
     description="Poliadic Quantum Machine Learning",
@@ -25,7 +25,7 @@ setuptools.setup(
         'scipy',
         'sklearn',
         'qiskit',
-        'manyq @ git+ssh://git@gitlab.com/entropica/manyq.git#egg=manyq',
+        'manyq',
         'tqdm'
     ],
     python_requires='>=3.6',
