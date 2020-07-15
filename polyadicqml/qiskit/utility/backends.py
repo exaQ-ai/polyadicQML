@@ -80,11 +80,6 @@ class Backends():
             while(not self.__logged__):
                 try:
                     IBMQ.load_account()
-                    provider = IBMQ.get_provider(
-                        hub=self.__hub__,
-                        group=self.__group__,
-                        project=self.__project__
-                    )
                     self.__logged__ = True
                 except QiskitError as descr:
                     error = f"{asctime()} - Error logging : {exc_info()[0]}\n\t{descr}\n"
@@ -96,6 +91,12 @@ class Backends():
                         continue
                     else:
                         raise
+
+            provider = IBMQ.get_provider(
+                hub=self.__hub__,
+                group=self.__group__,
+                project=self.__project__
+            )
 
             if not self.__simulator__:
                 for name in self.__names__:
