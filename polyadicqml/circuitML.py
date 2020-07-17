@@ -112,7 +112,9 @@ class circuitML():
     def __str__(self):
         return self.__repr__()
 
-    def grad(self, X, params, v=None, eps=None, nbshots=None, job_size=None):
+    def grad(self, X, params,
+             order=1, v=None, eps=None,
+             nbshots=None, job_size=None):
         """Compute the gradient of the circuit w.r.t. parameters *params* on
         input *X*.
 
@@ -124,6 +126,8 @@ class circuitML():
             Input matrix of shape *(nb_samples, nb_features)*.
         params : vector-like
             Parameter vector of length *nb_params*.
+        order: int, optional
+            Finite difference order. By default 1
         v : array-like
             Vector or matrix to right multiply the Jacobian with.
         eps : float, optional
@@ -143,6 +147,8 @@ class circuitML():
             Jacobian matix as an array of shape *(nb_params, 2**nbqbits)* if
             `v` is None, else Jacobian-vector product: ``J(circuit) @ v``
         """
+        if order > 2: raise NotImplementedError
+
         dim_out = 2**self.nbqbits
         if v is not None:
             if len(v.shape) > 1:
@@ -154,16 +160,29 @@ class circuitML():
             if nbshots is None:
                 eps = 1e-8
             else:
-                max(log2(self.nbqbits)*2*pi/3 * min(.5, 1/nbshots**.25), 1e-8)
+                eps = max(
+                    log2(self.nbqbits)*2*pi/3 * min(.5, 1/nbshots**.25),
+                    1e-8
+                )
 
         num = eps if nbshots is None else eps * nbshots
 
         out = zeros((self.nbparams, dim_out))
-        run_out = self.run(X, params, nbshots, job_size) / num
+
+        run_out = 0
+        if order == 1:
+            run_out = self.run(X, params, nbshots, job_size) / num
+
+        d = zeros_like(params)
         for i in range(len(params)):
-            d = zeros_like(params)
+            d.fill(0)
             d[i] = eps
-            pd = self.run(X, params + d, nbshots, job_size) / num - run_out
+
+            if order == 1:
+                pd = self.run(X, params + d, nbshots, job_size) / num - run_out
+            elif order == 2:
+                pd = (self.run(X, params + d, nbshots, job_size) -
+                      self.run(X, params - d, nbshots, job_size)) / num / 2
 
             out[i] = pd if v is None else pd @ v
 
