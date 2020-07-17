@@ -79,6 +79,7 @@ At this point, we are ready to create and train our first quantum |Classifier|.
 We only need to choose which bitsrings will be used to predict the classes.
 
 ::
+
    from polyadicqml import Classifier 
 
    # Choose two bitstrings
