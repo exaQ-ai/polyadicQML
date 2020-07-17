@@ -57,7 +57,6 @@ User's Guide
    :maxdepth: 3
 
    tutorial
-   use-cases
 
 Modules
 #######
