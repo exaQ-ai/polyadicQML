@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="polyadicqml",
-    version="0.1.0a1",
+    version="0.1.0b1",
     author="William Cappelletti",
     author_email="cappelletti.william@gmail.com",
     description="High level API to define, train and deploy Polyadic Quantum Machine Learning models",
