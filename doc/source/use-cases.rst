@@ -10,13 +10,13 @@
 .. |back| replace::
     :class:`~polyadicqml.qiskit.utility.Backends`
 
-Examples
-########
+Use cases
+#########
 
-Example 1 : The XOR problem
-===========================
+Use case 1 : The XOR problem
+============================
 
-Our first example is the XOR problem.
+Our first use case is the XOR problem.
 We place four points over the cartesian axes so to create a centered
 square; the two points on *x*-axis are labeled as 1, while those on
 *y*-axis as 0.
@@ -160,10 +160,10 @@ lines), which is the best possible.
    :scale: 80 %
    :align: center
 
-Example 2: The Iris Flower dataset
-==================================
+Use case 2: The Iris Flower dataset
+===================================
 
-For the second example, we perform ternary classification on the Iris Flower dataset.
+For the second use case, we perform ternary classification on the Iris Flower dataset.
 In this case, we will train the model using a simulator and then test it
 on a real quantum computer, using IBMQ access.
 
@@ -243,7 +243,7 @@ Which corresponds to the following circuit:
 Model training
 --------------
 
-As in the previous example, we need a |circuitML| and a classifier, which we train with the corresponding dataset.
+As in the previous use case, we need a |circuitML| and a classifier, which we train with the corresponding dataset.
 
 .. code-block:: python
 
@@ -264,11 +264,9 @@ We can print the training scores.
 
 .. code-block:: python
 
+    >>> from polyadicqml.utility import print_results
     >>> pred_train = model(input_train)
-    >>> print("Confusion matrix on train :",
-    >>>     confusion_matrix(target_train, pred_train),
-    >>>     "Accuracy : " + str(accuracy_score(target_train, pred_train)),
-    >>>     sep='\n')
+    >>> print_results(target_train, pred_train, name="train")
 
     Confusion matrix on train:
     [[30  0  0]
@@ -313,10 +311,9 @@ Finally, we can print the test scores:
 
 .. code-block:: python
 
-    >>> print("Confusion matrix on test :",
-    >>>     confusion_matrix(target_test, pred_test),
-    >>>     "Accuracy : " + str(accuracy_score(target_test, pred_test)),
-    >>>     sep='\n')
+    >>> from polyadicqml.utility import print_results
+    >>> pred_test = model(input_test)
+    >>> print_results(target_test, pred_test, name="test")
 
     Confusion matrix on test:
     [[20  0  0]
@@ -328,12 +325,12 @@ Source code
 ===========
 
 The git page contains the source code that produced the results and the
-figures in this examples.
+figures in this use cases.
 Note that the second experiment being run on a physical quantum computer,
 the test output is random, so it could slightly differ form the presented
 one -- run on ibmq_burlington the 23rd June 2020. 
 
-From the root directory, the examples can be run by command line as:
+From the root directory, the use cases can be run by command line as:
 
-- Example 1 : ``python3 exaples/example-XOR.py``
-- Example 2 : ``python3 exaples/example-iris.py``
+- Use case 1 : ``python3 exaples/example-XOR.py``
+- Use case 2 : ``python3 exaples/example-iris.py``
