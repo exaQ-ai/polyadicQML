@@ -62,6 +62,8 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+master_toc = "index"
+
 # -- Options for HTML output -------------------------------------------------
 
 import sphinx_rtd_theme

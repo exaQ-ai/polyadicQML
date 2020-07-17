@@ -47,21 +47,34 @@ learning, have a look at our :ref:`sec-tutorial`.
    :caption: Learn though examples : 
    :glob:
    :numbered:
+   :titlesonly:
    
    quickstart/*
+
+.. _sec-tutorial:
 
 User's Guide
 ############
 
+In the following tutorial, we will discover, step by step, the :mod:`polyadicqml` package.
+
+At first, we learn how to define a **parametric quantum circuit**.
+Then, we understand how to train and test a **Quantum Classifier**.
+Finally, we see the different backends supported by this package.
+
+At the end of the tutorial, you should be able to use a Quantum Classifier for any problem, provided you have enough computing power.
+
+
 .. toctree::
-   :maxdepth: 3
-
-   tutorial
-
-Modules
-#######
+   :caption: Tutorial : 
+   :maxdepth: 2
+   :glob:
+   :numbered:
+   
+   tutorial/*
 
 .. toctree::
+   :caption: Modules : 
    :maxdepth: 3
 
    polyadicqml
