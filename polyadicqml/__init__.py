@@ -3,7 +3,8 @@ __all__ = [
     "circuitML",
     "Classifier",
     "manyq",
-    "qiskit"
+    "qiskit",
+    "utility"
 ]
 
 from .quantumClassifier import Classifier
@@ -12,3 +13,4 @@ from .circuitBuilder import circuitBuilder
 
 from . import manyq
 from . import qiskit
+from . import utility
