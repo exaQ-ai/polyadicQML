@@ -3,7 +3,7 @@ import setuptools
 with open("README.rst", "r") as fh:
     long_description = fh.read()
 
-setuptools.setup(
+setup_kwargs = dict(
     name="polyadicqml",
     version="0.1.0b1",
     author="William Cappelletti",
@@ -34,4 +34,4 @@ setuptools.setup(
 )
 
 if __name__ == '__main__':
-    setuptools.setup(**setup_args)
+    setuptools.setup(**setup_kwargs)
