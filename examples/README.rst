@@ -13,7 +13,7 @@ We generate a dataset and its labels using :mod:`numpy` and we randomly split
 it in a train and test with :func:`~sklearn.model_selection.train_test_split`
 from :mod:`sklearn`.
 
-::
+.. code-block:: python
 
    import numpy as np
    np.random.seed(42)
@@ -46,7 +46,7 @@ following order: ``(bdr, x, params)``.
 These correspond to a |circuitBuilder|, to an input vector, and to a
 parameter vector.
 
-::
+.. code-block:: python
 
    def simple_circuit(bdr, x, params):
       bdr.allin(x).cz(0,1).allin(params[:2])
@@ -66,7 +66,7 @@ Now, we need to translate our description in a runnable circuit.
 This is obtained using a |circuitML| class, which interacts with a backend;
 in this case we use :ref:`sec-manyq`.
 
-::
+.. code-block:: python
 
    from polyadicqml.manyq import mqCircuitML
 
@@ -79,7 +79,7 @@ Model training
 At this point, we are ready to create and train our first quantum |Classifier|.
 We only need to choose which bitsrings will be used to predict the classes.
 
-::
+.. code-block:: python
 
    from polyadicqml import Classifier 
 
@@ -93,7 +93,7 @@ Predict on new data
 
 Once the model is trained, we can easily predict the class of any new sample.
 
-::
+.. code-block:: python
 
    pred_train = model(input_train)
    pred_test = model(input_test)
@@ -101,7 +101,7 @@ Once the model is trained, we can easily predict the class of any new sample.
 And we can assert the performance of the model by confronting the predictions
 and the true labels.
 
-::
+.. code-block:: python
 
     >>> from polyadicqml.utility import print_results
 
@@ -163,7 +163,7 @@ The label of each sample is given by the center of its distribution.
 This generates the following dataset, where the circles represent the
 samples and the squares the distribution centers.
 
-.. image:: ../../figures/XOR-points.png
+.. image:: ../figures/XOR-points.png
    :alt: XOR scatterplot
    :scale: 80 %
    :align: center
@@ -267,7 +267,7 @@ We can now plot the predictions and see that the model is very close to
 the bayesian prediction (whose decision boundaries are shown as grey
 lines), which is the best possible.
 
-.. image:: ../../figures/XOR-predictions.png
+.. image:: ../figures/XOR-predictions.png
    :alt: XOR predictions
    :scale: 80 %
    :align: center
@@ -354,7 +354,7 @@ repeated instructions.
 
 Which corresponds to the following circuit:
 
-.. image:: ../../figures/iris-circuit.png
+.. image:: ../figures/iris-circuit.png
    :alt: Iris circuit
    :scale: 40 %
    :align: center
