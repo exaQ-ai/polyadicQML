@@ -37,30 +37,18 @@ Quickstart
 
 With polyadicQML_, training a quantum-machine-learning model and using it to
 predict on new points can be done in a few lines.
-Suppose we have the following ``quickstart.py`` script:
 
-.. literalinclude:: ../../examples/quickstart.py
-   :emphasize-lines: 31-34, 39-42, 47-52, 59-60
+The following links provide a quick overview of the API through some
+motivating examples.
+To gain a deeper understanding of the interface, and of quantum machine
+learning, have a look at our :ref:`sec-tutorial`.
 
-We can run it and train our first QML model:
-
-.. code-block:: console
-
-   $ python3 quickstart.py
-
-   ##########################
-   Confusion matrix on train:
-   [[66  3]
-   [ 4 67]]
-   Accuracy : 0.95
-
-   ##########################
-   Confusion matrix on test:
-   [[30  1]
-   [ 2 27]]
-   Accuracy : 0.95
-
-To understand what we where doing in the script, have a look at our :ref:`sec-tutorial`.
+.. toctree::
+   :caption: Learn though examples : 
+   :glob:
+   :numbered:
+   
+   quickstart/*
 
 User's Guide
 ############

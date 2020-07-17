@@ -51,6 +51,7 @@ intersphinx_mapping = {
     'numpy': ('https://numpy.org/doc/stable/', None),
     'cupy': ('https://docs-cupy.chainer.org/en/stable/', None),
     'qiskit': ('https://qiskit.org/documentation/', None),
+    'sklearn': ('https://scikit-learn.org/stable/', None),
 }
 
 # Add any paths that contain templates here, relative to this directory.

@@ -7,9 +7,6 @@ The Qiskit/IBMQ interface
 
 .. _Qiskit: https://qiskit.org/
 .. _`IBMQ`: https://www.ibm.com/quantum-computing/
-.. _`Qiskit installation guide`: https://qiskit.org/documentation/install.html#access-ibm-quantum-systems
-.. |qk_aer| replace:: *Qiskit Aer* simulators
-.. _qk_aer: https://qiskit.org/documentation/tutorials/simulators/1_aer_provider.html
 
 In this tutorial, we discuss the |qk| module, which provides support for
 Qiskit_ simulators as well as `IBMQ`_ backends. 
