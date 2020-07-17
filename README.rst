@@ -15,7 +15,7 @@ presentation`_ from the **IBM Singapore Supercomputing Virtual Forum**.
 This code has been used to fully train a Quantum Machine Learning model
 on a real quantum computer to classify the Iris flower dataset.
 
-Training a model on a simulator and testing it on a real quantum computer can
+With polyadicQML_, Training a model on a simulator and testing it on a real quantum computer can
 be done in a few lines:
 
 .. code-block:: python
