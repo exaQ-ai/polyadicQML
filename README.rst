@@ -70,7 +70,7 @@ Installing latest stable from github::
 
    git clone https://github.com/entropicalabs/polyadicQML.git polyadicqml
    cd polyadicqml
-   python3 setup.py install --user
+   pip install -U .
  
 
 .. _`video presentation`: https://youtu.be/QZ8ynyG-O9U
