@@ -54,10 +54,10 @@ model = Classifier(qc, bitstr).fit(input_train, target_train)
 ###############################
 # Predict and print the results
 
-from polyadicqml.utility import print_results
-
 pred_train = model(input_train)
 pred_test = model(input_test)
+
+from polyadicqml.utility import print_results
 
 print_results(target_train, pred_train, name="train")
 print_results(target_test, pred_test, name="test")
