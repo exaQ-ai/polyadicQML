@@ -13,9 +13,8 @@ __pycache__/
 /*.egg-info
 
 # Spynx doc
-doc/
 doc/build/
-doc/source/_*
+doc/source/_build
 
 # Local Netlify folder
 .netlify
