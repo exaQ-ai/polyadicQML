@@ -40,7 +40,7 @@ predict on new points can be done in a few lines.
 Suppose we have the following ``quickstart.py`` script:
 
 .. literalinclude:: ../../examples/quickstart.py
-   :emphasize-lines: 31-34, 39-42, 47-52, 65-66
+   :emphasize-lines: 31-34, 39-42, 47-52, 59-60
 
 We can run it and train our first QML model:
 
