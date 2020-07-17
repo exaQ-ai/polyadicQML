@@ -13,7 +13,7 @@ setup_kwargs = dict(
     long_description_content_type="text/x-rst",
     url="https://github.com/entropicalabs/polyadicQML",
     packages=setuptools.find_packages(
-        exclude=('examples')
+        include=('polyadicqml')
     ),
     license='Apache 2.0',
     classifiers=[
