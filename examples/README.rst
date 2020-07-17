@@ -57,7 +57,7 @@ This corresponds to the circuit in the following figure, where we use `input`
 gates and `CZ entanglements`.
 The precise syntax of |make_c| and the meaning of the `gates` are explained in the ":ref:`sec-circuit`" tutorial .
 
-.. image:: ../figures/circuit-2qb-binary.png
+.. image:: ../doc/source/figures/circuit-2qb-binary.png
    :scale: 25 %
    :alt: Parametric quantum circuit on two qubits
    :align: center
