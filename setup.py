@@ -34,4 +34,4 @@ setuptools.setup(
 )
 
 if __name__ == '__main__':
-    setup(**setup_args)
+    setuptools.setup(**setup_args)
