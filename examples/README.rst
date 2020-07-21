@@ -1,3 +1,33 @@
+.. SUBSTITUTIONS
+
+.. |make_c| replace:: ``make_circuit``
+.. _make_c: https://polyadicqml.entropicalabs.io/polyadicqml.html#polyadicqml.circuitML.make_circuit
+
+.. |circuitBuilder| replace:: ``circuitBuilder``
+.. _circuitBuilder: https://polyadicqml.entropicalabs.io/polyadicqml.html#polyadicqml.circuitBuilder
+
+.. |circuitML| replace:: ``circuitML``
+.. _circuitML: https://polyadicqml.entropicalabs.io/polyadicqml.html#polyadicqml.circuitML
+
+.. |sec-manyq| replace:: The *manyq* simulator
+.. _sec-manyq: https://polyadicqml.entropicalabs.io/tutorial/3-manyq.html#the-manyq-simulator
+
+.. |Classifier| replace:: ``Classifier``
+.. _Classifier: https://polyadicqml.entropicalabs.io/polyadicqml.html#polyadicqml.Classifier
+
+.. |sec-circuit| replace:: Defining a quantum circuit
+.. _sec-circuit: https://polyadicqml.entropicalabs.io/tutorial/1-circuit.html#sec-circuit
+
+.. |qk_aer| replace:: *Qiskit Aer* simulators
+.. _qk_aer: https://qiskit.org/documentation/tutorials/simulators/1_aer_provider.html
+
+.. |back| replace:: ``Backends``
+.. _back: https://polyadicqml.entropicalabs.io/qiskit.html#polyadicqml.qiskit.utility.Backends
+
+.. |qkCircuitML| replace:: ``qkCircuitML``
+.. _qkCircuitML: https://polyadicqml.entropicalabs.io/qiskit.html#polyadicqml.qiskit.qkCircuitML
+
+
 Quickstart Examples
 ###################
 
@@ -9,9 +39,9 @@ In this tutorial we train and test a binary-quantum-classifier.
 Dataset generation
 ------------------
 
-We generate a dataset and its labels using :mod:`numpy` and we randomly split
-it in a train and test with :func:`~sklearn.model_selection.train_test_split`
-from :mod:`sklearn`.
+We generate a dataset and its labels using ``numpy`` and we randomly split
+it in a train and test with ``model_selection.train_test_split``
+from ``sklearn``.
 
 .. code-block:: python
 
@@ -55,7 +85,7 @@ parameter vector.
 
 This corresponds to the circuit in the following figure, where we use `input`
 gates and `CZ entanglements`.
-The precise syntax of |make_c| and the meaning of the `gates` are explained in the ":ref:`sec-circuit`" tutorial .
+The precise syntax of |make_c| and the meaning of the `gates` are explained in the "|sec-circuit|" tutorial .
 
 .. image:: ../doc/source/figures/circuit-2qb-binary.png
    :scale: 25 %
@@ -64,7 +94,7 @@ The precise syntax of |make_c| and the meaning of the `gates` are explained in t
 
 Now, we need to translate our description in a runnable circuit.
 This is obtained using a |circuitML| class, which interacts with a backend;
-in this case we use :ref:`sec-manyq`.
+in this case we use |sec-manyq|.
 
 .. code-block:: python
 
@@ -252,7 +282,7 @@ Otherwise, we can combine the two operations by using the shorthand:
     y_pred = model(X_test)
 
 For instance, going back to our XOR problem, we can predict the label of
-each point on a grid that covers :math:`(-\pi,\pi)\times(-\pi,\pi)`, to
+each point on a grid that covers ``(-\pi,\pi)\times(-\pi,\pi)``, to
 assess the model accuracy.
 Using some list comprehension, it would look like this:
 
@@ -308,7 +338,7 @@ test set, representing respectively 60% and 40% of the samples.
         train_test_split(data, target, test_size=.4, train_size=.6, stratify=target)
 
 Then, we center it and rescale it so that it has zero mean and all the
-feature values fall between :math:`(-0.95\pi,0.95\pi)`. (Actually, with
+feature values fall between ``(-0.95\pi,0.95\pi)``. (Actually, with
 our scaling, last interval should cover 99% of a gaussian with the same
 mean and std; it covers all points on almost all splits.)
 
