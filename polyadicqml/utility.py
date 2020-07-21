@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.metrics import log_loss
+from sklearn.metrics import log_loss, confusion_matrix, accuracy_score
 
 
 def stable_softmax(X, axis=None):
@@ -57,3 +57,49 @@ def CE_grad(y_true, y_pred):
     sigma = stable_softmax(y_pred, axis=1)
     sigma[range(n), y_true] -= 1
     return sigma.sum(axis=0) / n
+
+
+def print_results(target, pred, name=None, output=None):
+    """Print confusion matrix and accuracy of predicted labels vs actual
+    target.
+
+    Parameters
+    ----------
+    target : vector
+        Actual classes
+    pred : vector
+        Predicted labels
+    name : str, optional
+        Which name to print, required if output is not None. By default None.
+    output : str, optional
+        Output type, if None then results are printed to std.Out. By default
+        ``None``
+        - `dict` : return the scores in a nested dictionary
+        ( `{name : {'confusion_matrix' : ..., 'accuracy' : ...})
+
+    Returns
+    -------
+    [output]
+        If `output` is not ``None``, the results are returned in desired
+        structure.
+    """
+    if output is None:
+        if name is None:
+            name = "input"
+        print(
+            '\n' + 30*'#',
+            "Confusion matrix on {}:".format(name),
+            confusion_matrix(target, pred),
+            "Accuracy : " + str(accuracy_score(target, pred)),
+            sep='\n'
+        )
+        return None
+    elif output == 'dict':
+        if name is None:
+            raise ValueError("Cannot output dict if `name` is not given")
+        out = {name: {"confusion_matrix":
+                      confusion_matrix(target, pred).tolist(),
+                      "accuracy": accuracy_score(target, pred).item()
+                      }
+               }
+        return out

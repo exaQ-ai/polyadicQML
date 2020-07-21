@@ -1,6 +1,10 @@
-#################################
-Polyadic Quantum Machine Learning
-#################################
+########################################
+Welcome to Polyadic QML's documentation!
+########################################
+
+.. _Qiskit: https://qiskit.org/
+.. _`video presentation`: https://youtu.be/QZ8ynyG-O9U
+.. _polyadicQML: https://polyadicqml.entropicalabs.io/
 
 This package provides an high level API to define, train and deploy
 **Polyadic Quantum Machine Learning** models.
@@ -45,17 +49,11 @@ be done in a few lines:
 
    pred_test = model(input_test)
 
-You can find out more in the `official documentation`_, where you will find tutorials and examples.
-A quickstart through examples can be found in the `examples folder`_, as well as on the website.
+You can find out more in the :ref:`sec-quickstart`  and in the :ref:`sec-tutorial`.
 As an introduction to the algorithm you can check out this `video
 presentation`_ from the **IBM Singapore Supercomputing Virtual Forum**. 
 This code has been used to fully train a Quantum Machine Learning model
 on a real quantum computer to classify the Iris flower dataset.
-
-Documentation
-#############
-
-You can find a `quickstart guide`_, the tutorial_ and the module references_ at polyadicqml.entropicalabs.io_.
 
 Installation
 ############
@@ -69,14 +67,62 @@ Installing latest stable from github::
    git clone https://github.com/entropicalabs/polyadicQML.git polyadicqml
    cd polyadicqml
    pip install -U .
- 
 
-.. _`video presentation`: https://youtu.be/QZ8ynyG-O9U
-.. _polyadicQML: https://polyadicqml.entropicalabs.io/
-.. _Qiskit: https://qiskit.org/
-.. _polyadicqml.entropicalabs.io: https://polyadicqml.entropicalabs.io
-.. _`official documentation`: https://polyadicqml.entropicalabs.io
-.. _`examples folder`: https://github.com/entropicalabs/polyadicQML/tree/master/examples
-.. _`quickstart guide`: https://polyadicqml.entropicalabs.io/#quickstart
-.. _tutorial: https://polyadicqml.entropicalabs.io/#user-s-guide
-.. _references: https://polyadicqml.entropicalabs.io/#modules
+.. _sec-quickstart:
+
+Quickstart
+##########
+
+With polyadicQML_, training a quantum-machine-learning model and using it to
+predict on new points can be done in a few lines.
+
+The following links provide a quick overview of the API through some
+motivating examples.
+To gain a deeper understanding of the interface, and of quantum machine
+learning, have a look at our :ref:`sec-tutorial`.
+
+.. toctree::
+   :caption: Learn though examples : 
+   :glob:
+   :numbered:
+   :titlesonly:
+   
+   quickstart/*
+
+.. _sec-tutorial:
+
+User's Guide
+############
+
+In the following tutorial, we will discover, step by step, the :mod:`polyadicqml` package.
+
+At first, we learn how to define a **parametric quantum circuit**.
+Then, we understand how to train and test a **Quantum Classifier**.
+Finally, we see the different backends supported by this package.
+
+At the end of the tutorial, you should be able to use a Quantum Classifier for any problem, provided you have enough computing power.
+
+
+.. toctree::
+   :caption: Tutorial : 
+   :maxdepth: 2
+   :glob:
+   :numbered:
+   
+   tutorial/*
+
+.. toctree::
+   :caption: Modules : 
+   :name: modules
+   :maxdepth: 3
+
+   polyadicqml
+   manyq
+   qiskit
+
+Indices and tables
+##################
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

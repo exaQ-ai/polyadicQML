@@ -3,22 +3,24 @@ import setuptools
 with open("README.rst", "r") as fh:
     long_description = fh.read()
 
-setuptools.setup(
+setup_kwargs = dict(
     name="polyadicqml",
-    version="0.1.0a1",
+    version="0.1.0b1",
     author="William Cappelletti",
     author_email="cappelletti.william@gmail.com",
-    description="Poliadic Quantum Machine Learning",
+    description="High level API to define, train and deploy Polyadic Quantum Machine Learning models",
     long_description=long_description,
     long_description_content_type="text/x-rst",
-    url="https://gitlab.com/entropica/polyadic-quantum-ml",
+    url="https://github.com/entropicalabs/polyadicQML",
     packages=setuptools.find_packages(
-        exclude=('examples')
+        include=('polyadicqml')
     ),
+    license='Apache 2.0',
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
-        "Development Status :: 1 - Planning",
+        "Development Status :: 4 - Beta",
+        "License :: OSI Approved :: Apache Software License",
     ],
     install_requires=[
         'numpy',
@@ -30,3 +32,6 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
 )
+
+if __name__ == '__main__':
+    setuptools.setup(**setup_kwargs)

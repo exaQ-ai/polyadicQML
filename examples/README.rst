@@ -1,23 +1,167 @@
-.. |circuitML| replace::
-    :class:`~polyadicqml.circuitML`
+.. SUBSTITUTIONS
 
-.. |make_c| replace::
-    :meth:`~polyadicqml.circuitML.make_circuit`
+.. |make_c| replace:: ``make_circuit``
+.. _make_c: https://polyadicqml.entropicalabs.io/polyadicqml.html#polyadicqml.circuitML.make_circuit
 
-.. |qkCircuitML| replace::
-    :class:`~polyadicqml.qiskit.qkCircuitML`
+.. |circuitBuilder| replace:: ``circuitBuilder``
+.. _circuitBuilder: https://polyadicqml.entropicalabs.io/polyadicqml.html#polyadicqml.circuitBuilder
 
-.. |back| replace::
-    :class:`~polyadicqml.qiskit.utility.Backends`
+.. |circuitML| replace:: ``circuitML``
+.. _circuitML: https://polyadicqml.entropicalabs.io/polyadicqml.html#polyadicqml.circuitML
 
-Examples
-########
+.. |sec-manyq| replace:: The *manyq* simulator
+.. _sec-manyq: https://polyadicqml.entropicalabs.io/tutorial/3-manyq.html#the-manyq-simulator
 
-Example 1 : The XOR problem
-===========================
+.. |Classifier| replace:: ``Classifier``
+.. _Classifier: https://polyadicqml.entropicalabs.io/polyadicqml.html#polyadicqml.Classifier
 
-Our first example is the XOR problem.
-We dispose four points over the cartesian axes so to create a centered
+.. |sec-circuit| replace:: Defining a quantum circuit
+.. _sec-circuit: https://polyadicqml.entropicalabs.io/tutorial/1-circuit.html#sec-circuit
+
+.. |qk_aer| replace:: *Qiskit Aer* simulators
+.. _qk_aer: https://qiskit.org/documentation/tutorials/simulators/1_aer_provider.html
+
+.. |back| replace:: ``Backends``
+.. _back: https://polyadicqml.entropicalabs.io/qiskit.html#polyadicqml.qiskit.utility.Backends
+
+.. |qkCircuitML| replace:: ``qkCircuitML``
+.. _qkCircuitML: https://polyadicqml.entropicalabs.io/qiskit.html#polyadicqml.qiskit.qkCircuitML
+
+
+Quickstart Examples
+###################
+
+A binary classifier
+===================
+
+In this tutorial we train and test a binary-quantum-classifier.
+
+Dataset generation
+------------------
+
+We generate a dataset and its labels using ``numpy`` and we randomly split
+it in a train and test with ``model_selection.train_test_split``
+from ``sklearn``.
+
+.. code-block:: python
+
+   import numpy as np
+   np.random.seed(42)
+
+   n_pc = 100  # Points per component
+
+   # Create a matrix on the point and its symmetry
+   px, py = 0.75, 0.75
+   X = np.asarray(n_pc * [[px, py]] +
+                  n_pc * [[-px, -py]]
+   )
+   # Add gaussian noise
+   X += 0.7 *  np.random.randn(*X.shape)
+   # Create target vecor
+   y = np.concatenate((np.zeros(n_pc), np.ones(n_pc)))
+
+   # Split in train and test
+   from sklearn.model_selection import train_test_split
+
+   input_train, input_test, target_train, target_test =\
+      train_test_split(X, y, test_size=.3)
+
+Circuit definition
+------------------
+
+Now, we need to define the structure of the circuit, we do this using a
+|make_c|_ function.
+This function can have any name, but must take exactly three arguments, in the
+following order: ``(bdr, x, params)``.
+These correspond to a |circuitBuilder|_, to an input vector, and to a
+parameter vector.
+
+.. code-block:: python
+
+   def simple_circuit(bdr, x, params):
+      bdr.allin(x).cz(0,1).allin(params[:2])
+      bdr.cz(0,1).allin(params[2:4])
+      return bdr
+
+This corresponds to the circuit in the following figure, where we use `input`
+gates and `CZ entanglements`.
+The precise syntax of |make_c|_ and the meaning of the `gates` are explained in the "|sec-circuit|_" tutorial .
+
+.. image:: ../doc/source/figures/circuit-2qb-binary.png
+   :scale: 25 %
+   :alt: Parametric quantum circuit on two qubits
+   :align: center
+
+Now, we need to translate our description in a runnable circuit.
+This is obtained using a |circuitML|_ class, which interacts with a backend;
+in this case we use |sec-manyq|_.
+
+.. code-block:: python
+
+   from polyadicqml.manyq import mqCircuitML
+
+   qc = mqCircuitML(make_circuit=simple_circuit,
+                  nbqbits=2, nbparams=4)
+
+Model training 
+---------------
+
+At this point, we are ready to create and train our first quantum |Classifier|_.
+We only need to choose which bitsrings will be used to predict the classes.
+
+.. code-block:: python
+
+   from polyadicqml import Classifier 
+
+   # Choose two bitstrings
+   bitstr = ["01", "10"]
+
+   model = Classifier(qc, bitstr).fit(input_train, target_train)
+
+Predict on new data
+-------------------
+
+Once the model is trained, we can easily predict the class of any new sample.
+
+.. code-block:: python
+
+   pred_train = model(input_train)
+   pred_test = model(input_test)
+
+And we can assert the performance of the model by confronting the predictions
+and the true labels.
+
+.. code-block:: python
+
+    >>> from polyadicqml.utility import print_results
+
+    >>> print_results(target_train, pred_train, name="train")
+
+   ##########################
+   Confusion matrix on train:
+   [[66  3]
+    [ 4 67]]
+   Accuracy : 0.95
+
+    >>> print_results(target_test, pred_test, name="test")
+
+   ##########################
+   Confusion matrix on test:
+   [[30  1]
+    [ 2 27]]
+   Accuracy : 0.95
+
+Source code
+-----------
+
+This example script can be found in the `GitHub example page`_ as
+``quickstart.py``.
+
+A Gaussian XOR problem
+======================
+
+Our second example is the XOR problem.
+We place four points over the cartesian axes so to create a centered
 square; the two points on *x*-axis are labeled as 1, while those on
 *y*-axis as 0.
 
@@ -57,9 +201,7 @@ samples and the squares the distribution centers.
 Circuit definition
 ------------------
 
-Now, we define the circuit structure using a `circuitBulder`.
-This function has to respect a precise signature: |make_c| (``bdr``,
-``x``, ``params``). 
+Now, we define the circuit structure using the |make_c|_ function.
 
 .. code-block:: python
 
@@ -94,7 +236,7 @@ Model training
 ---------------
 
 Finally, we can create and train the classifier. 
-We instantiate the |circuitML| subclass that we prefer, in this case the one using the fast *manyq* simualtor, specifying the number of qubits and of parameters.
+We instantiate the |circuitML|_ subclass that we prefer, in this case the one using the fast *manyq* simualtor, specifying the number of qubits and of parameters.
 
 .. code-block:: python
 
@@ -133,16 +275,16 @@ To obtain the bitstring probabilities, we can just call the model:
 
 Then, we can retrieve the label of each point as the argmax of the
 corresponding probabilities.
-Otherwise, we can combine the two operation by using the shorthand:
+Otherwise, we can combine the two operations by using the shorthand:
 
 .. code-block:: python
 
     y_pred = model(X_test)
 
 For instance, going back to our XOR problem, we can predict the label of
-each point on a grid that covers :math:`(-\pi,\pi)\times(-\pi,\pi)`, to
+each point on a grid that covers ``(-\pi,\pi)\times(-\pi,\pi)``, to
 assess the model accuracy.
-Using some list comprhension, it would look like this:
+Using some list comprehension, it would look like this:
 
 .. code-block:: python
 
@@ -160,10 +302,17 @@ lines), which is the best possible.
    :scale: 80 %
    :align: center
 
-Example 2: The Iris Flower dataset
-==================================
+Source code
+-----------
 
-For the second example, we perform ternary classification on the Iris Flower dataset.
+The example script, producing the plots, can be found in the `GitHub example
+page`_ as ``example-XOR.py``.
+
+The Iris Flower dataset
+=======================
+
+For this use case, we perform ternary classification on the Iris Flower
+dataset.
 In this case, we will train the model using a simulator and then test it
 on a real quantum computer, using IBMQ access.
 
@@ -189,7 +338,7 @@ test set, representing respectively 60% and 40% of the samples.
         train_test_split(data, target, test_size=.4, train_size=.6, stratify=target)
 
 Then, we center it and rescale it so that it has zero mean and all the
-feature values fall between :math:`(-0.95\pi,0.95\pi)`. (Actually, with
+feature values fall between ``(-0.95\pi,0.95\pi)``. (Actually, with
 our scaling, last interval should cover 99% of a gaussian with the same
 mean and std; it covers all points on almost all splits.)
 
@@ -207,7 +356,7 @@ mean and std; it covers all points on almost all splits.)
 Circuit definition
 ------------------
 
-Now, we define a circuit on two qubits, again using the |make_c| syntax.
+Now, we define a circuit on two qubits, again using the |make_c|_ syntax.
 Thanks to the functional nature, we can use other fuctions to group
 repeated instructions.
 
@@ -243,7 +392,7 @@ Which corresponds to the following circuit:
 Model training
 --------------
 
-As in the previous example, we need a |circuitML| and a classifier, which we train with the corresponding dataset.
+As in the previous use case, we need a |circuitML|_ and a classifier, which we train with the corresponding dataset.
 
 .. code-block:: python
 
@@ -264,11 +413,9 @@ We can print the training scores.
 
 .. code-block:: python
 
+    >>> from polyadicqml.utility import print_results
     >>> pred_train = model(input_train)
-    >>> print("Confusion matrix on train :",
-    >>>     confusion_matrix(target_train, pred_train),
-    >>>     "Accuracy : " + str(accuracy_score(target_train, pred_train)),
-    >>>     sep='\n')
+    >>> print_results(target_train, pred_train, name="train")
 
     Confusion matrix on train:
     [[30  0  0]
@@ -283,12 +430,23 @@ Model Testing
 
 Once the model is trained, we can test it.
 Furthermore, we can keep the trained parameters and change the circuit
-backend, as long as the |make_c| function is the same.
+backend, as long as the |make_c|_ function is the same.
 So, if we have an `IBMQ account`_ configured and access to a quantum
 backend (in this case *ibmq-burlington*), we can run the test on an actual hardware.
 
-We use the |back| utility class, along with the |qkCircuitML|, which
-implements |circuitML| for qiksit use.
+.. note::
+
+    To access IBM Quantum systems, you need to configure your IBM Quantum account.
+    Detailed instructions are provided on the `Qiskit installation guide`_.
+    You can verify your setup if the following runs without producing errors::
+
+        >>> from qiskit import IBMQ
+        >>> IBMQ.load_account()
+
+    If you do not have an IBM Quantum account, you can still use |qk_aer|_.
+
+We use the |back|_ utility class, along with the |qkCircuitML|_, which
+implements |circuitML|_ for qiksit use.
 **NOTE** that we must provide a number of shots, as the backend is not a
 simulator; the job size is inferred if left empty, but we chose to set it at 40.
 
@@ -313,10 +471,9 @@ Finally, we can print the test scores:
 
 .. code-block:: python
 
-    >>> print("Confusion matrix on test :",
-    >>>     confusion_matrix(target_test, pred_test),
-    >>>     "Accuracy : " + str(accuracy_score(target_test, pred_test)),
-    >>>     sep='\n')
+    >>> from polyadicqml.utility import print_results
+    >>> pred_test = model(input_test)
+    >>> print_results(target_test, pred_test, name="test")
 
     Confusion matrix on test:
     [[20  0  0]
@@ -325,15 +482,7 @@ Finally, we can print the test scores:
     Accuracy : 1.0
 
 Source code
-===========
+-----------
 
-The git page contains the source code that produced the results and the
-figures in this examples.
-Note that the second experiment being run on a physical quantum computer,
-the test output is random, so it could slightly differ form the presented
-one -- run on ibmq_burlington the 23rd June 2020. 
-
-From the root directory, the examples can be run by command line as:
-
-- Example 1 : ``python3 exaples/example-XOR.py``
-- Example 2 : ``python3 exaples/example-iris.py``
+The example script, producing the plots, can be found in the `GitHub example
+page`_ as ``example-iris.py``.
