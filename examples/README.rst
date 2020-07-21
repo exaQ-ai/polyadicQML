@@ -70,10 +70,10 @@ Circuit definition
 ------------------
 
 Now, we need to define the structure of the circuit, we do this using a
-|make_c| function.
+|make_c|_ function.
 This function can have any name, but must take exactly three arguments, in the
 following order: ``(bdr, x, params)``.
-These correspond to a |circuitBuilder|, to an input vector, and to a
+These correspond to a |circuitBuilder|_, to an input vector, and to a
 parameter vector.
 
 .. code-block:: python
@@ -85,7 +85,7 @@ parameter vector.
 
 This corresponds to the circuit in the following figure, where we use `input`
 gates and `CZ entanglements`.
-The precise syntax of |make_c| and the meaning of the `gates` are explained in the "|sec-circuit|" tutorial .
+The precise syntax of |make_c|_ and the meaning of the `gates` are explained in the "|sec-circuit|_" tutorial .
 
 .. image:: ../doc/source/figures/circuit-2qb-binary.png
    :scale: 25 %
@@ -93,8 +93,8 @@ The precise syntax of |make_c| and the meaning of the `gates` are explained in t
    :align: center
 
 Now, we need to translate our description in a runnable circuit.
-This is obtained using a |circuitML| class, which interacts with a backend;
-in this case we use |sec-manyq|.
+This is obtained using a |circuitML|_ class, which interacts with a backend;
+in this case we use |sec-manyq|_.
 
 .. code-block:: python
 
@@ -106,7 +106,7 @@ in this case we use |sec-manyq|.
 Model training 
 ---------------
 
-At this point, we are ready to create and train our first quantum |Classifier|.
+At this point, we are ready to create and train our first quantum |Classifier|_.
 We only need to choose which bitsrings will be used to predict the classes.
 
 .. code-block:: python
@@ -201,7 +201,7 @@ samples and the squares the distribution centers.
 Circuit definition
 ------------------
 
-Now, we define the circuit structure using the |make_c| function.
+Now, we define the circuit structure using the |make_c|_ function.
 
 .. code-block:: python
 
@@ -236,7 +236,7 @@ Model training
 ---------------
 
 Finally, we can create and train the classifier. 
-We instantiate the |circuitML| subclass that we prefer, in this case the one using the fast *manyq* simualtor, specifying the number of qubits and of parameters.
+We instantiate the |circuitML|_ subclass that we prefer, in this case the one using the fast *manyq* simualtor, specifying the number of qubits and of parameters.
 
 .. code-block:: python
 
@@ -356,7 +356,7 @@ mean and std; it covers all points on almost all splits.)
 Circuit definition
 ------------------
 
-Now, we define a circuit on two qubits, again using the |make_c| syntax.
+Now, we define a circuit on two qubits, again using the |make_c|_ syntax.
 Thanks to the functional nature, we can use other fuctions to group
 repeated instructions.
 
@@ -392,7 +392,7 @@ Which corresponds to the following circuit:
 Model training
 --------------
 
-As in the previous use case, we need a |circuitML| and a classifier, which we train with the corresponding dataset.
+As in the previous use case, we need a |circuitML|_ and a classifier, which we train with the corresponding dataset.
 
 .. code-block:: python
 
@@ -430,7 +430,7 @@ Model Testing
 
 Once the model is trained, we can test it.
 Furthermore, we can keep the trained parameters and change the circuit
-backend, as long as the |make_c| function is the same.
+backend, as long as the |make_c|_ function is the same.
 So, if we have an `IBMQ account`_ configured and access to a quantum
 backend (in this case *ibmq-burlington*), we can run the test on an actual hardware.
 
@@ -445,8 +445,8 @@ backend (in this case *ibmq-burlington*), we can run the test on an actual hardw
 
     If you do not have an IBM Quantum account, you can still use |qk_aer|_.
 
-We use the |back| utility class, along with the |qkCircuitML|, which
-implements |circuitML| for qiksit use.
+We use the |back|_ utility class, along with the |qkCircuitML|_, which
+implements |circuitML|_ for qiksit use.
 **NOTE** that we must provide a number of shots, as the backend is not a
 simulator; the job size is inferred if left empty, but we chose to set it at 40.
 

@@ -64,5 +64,6 @@
 .. _`GitHub example page`: https://github.com/entropicalabs/polyadicQML/tree/master/examples
 
 .. _`Qiskit installation guide`: https://qiskit.org/documentation/install.html#access-ibm-quantum-systems
+
 .. |qk_aer| replace:: *Qiskit Aer* simulators
 .. _qk_aer: https://qiskit.org/documentation/tutorials/simulators/1_aer_provider.html
