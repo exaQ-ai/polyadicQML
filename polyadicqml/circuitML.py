@@ -172,7 +172,7 @@ class circuitML():
 
         num = eps if nbshots is None else eps * nbshots
 
-        out = zeros((self.nbparams,)+ dim_out)
+        out = zeros((self.nbparams,) + dim_out)
 
         run_out = 0
         if order == 1:

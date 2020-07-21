@@ -41,22 +41,22 @@ def CE_grad(y_true, y_pred):
     Parameters
     ----------
     y_true : vector
-        Ground truth (correct) labels for n_samples samples
+        Ground truth (correct) labels for *n_samples* samples
     y_pred : vector
         Predicted probabilities, as returned by a classifier’s
         ``predict_proba`` method.
 
     Returns
     -------
-    float
-        Loss value.
+    ndarray
+        Jacobian of the loss, of size *(n_samples, n_classes)*.
     """
 
     n = len(y_pred)
 
     sigma = stable_softmax(y_pred, axis=1)
     sigma[range(n), y_true] -= 1
-    return sigma.sum(axis=0) / n
+    return sigma / n
 
 
 def print_results(target, pred, name=None, output=None):
