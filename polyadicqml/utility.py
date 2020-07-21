@@ -49,14 +49,14 @@ def CE_grad(y_true, y_pred):
     Returns
     -------
     ndarray
-        Jacobian of the loss, of size *(n_samples, n_classes)*.
+        Jacobian of the loss, of size *(n_samples, n_classes, 1)*.
     """
 
     n = len(y_pred)
 
     sigma = stable_softmax(y_pred, axis=1)
     sigma[range(n), y_true] -= 1
-    return sigma / n
+    return (sigma / n)[:, :, np.newaxis]
 
 
 def print_results(target, pred, name=None, output=None):

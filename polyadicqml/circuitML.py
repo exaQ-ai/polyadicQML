@@ -1,6 +1,6 @@
 """Implementation of circuit for ML
 """
-from numpy import pi, random, zeros_like, zeros, log2
+import numpy as np
 
 
 class circuitML():
@@ -79,8 +79,8 @@ class circuitML():
         vector
             Vector of random parameters.
         """
-        if seed: random.seed(seed)
-        return random.randn(self.nbparams)
+        if seed: np.random.seed(seed)
+        return np.random.randn(self.nbparams)
 
     def make_circuit(self, bdr, x, params):
         """Generate the circuit corresponding to input `x` and `params`.
@@ -149,36 +149,37 @@ class circuitML():
             2**nbqbits)* if `v` is None, else Jacobian-vector product:
             ``J(circuit) @ v``.
         """
-        if order > 2: raise NotImplementedError
+        if order > 2:
+            raise NotImplementedError
 
         if len(X.shape) < 2:
             X = X.reshape(1, -1)
         N, *_ = X.shape
         dim_out = (N, 2**self.nbqbits)
         if v is not None:
-            if len(v.shape) > 1:
-                dim_out = (v.shape[-1],)
-            else:
-                dim_out = (1,)
+            # if len(v.shape) > 1:
+            #     dim_out = (v.shape[-1],)
+            # else:
+            dim_out = (1,)
 
         if eps is None:
             if nbshots is None:
                 eps = 1e-8
             else:
                 eps = max(
-                    log2(self.nbqbits)*2*pi/3 * min(.5, 1/nbshots**.25),
+                    np.log2(self.nbqbits)*2*np.pi/3 * min(.5, 1/nbshots**.25),
                     1e-8
                 )
 
         num = eps if nbshots is None else eps * nbshots
 
-        out = zeros((self.nbparams,) + dim_out)
+        out = np.zeros((self.nbparams,) + dim_out)
 
         run_out = 0
         if order == 1:
             run_out = self.run(X, params, nbshots, job_size) / num
 
-        d = zeros_like(params)
+        d = np.zeros_like(params)
         for i in range(len(params)):
             d.fill(0)
             d[i] = eps
@@ -189,6 +190,6 @@ class circuitML():
                 pd = (self.run(X, params + d, nbshots, job_size) -
                       self.run(X, params - d, nbshots, job_size)) / num / 2
 
-            out[i] = pd if v is None else pd @ v
+            out[i] = pd if v is None else np.sum(pd * v)
 
         return out

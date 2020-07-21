@@ -10,7 +10,7 @@ from scipy.optimize import minimize
 
 from .circuitML import circuitML
 
-from .utility import CE_loss
+from .utility import CE_loss, CE_grad
 
 SCIPY_METHODS = {
     'bfgs', 'nelder-mead', 'powell', 'cg',
@@ -79,6 +79,10 @@ class Classifier():
         nbshots_increment = kwargs.get('nbshots_increment')
         nbshots_incr_delay = kwargs.get('nbshots_incr_delay')
         loss = kwargs.get('loss', CE_loss)
+        loss_grad = kwargs.get(
+            'loss_grad',
+            CE_grad if loss is CE_loss else None
+        )
         job_size = kwargs.get('job_size')
         budget = kwargs.get('budget', 100)
         name = kwargs.get('name')
@@ -121,6 +125,7 @@ class Classifier():
         self.job_size = job_size
 
         self.__loss__ = loss
+        self.__loss_grad__ = loss_grad
         self.__min_loss__ = np.inf
 
         self.__last_loss_value__ = None
@@ -286,6 +291,26 @@ class Classifier():
             out = out / float(self.nbshots)
 
         return out[:, self.bitstr]
+
+    def grad(self, X, y, params):
+        # Compute the Jacobian vector product of
+        # Jac_{params}(circuit) @ Grad_{bistr}(loss)
+
+        if len(X.shape) < 2:
+            X = X.reshape(1, -1)
+        N, *_ = X.shape
+
+        v = np.zeros((N, 2**self.circuit.nbqbits))
+        v[:, self.bitstr] = self.__loss_grad__(
+            y, self.predict_proba(X, params)
+        )[:, :, 0]
+
+        return self.circuit.grad(
+            X, params,
+            v=v,
+            nbshots=self.nbshots,
+            job_size=self.job_size,
+        )
 
     def proba_to_label(self, proba) -> np.ndarray:
         """Transforms a matrix of real values in integer labels.
