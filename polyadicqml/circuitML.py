@@ -124,6 +124,7 @@ class circuitML():
         ----------
         X : array-like
             Input matrix of shape *(nb_samples, nb_features)*.
+            If a vector is provided, it is reshaped as *(1, nb_features)*.
         params : vector-like
             Parameter vector of length *nb_params*.
         order: int, optional
@@ -144,17 +145,21 @@ class circuitML():
         Returns
         -------
         array
-            Jacobian matix as an array of shape *(nb_params, 2**nbqbits)* if
-            `v` is None, else Jacobian-vector product: ``J(circuit) @ v``
+            Jacobian matix as a tensor of shape *(nb_samples, nb_params,
+            2**nbqbits)* if `v` is None, else Jacobian-vector product:
+            ``J(circuit) @ v``.
         """
         if order > 2: raise NotImplementedError
 
-        dim_out = 2**self.nbqbits
+        if len(X.shape) < 2:
+            X = X.reshape(1, -1)
+        N, *_ = X.shape
+        dim_out = (N, 2**self.nbqbits)
         if v is not None:
             if len(v.shape) > 1:
-                dim_out = v.shape[0]
+                dim_out = (v.shape[-1],)
             else:
-                dim_out = 1
+                dim_out = (1,)
 
         if eps is None:
             if nbshots is None:
@@ -167,7 +172,7 @@ class circuitML():
 
         num = eps if nbshots is None else eps * nbshots
 
-        out = zeros((self.nbparams, dim_out))
+        out = zeros((self.nbparams,)+ dim_out)
 
         run_out = 0
         if order == 1:
