@@ -10,11 +10,6 @@ As for now, it supports a fast simulator, *manyq*, and
 Qiskit_.
 More are coming.
 
-As an introduction to the algorithm you can check out this `video
-presentation`_ from the **IBM Singapore Supercomputing Virtual Forum**. 
-This code has been used to fully train a Quantum Machine Learning model
-on a real quantum computer to classify the Iris flower dataset.
-
 With polyadicQML_, Training a model on a simulator and testing it on a real quantum computer can
 be done in a few lines:
 
@@ -25,19 +20,15 @@ be done in a few lines:
       ...
    
    # Prepare a circuit simulator:
-   from polyadicqml.manyq import mqCircuitML
-   
+
    qc = mqCircuitML(make_circuit=make_circuit,
                     nbqbits=nbqbits, nbparams=nbparams)
 
    # Instanciate and train the model
-   from polyadicqml import quantumClassifier 
 
    model = Classifier(qc, bitstr).fit(input_train, target_train)
 
    # Prepare to run the circuit on an IBMq machine:
-   from polyadicqml.qiskit.utility import Backends
-   from polyadicqml.qiskit import qkCircuitML
 
    backend = Backends("ibmq_ourense", hub="ibm-q")
 
@@ -54,10 +45,17 @@ be done in a few lines:
 
    pred_test = model(input_test)
 
+You can find out more in the `official documentation`_, where you will find tutorials and examples.
+A quickstart through examples can be found in the `examples folder`_, as well as on the website.
+As an introduction to the algorithm you can check out this `video
+presentation`_ from the **IBM Singapore Supercomputing Virtual Forum**. 
+This code has been used to fully train a Quantum Machine Learning model
+on a real quantum computer to classify the Iris flower dataset.
+
 Documentation
 #############
 
-You can find a tutorial_ and the module references_ at polyadicqml.entropicalabs.io_
+You can find a tutorial_ and the module references_ at polyadicqml.entropicalabs.io_.
 
 Installation
 ############
@@ -77,5 +75,8 @@ Installing latest stable from github::
 .. _polyadicQML: https://polyadicqml.entropicalabs.io/
 .. _Qiskit: https://qiskit.org/
 .. _polyadicqml.entropicalabs.io: https://polyadicqml.entropicalabs.io
-.. _tutorial: https://polyadicqml.entropicalabs.io/tutorial
+.. _`official documentation`: https://polyadicqml.entropicalabs.io
+.. _`examples folder`: https://github.com/entropicalabs/polyadicQML/tree/master/examples
+.. _`quickstart guide`: https://polyadicqml.entropicalabs.io/#quickstart
+.. _tutorial: https://polyadicqml.entropicalabs.io/#user-s-guide
 .. _references: https://polyadicqml.entropicalabs.io/#modules
