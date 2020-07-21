@@ -113,6 +113,7 @@ At the end of the tutorial, you should be able to use a Quantum Classifier for a
 
 .. toctree::
    :caption: Modules : 
+   :name: modules
    :maxdepth: 3
 
    polyadicqml

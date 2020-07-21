@@ -55,7 +55,7 @@ on a real quantum computer to classify the Iris flower dataset.
 Documentation
 #############
 
-You can find a tutorial_ and the module references_ at polyadicqml.entropicalabs.io_.
+You can find a `quickstart guide`_, the tutorial_ and the module references_ at polyadicqml.entropicalabs.io_.
 
 Installation
 ############
