@@ -17,6 +17,11 @@ SCIPY_METHODS = {
     'newton-cg', 'l-bfgs-b', 'tnc', 'cobyla',
     'slsqp', 'trust-constr', 'dogleg',
 }
+GRAD_BASED = {
+    'cg', 'bfgs', 'newton-cg', 'l-bfgs-b',
+    'tnc', 'slsqp', 'dogleg', 'trust-ncg',
+    'trust-krylov', 'trust-exact', 'trust-constr'
+}
 
 
 class Classifier():
@@ -311,7 +316,7 @@ class Classifier():
             v=v,
             nbshots=self.nbshots,
             job_size=self.job_size,
-        )
+        ).flatten()
 
     def proba_to_label(self, proba) -> np.ndarray:
         """Transforms a matrix of real values in integer labels.
@@ -444,13 +449,19 @@ class Classifier():
             bounds = [(-np.pi, np.pi) for _ in self.params]
 
         mini_kwargs = dict(
-            method=method, bounds=bounds,
+            method=method,
+            bounds=bounds,
             options=options,
         )
         if method.lower() not in ('cobyla'):
             mini_kwargs["callback"] = lambda xk: self.__callback__(
                 xk, save_loss_progress, save_output_progress,
             )
+        if method.lower() in GRAD_BASED:
+            def jac(params):
+                return self.grad(input_train, target_train, params)
+
+            mini_kwargs['jac'] = jac
 
         mini_out = minimize(to_optimize, self.params, **mini_kwargs)
 
