@@ -21,6 +21,8 @@ setup_kwargs = dict(
         "Operating System :: OS Independent",
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: Apache Software License",
+        "Intended Audience :: Science/Research",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ],
     install_requires=[
         'numpy',
