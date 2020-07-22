@@ -55,7 +55,7 @@ def CE_grad(y_true, y_pred):
     n = len(y_pred)
 
     sigma = stable_softmax(y_pred, axis=1)
-    sigma[range(n), y_true] -= 1
+    sigma[range(n), y_true.astype(int)] -= 1
     return (sigma / n)[:, :, np.newaxis]
 
 
