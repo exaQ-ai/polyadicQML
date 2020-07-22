@@ -127,6 +127,7 @@ class Classifier():
         self.__loss__ = loss
         self.__loss_grad__ = loss_grad
         self.__min_loss__ = np.inf
+        self.__fit_conv__ = False
 
         self.__last_loss_value__ = None
         self.__last_output__ = None
@@ -388,13 +389,15 @@ class Classifier():
             Wheter to store the current output and parameters , by default
             False
         """
+        self.__n_iter__ += 1
+        self.pbar.update()
+
         if loss or output:
             self.__loss_progress__.append(self.__last_loss_value__)
         if output:
             self.__output_progress__.append(self.__last_output__.tolist())
             self.__params_progress__.append(params.tolist())
 
-        self.__n_iter__ += 1
         if self.__save_path__ and self.__n_iter__ % 10 == 0:
             self.save()
 
@@ -402,8 +405,6 @@ class Classifier():
         # this is necessary to estimate the gradient by FD
         self._rnd_indices = np.random.choice(
             self.__indices, size=self.__batch_size, replace=False)
-
-        self.pbar.update()
 
     def __scipy_minimize__(
             self, input_train, target_train, labels, method,
@@ -454,6 +455,7 @@ class Classifier():
         mini_out = minimize(to_optimize, self.params, **mini_kwargs)
 
         self.set_params(mini_out.x.copy())
+        self.__fit_conv__ = mini_out.success
 
     def __inner_opt__(self):
         pass
@@ -528,10 +530,15 @@ class Classifier():
                 method, save_loss_progress, save_output_progress, **kwargs
             )
         else:
-            pass
+            raise NotImplementedError
 
         self.pbar.close()
         del self.pbar
+        if self.__n_iter__ < self.__budget__:
+            if self.__fit_conv__:
+                print(f"Early convergence at step {self.__n_iter__}")
+            else:
+                print(f"Optimization failed at step {self.__n_iter__}")
 
         if save_output_progress:
             with open(save_output_progress, "w") as f:
