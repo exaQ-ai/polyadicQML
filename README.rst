@@ -5,6 +5,8 @@ Polyadic Quantum Machine Learning
 This package provides a library to define, train and deploy
 **Quantum Machine Learning** models.
 
+This library has been used to train a qmodel with the Iris flower dataset on IBM quantum computers: iris.entropicalabs.io_
+
 The quantum circuits can run on top of any quantum computer provider.
 As for now, it implements interfaces for a fast simulator, *manyq*, and 
 Qiskit_.
@@ -71,9 +73,8 @@ You can find out more in the `documentation`_, where you will find tutorials and
 A quickstart through examples can be found in the `examples folder`_, as well as on the website.
 As an introduction to the algorithm you can check out this `video
 presentation`_. 
-This code has been used to train a qmodel
-on a real quantum computer to classify the Iris flower dataset.
 
+.. _iris.entropicalabs.io: https://iris.entropicalabs.io/
 
 .. _`video presentation`: https://youtu.be/QZ8ynyG-O9U
 .. _polyadicQML: https://polyadicqml.entropicalabs.io/
