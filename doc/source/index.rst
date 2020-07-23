@@ -58,7 +58,7 @@ on a real quantum computer to classify the Iris flower dataset.
 Installation
 ############
 
-From PyPI, at the command line (not yet supported)::
+From PyPI, at the command line::
 
    pip install polyadicqml
 

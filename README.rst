@@ -60,7 +60,7 @@ You can find a `quickstart guide`_, the tutorial_ and the module references_ at 
 Installation
 ############
 
-From PyPI, at the command line (not yet supported)::
+From PyPI, at the command line::
 
    pip install polyadicqml
 
