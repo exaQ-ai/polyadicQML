@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setup_kwargs = dict(
     name="polyadicqml",
-    version="0.1.0b3",
+    version="0.1.0b4",
     author="William Cappelletti",
     author_email="cappelletti.william@gmail.com",
     description="High level API to define, train and deploy Polyadic Quantum Machine Learning models",
