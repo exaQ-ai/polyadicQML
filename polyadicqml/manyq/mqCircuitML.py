@@ -103,3 +103,27 @@ class mqCircuitML(circuitML):
         """Switch to numpy.
         """
         self.__gpu = False
+
+    def __partial_diffs__(
+        self, X, params, out, eps, nbshots, job_size, order, v
+    ):
+        num = eps if nbshots is None else eps * nbshots
+
+        run_out = 0
+        if order == 1:
+            run_out = self.run(X, params, nbshots, job_size) / num
+
+        d = np.zeros_like(params)
+        for i in range(len(params)):
+            d.fill(0)
+            d[i] = eps
+
+            if order == 1:
+                pd = self.run(X, params + d, nbshots, job_size) / num - run_out
+            elif order == 2:
+                pd = (self.run(X, params + d, nbshots, job_size) -
+                      self.run(X, params - d, nbshots, job_size)) / num / 2
+
+            out[i] = pd if v is None else np.sum(pd * v)
+
+        return out

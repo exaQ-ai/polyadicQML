@@ -171,9 +171,16 @@ class circuitML():
                     1e-8
                 )
 
-        num = eps if nbshots is None else eps * nbshots
-
         out = np.zeros((self.nbparams,) + dim_out)
+
+        return self.__partial_diffs__(
+            X, params, out, eps, nbshots, job_size, order, v
+        )
+
+    def __partial_diffs__(
+        self, X, params, out, eps, nbshots, job_size, order, v
+    ):
+        num = eps if nbshots is None else eps * nbshots
 
         run_out = 0
         if order == 1:
