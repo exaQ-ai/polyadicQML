@@ -1,6 +1,7 @@
 """Implementation of circuit for ML
 """
 import numpy as np
+from multiprocessing import Process, Queue
 
 
 class circuitML():
@@ -182,21 +183,73 @@ class circuitML():
     ):
         num = eps if nbshots is None else eps * nbshots
 
-        run_out = 0
+        # Init queues left and right
+        ql, qr = Queue(), Queue()
+        processes = []
         if order == 1:
-            run_out = self.run(X, params, nbshots, job_size) / num
+            p = Process(
+                target=self.__partial_diffs__,
+                args=(ql, 0, X,
+                      params,
+                      nbshots, job_size)
+            )
+            processes.append(p)
+            p.start()
 
-        d = np.zeros_like(params)
+        # Deploy processes
         for i in range(len(params)):
-            d.fill(0)
+            d = np.zeros_like(params)
             d[i] = eps
 
-            if order == 1:
-                pd = self.run(X, params + d, nbshots, job_size) / num - run_out
-            elif order == 2:
-                pd = (self.run(X, params + d, nbshots, job_size) -
-                      self.run(X, params - d, nbshots, job_size)) / num / 2
+            pr = Process(
+                target=self.__parallel_run__,
+                args=(qr, i, X,
+                      params + d,
+                      nbshots, job_size)
+            )
+            processes.append(pr)
+            pr.start()
 
-            out[i] = pd if v is None else np.sum(pd * v)
+            if order == 2:
+                pl = Process(
+                    target=self.__parallel_run__,
+                    args=(ql, i, X,
+                          params - d,
+                          nbshots, job_size)
+                )
+                processes.append(pl)
+                pl.start()
+
+        # Retrieve processes
+        for p in processes:
+            p.join()
+
+        # Work with the data in the queue
+        # Right diffs
+        while not qr.empty():
+            i, pd_r = qr.get()
+            pd_r /= num
+
+            out[i] += pd_r if v is None else np.sum(pd_r * v)
+
+        # Left diffs
+        while not ql.empty():
+            i, pd_l = ql.get()
+            pd_l /= num
+
+            if order == 1:
+                out -= pd_l if v is None else np.sum(pd_l * v)
+            elif order == 2:
+                out[i] -= pd_l if v is None else np.sum(pd_l * v)
+
+        if order == 2:
+            out /= 2
 
         return out
+
+    def __parallel_run__(
+        self, q, i, X, params_d, nbshots, job_size,
+    ):
+        pd = self.run(X, params_d, nbshots, job_size)
+
+        q.put([i, pd])
