@@ -239,7 +239,7 @@ class circuitML():
                 out -= pd_l     # if v is None else np.sum(pd_l * v)
             elif order == 2:
                 out[i] -= pd_l  # if v is None else np.sum(pd_l * v)
-            
+
             processed_l.append(i)
 
         if order == 2:
