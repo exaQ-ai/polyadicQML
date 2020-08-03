@@ -68,9 +68,9 @@ class mqCircuitML(circuitML):
         _params = None
         if self.__gpu:
             _X = asarray(_X)
-            _params = hstack(batch_size * (asarray(params).reshape(-1, 1),))
+            _params = asarray(params)
         else:
-            _params = np.hstack(batch_size * (params.reshape(-1, 1),))
+            _params = params
 
         bdr = self.make_circuit(
             self._circuitBuilder(
