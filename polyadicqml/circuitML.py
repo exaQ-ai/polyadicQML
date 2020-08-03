@@ -157,7 +157,7 @@ class circuitML():
             X = X.reshape(1, -1)
         N, *_ = X.shape
         dim_out = (N, 2**self.nbqbits)
-        if v is not None:
+        if v is not None and False:
             # if len(v.shape) > 1:
             #     dim_out = (v.shape[-1],)
             # else:
@@ -174,26 +174,20 @@ class circuitML():
 
         out = np.zeros((self.nbparams,) + dim_out)
 
-        return self.__partial_diffs__(
-            X, params, out, eps, nbshots, job_size, order, v
-        )
-
-    def __partial_diffs__(
-        self, X, params, out, eps, nbshots, job_size, order, v
-    ):
         num = eps if nbshots is None else eps * nbshots
 
         # Init queues left and right
         ql, qr = Queue(), Queue()
-        processes = []
+        processes_l = []
+        processes_r = []
         if order == 1:
             p = Process(
-                target=self.__partial_diffs__,
+                target=self.__parallel_run__,
                 args=(ql, 0, X,
                       params,
                       nbshots, job_size)
             )
-            processes.append(p)
+            processes_l.append(p)
             p.start()
 
         # Deploy processes
@@ -207,7 +201,7 @@ class circuitML():
                       params + d,
                       nbshots, job_size)
             )
-            processes.append(pr)
+            processes_r.append(pr)
             pr.start()
 
             if order == 2:
@@ -217,35 +211,41 @@ class circuitML():
                           params - d,
                           nbshots, job_size)
                 )
-                processes.append(pl)
+                processes_l.append(pl)
                 pl.start()
 
         # Retrieve processes
-        for p in processes:
-            p.join()
+        # for p in processes:
+        #     p.join()
 
         # Work with the data in the queue
+        processed_l = []
+        processed_r = []
+
         # Right diffs
-        while not qr.empty():
+        while len(processed_r) < len(processes_r):
             i, pd_r = qr.get()
             pd_r /= num
 
-            out[i] += pd_r if v is None else np.sum(pd_r * v)
+            out[i] += pd_r      # if v is None else np.sum(pd_r * v)
+            processed_r.append(i)
 
         # Left diffs
-        while not ql.empty():
+        while len(processed_l) < len(processes_l):
             i, pd_l = ql.get()
             pd_l /= num
 
             if order == 1:
-                out -= pd_l if v is None else np.sum(pd_l * v)
+                out -= pd_l     # if v is None else np.sum(pd_l * v)
             elif order == 2:
-                out[i] -= pd_l if v is None else np.sum(pd_l * v)
+                out[i] -= pd_l  # if v is None else np.sum(pd_l * v)
+            
+            processed_l.append(i)
 
         if order == 2:
             out /= 2
 
-        return out
+        return out if v is None else np.tensordot(out, v)
 
     def __parallel_run__(
         self, q, i, X, params_d, nbshots, job_size,
