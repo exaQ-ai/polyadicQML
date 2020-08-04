@@ -18,11 +18,27 @@ class QMeans(quantumModel):
         self.means = np.empty((nclasses, 2**circuit.nbqbits))
 
     def predict_proba(self, X: np.ndarray, params=None) -> np.ndarray:
-        dists = self.run_circuit(X, params)
-        return cdist(dists, self.means, metric="cityblock")
+        probs = self.run_circuit(X, params)
+        return cdist(probs, self.means, metric="euclidean")
 
     def predict(self, X: np.ndarray) -> np.ndarray:
-        return np.argmax(self.predict_proba(X), axis=0)
+        return np.argmin(self.predict_proba(X), axis=1)
+
+    def __update_centers__(self, probs, labels=None):
+        if labels is None:
+            labels = np.argmin(
+                cdist(probs, self.means, metric="euclidean"),
+                axis=1
+            )
+
+        for i in range(len(self.means)):
+            self.means[i] = np.mean(
+                probs[labels == i],
+                axis=0
+            )
+
+    def __update_params__(self, probs, labels=None, **kwargs):
+        pass
 
     def fit(
         self, input_train, target_train, batch_size=None, **kwargs
