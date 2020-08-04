@@ -18,7 +18,8 @@ class qmeansTester(unittest.TestCase):
 
         self.X = np.array(
             [[0., 0.],
-             [np.pi/2, np.pi/2]]
+             [np.pi/2, np.pi/2],
+             [0., np.pi/2]]
         )
 
         self.model = pqml.QMeans(
@@ -35,12 +36,14 @@ class qmeansTester(unittest.TestCase):
         self.assertTrue(
             np.allclose(
                 out,
-                np.array([[0, 0, 0, 1], [.25, .25, .25, .25]])
+                np.array([[0, 0, 0, 1],
+                          [.25, .25, .25, .25],
+                          [0, 0, 0.5, 0.5]])
             )
         )
 
     def test_predict_proba(self):
-        dists = self.model.predict_proba(self.X)
+        dists = self.model.predict_proba(self.X[:2])
         # print(dists)
         with self.subTest("Correct class zero distance"):
             self.assertTrue(
@@ -54,6 +57,13 @@ class qmeansTester(unittest.TestCase):
             self.assertTrue(
                 np.all(dists > 0)
             )
+
+    def test_predict(self):
+        self.assertTrue(
+            np.allclose(
+                self.model(self.X), np.array([0, 1, 1])
+            )
+        )
 
 
 if __name__ == '__main__':
