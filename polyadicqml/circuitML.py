@@ -252,4 +252,4 @@ class circuitML():
     ):
         pd = self.run(X, params_d, nbshots, job_size)
 
-        q.put([i, pd])
+        q.put([i, pd.astype(float)])
