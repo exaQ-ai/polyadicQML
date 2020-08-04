@@ -9,6 +9,8 @@ from tqdm.auto import tqdm
 from scipy.optimize import minimize
 
 from .quantumModel import quantumModel
+from .optim import OPTIM_METHODS
+
 
 from .utility import CE_loss, CE_grad
 
@@ -161,9 +163,11 @@ class Classifier(quantumModel):
 
         return out[:, self.bitstr]
 
-    def grad(self, X, y, params):
+    def grad(self, X, y, params=None):
         # Compute the Jacobian vector product of
         # Jac_{params}(circuit) @ Grad_{bistr}(loss)
+        if params is None:
+            params = self.params
 
         if len(X.shape) < 2:
             X = X.reshape(1, -1)
@@ -255,10 +259,12 @@ class Classifier(quantumModel):
             self.__indices, size=self.__batch_size, replace=False)
 
     def __scipy_minimize__(
-            self, input_train, target_train, labels, method,
-            save_loss_progress, save_output_progress,
+            self, input_train, target_train, labels,
             **kwargs
     ):
+        method = kwargs.get('method', 'BFGS').lower()
+        save_loss_progress = kwargs.get('save_loss_progress', None)
+        save_output_progress = kwargs.get('save_output_progress', None)
 
         def to_optimize(params):
             self.nbshots = self.nbshots_increment(
@@ -278,7 +284,7 @@ class Classifier(quantumModel):
                 self.__min_loss__ = loss_value
                 self.set_params(params.copy())
 
-            if method.lower() == "cobyla":
+            if method == "cobyla":
                 self.__callback__(
                     params, save_loss_progress, save_output_progress
                 )
@@ -296,11 +302,11 @@ class Classifier(quantumModel):
             bounds=bounds,
             options=options,
         )
-        if method.lower() not in ('cobyla'):
+        if method not in ('cobyla'):
             mini_kwargs["callback"] = lambda xk: self.__callback__(
                 xk, save_loss_progress, save_output_progress,
             )
-        if method.lower() in GRAD_BASED:
+        if method in GRAD_BASED:
             def jac(params):
                 return self.grad(input_train, target_train, params)
 
@@ -311,8 +317,66 @@ class Classifier(quantumModel):
         self.set_params(mini_out.x.copy())
         self.__fit_conv__ = mini_out.success
 
-    def __inner_opt__(self):
-        pass
+    def __optim__(
+            self, input_train, target_train, labels,
+            **kwargs
+    ):
+        # Retrieve kwargs
+        method = kwargs.get('method', 'sgd').lower()
+        save_loss_progress = kwargs.get('save_loss_progress', None)
+        save_output_progress = kwargs.get('save_output_progress', None)
+
+        opt_options = kwargs.get(
+            'options',
+        )
+        if opt_options is None:
+            raise TypeError("Missing required keyword argument: 'opt_options'")
+
+        lr = opt_options.get('lr')
+        if lr is None:
+            raise TypeError("Missing required argument in 'opt_options': 'lr'")
+
+        lr_t = opt_options.pop('lr_t', lr)
+        t_iter = opt_options.pop('t_iter', 1)
+
+        optimizer = OPTIM_METHODS.get(method)(
+            self, **opt_options
+        )
+
+        for it in range(self.__budget__):
+            self.nbshots = self.nbshots_increment(
+                self.nbshots, self.__n_iter__, self.__min_loss__)
+
+            # optimize
+            optimizer.step(
+                input_train[self.__rnd_indices],
+                target_train[self.__rnd_indices]
+            )
+
+            if it < t_iter:
+                a = it / t_iter
+                optimizer.set_lr(
+                    (1 - a) * lr + a * lr_t
+                )
+
+            if save_loss_progress or save_output_progress:
+                probas = self.predict_proba(
+                    input_train[self.__rnd_indices],
+                )
+                loss_value = self.__loss__(
+                    target_train[self.__rnd_indices],
+                    probas,
+                    labels=labels
+                )
+
+                self.__last_loss_value__ = loss_value
+                self.__last_output__ = probas[np.argsort(self.__rnd_indices)]
+
+
+            # Callback function
+            self.__callback__(
+                self.params, save_loss_progress, save_output_progress
+            )
 
     def fit(self, input_train, target_train, batch_size=None,
             **kwargs):
@@ -349,17 +413,15 @@ class Classifier(quantumModel):
             self
         """
 
-        method = kwargs.pop('method', 'BFGS')
-        save_loss_progress = kwargs.pop('save_loss_progress', None)
-        save_output_progress = kwargs.pop('save_output_progress', None)
-        seed = kwargs.pop('seed', None)
+        method = kwargs.get('method', 'BFGS').lower()
+        save_loss_progress = kwargs.get('save_loss_progress', None)
+        save_output_progress = kwargs.get('save_output_progress', None)
+        seed = kwargs.get('seed', None)
 
         if seed is not None:
             np.random.seed(seed)
 
         _nbshots = self.nbshots
-        self.pbar = tqdm(total=self.__budget__, desc="Training", leave=False)
-        self.__n_iter__ = 0
 
         if batch_size:
             self.__batch_size = batch_size
@@ -378,10 +440,18 @@ class Classifier(quantumModel):
             self.__indices, size=self.__batch_size, replace=False
         )
 
-        if method.lower() in SCIPY_METHODS:
+        self.pbar = tqdm(total=self.__budget__, desc="Training", leave=False)
+        self.__n_iter__ = 0
+
+        if method in SCIPY_METHODS:
             self.__scipy_minimize__(
                 input_train, target_train, _labels,
-                method, save_loss_progress, save_output_progress, **kwargs
+                **kwargs
+            )
+        elif method in OPTIM_METHODS.keys():
+            self.__optim__(
+                input_train, target_train, _labels,
+                **kwargs
             )
         else:
             raise NotImplementedError
