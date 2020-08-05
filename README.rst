@@ -3,7 +3,7 @@ Polyadic Quantum Machine Learning
 #################################
 
 This package provides a library to define, train and deploy
-**Quantum Machine Learning** models.
+**Quantum Machine Learning** models as defined in `Polyadic Quantum Classifier — arXiv:2007.14044 <https://arxiv.org/abs/2007.14044>`_
 
 This library has been used to train a qmodel with the Iris flower dataset on IBM quantum computers: iris.entropicalabs.io_
 
