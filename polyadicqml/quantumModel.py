@@ -2,6 +2,7 @@
 """
 
 from .circuitML import circuitML
+from numpy import argmax
 
 
 class quantumModel():
@@ -168,7 +169,7 @@ class quantumModel():
         X : array
             Design matrix of n samples
         """
-        raise NotImplementedError
+        return argmax(self.predict_proba(X), axis=1)
 
     def __call__(self, X):
         """Compute the predicted class for each input point of the design

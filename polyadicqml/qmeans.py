@@ -5,6 +5,7 @@ import numpy as np
 from scipy.spatial.distance import cdist
 
 from .quantumModel import quantumModel, circuitML
+from .utility import stable_softmax
 
 
 class QMeans(quantumModel):
@@ -17,12 +18,15 @@ class QMeans(quantumModel):
 
         self.means = np.empty((nclasses, 2**circuit.nbqbits))
 
-    def predict_proba(self, X: np.ndarray, params=None) -> np.ndarray:
+    def dists(self, X: np.ndarray, params=None) -> np.ndarray:
         probs = self.run_circuit(X, params)
         return cdist(probs, self.means, metric="euclidean")
 
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        return np.argmin(self.predict_proba(X), axis=1)
+    def predict_proba(self, X: np.ndarray, params=None) -> np.ndarray:
+        return stable_softmax(
+            - self.dists(X, params),    # NOTE negative distances
+            axis=1
+        )
 
     def __update_centers__(self, probs, labels=None):
         if labels is None:
