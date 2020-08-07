@@ -42,8 +42,8 @@ class qmeansTester(unittest.TestCase):
             )
         )
 
-    def test_predict_proba(self):
-        dists = self.model.predict_proba(self.X[:2])
+    def test_dists(self):
+        dists = self.model.dists(self.X[:2])
         # print(dists)
         with self.subTest("Correct class zero distance"):
             self.assertTrue(
@@ -56,6 +56,21 @@ class qmeansTester(unittest.TestCase):
             dists += np.diag(np.ones(len(dists)))
             self.assertTrue(
                 np.all(dists > 0)
+            )
+
+    def test_predict_proba(self):
+        probs = self.model.predict_proba(self.X)
+        print(probs)
+        with self.subTest("All positive"):
+            self.assertTrue(
+                np.all(probs > 0)
+            )
+
+        with self.subTest("Sum to one"):
+            self.assertTrue(
+                np.allclose(
+                    probs.sum(axis=1), 1
+                )
             )
 
     def test_predict(self):
