@@ -372,7 +372,6 @@ class Classifier(quantumModel):
                 self.__last_loss_value__ = loss_value
                 self.__last_output__ = probas[np.argsort(self.__rnd_indices)]
 
-
             # Callback function
             self.__callback__(
                 self.params, save_loss_progress, save_output_progress
@@ -414,7 +413,6 @@ class Classifier(quantumModel):
         """
 
         method = kwargs.get('method', 'BFGS').lower()
-        save_loss_progress = kwargs.get('save_loss_progress', None)
         save_output_progress = kwargs.get('save_output_progress', None)
         seed = kwargs.get('seed', None)
 
