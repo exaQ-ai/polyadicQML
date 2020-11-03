@@ -40,17 +40,6 @@ class qkBuilder(__qiskitGeneralBuilder__):
     def __init__(self, nbqbits, *args, **kwargs):
         super().__init__(nbqbits)
 
-    def alldiam(self, idx=None):
-        if idx is None:
-            self.qc.rx(pi/2, self.qr)
-        else:
-            if isinstance(idx, int):
-                idx = [idx]
-            for i in idx:
-                self.__verify_index__(i)
-                self.qc.rx(pi/2, self.qr[i])
-
-        return self
 
     def input(self, idx, theta):
         if isinstance(idx, list):
@@ -96,17 +85,6 @@ class ibmqNativeBuilder(__qiskitGeneralBuilder__):
     def __init__(self, nbqbits, *args, **kwargs):
         super().__init__(nbqbits)
 
-    def alldiam(self, idx=None):
-        if idx is None:
-            self.qc.u2(-pi/2, pi/2, self.qr)
-        else:
-            if isinstance(idx, int):
-                idx = [idx]
-            for i in idx:
-                self.__verify_index__(i)
-                self.qc.u2(-pi/2, pi/2, self.qr[i])
-
-        return self
 
     def input(self, idx, theta):
         if isinstance(idx, list):
@@ -158,23 +136,6 @@ class qkParallelBuilder(__qiskitGeneralBuilder__):
         super().__init__(tot_nbqbits if tot_nbqbits else nbqbits)
         self.c_nbq = nbqbits
         self.start_2 = tot_nbqbits - nbqbits if tot_nbqbits else None
-
-    def alldiam(self, idx=None):
-        if idx is None:
-            self.qc.rx(pi/2, self.qr[:self.c_nbq])
-            if self.start_2:
-                self.qc.rx(pi/2, self.qr[self.start_2:])
-        else:
-            if isinstance(idx, int):
-                idx = [idx]
-            for i in idx:
-                self.__verify_index__(i)
-
-                self.qc.rx(pi/2, self.qr[i])
-                if self.start_2:
-                    self.qc.rx(pi/2, self.qr[self.start_2 + i])
-
-        return self
 
     def input(self, idx, theta):
         if isinstance(idx, list):

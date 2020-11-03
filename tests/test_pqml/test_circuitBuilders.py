@@ -12,26 +12,6 @@ def make_builder_test(builder_class):
         def test_empty_circuit(self):
             self.assertIsInstance(self.bdr, pqml.circuitBuilder)
 
-        def test_invalid_idx_raises_in_alldiam(self):
-            with self.subTest("out of bounds"):
-                idxes = [10, -1, [-1, 5]]
-                for idx in idxes:
-                    with self.subTest(idx=idx):
-                        self.assertRaises(
-                            ValueError,
-                            self.bdr.alldiam,
-                            idx
-                        )
-            with self.subTest("Wrong type"):
-                idxes = [2.1, "a"]
-                for idx in idxes:
-                    with self.subTest(idx=idx):
-                        self.assertRaises(
-                            TypeError,
-                            self.bdr.alldiam,
-                            idx
-                        )
-
         def test_invalid_idx_raises_in_input(self):
             with self.subTest("out of bounds"):
                 idxes = [10, -1, [-1, 5]]
@@ -114,13 +94,6 @@ class TestMQBuilder(make_builder_test(pqml.manyq.mqBuilder)):
         self.assertEqual(
             repr(self.bdr.circuit()),
             repr(bdr2.circuit())
-        )
-
-    def test_alldiam(self):
-        self.bdr.alldiam()
-        self.assertEqual(
-            str(self.bdr.circuit()),
-            "SX(0)SX(1)SX(2)"
         )
 
     def test_cz(self):

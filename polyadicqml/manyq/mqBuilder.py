@@ -47,19 +47,6 @@ class mqBuilder(circuitBuilder):
 
         return self
 
-    def alldiam(self, idx=None):
-        if idx is None:
-            idx = range(self.nbqbits)
-        if isinstance(idx, int):
-            idx = [idx]
-        for i in idx:
-            self.__verify_index__(i)
-            mq.SX(i)
-
-            self.__txt += f"SX({i})"
-
-        return self
-
     def __single_input(self, idx, theta):
         self.__verify_index__(idx)
         mq.SX(idx)

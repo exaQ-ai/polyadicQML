@@ -58,28 +58,6 @@ class circuitBuilder():
         """
         raise NotImplementedError
 
-    def alldiam(self, idx=None):
-        """Add X-rotation of :math:`\\pi/2`.
-
-        Parameters
-        ----------
-        idx : iterable, optional
-            Indices on which to apply the rotation, by default ``None``.
-            If ``None``, apply to all qubits.
-
-        Returns
-        -------
-        circuitBuilder
-            self
-        
-        Raises
-        ------
-        ValueError
-            If idx is out of range
-        TypeError
-            If the indices are not int
-        """
-        raise NotImplementedError
 
     def input(self, idx, theta):
         """Add input gate.
