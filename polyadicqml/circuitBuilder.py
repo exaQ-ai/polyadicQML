@@ -123,3 +123,27 @@ class circuitBuilder():
             If the indices are not int
         """
         raise NotImplementedError
+
+    def fsim(self, a, b, theta, phi):
+        """Add fSIM gate between qubits `a` and `b`
+
+        Parameters
+        ----------
+        a : int
+            Control qubit
+        b : int
+            Target qubit.
+
+        Returns
+        -------
+        circuitBuilder
+            self
+        
+        Raises
+        ------
+        ValueError
+            If a or b are out of range
+        TypeError
+            If the indices are not int
+        """
+        raise NotImplementedError

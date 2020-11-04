@@ -79,3 +79,14 @@ class mqBuilder(circuitBuilder):
         self.__txt += f"CZ({a},{b})"
 
         return self
+
+
+    def fsim(self, a, b, theta, phi):
+        self.__verify_index__(a)
+        self.__verify_index__(b)
+
+        mq.fSIM(a, b, theta, phi)
+
+        self.__txt += f"fSIM({a},{b})"
+
+        return self
