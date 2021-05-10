@@ -20,7 +20,7 @@ From PyPI, at the command line::
 
 Installing latest stable from github::
 
-   git clone https://github.com/entropicalabs/polyadicQML.git polyadicqml
+   git clone https://github.com/exaQ-ai/polyadicQML.git polyadicqml
    cd polyadicqml
    pip install -U .
 
